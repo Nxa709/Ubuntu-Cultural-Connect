@@ -1,0 +1,27 @@
+{
+  "name": "Ubuntu Cultural Connect",
+  "short_name": "Ubuntu CC",
+  "description": "Discover and experience South Africa's rich cultural heritage",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a1a",
+  "theme_color": "#FFB612",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["travel", "culture", "tourism"],
+  "icons": [
+    {
+      "src": "/img/Ubuntu_logo/Ubuntu-logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/img/Ubuntu_logo/Ubuntu-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

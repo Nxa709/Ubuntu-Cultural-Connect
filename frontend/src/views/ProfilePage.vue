@@ -1,0 +1,1268 @@
+<template>
+  <div class="profile-page">
+    <div class="hero-header">
+      <h1><span class="accent-word">My</span> Profile</h1>
+      <p>{{ auth.isBusinessOwner ? 'Manage your business account, view performance metrics, and keep your information up to date.' : auth.isAdmin ? 'Your administration center — monitor platform activity, manage users, and oversee registered hotspots.' : 'Your personal travel hub — manage preferences, view your travel history, and review experiences.' }}</p>
+    </div>
+
+    <div v-if="success" class="alert alert-success">{{ success }}</div>
+    <div v-if="error" class="alert alert-error">{{ error }}</div>
+
+    <div class="profile-layout" :class="{ 'single-col': auth.isBusinessOwner || auth.isAdmin }">
+
+      <!-- ── LEFT COLUMN ── -->
+      <div class="left-col">
+
+        <!-- User Information -->
+        <div class="card">
+          <div class="user-info-header">
+            <div class="user-avatar-large">{{ initials }}</div>
+            <div class="user-info-text">
+              <h2>{{ auth.user?.full_name }}</h2>
+              <span class="user-role-badge">{{ auth.userRole?.replace('_', ' ') }}</span>
+            </div>
+          </div>
+          <div class="user-details">
+            <div class="detail-row">
+              <span class="detail-label">Email</span>
+              <span class="detail-value">{{ auth.user?.email }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Phone</span>
+              <span class="detail-value">{{ auth.user?.phone_number || 'Not provided' }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Member Since</span>
+              <span class="detail-value">{{ formatDate(auth.user?.created_at) }}</span>
+            </div>
+          </div>
+          <button class="btn btn-primary" @click="showEditModal = true">Edit Profile</button>
+        </div>
+
+        <!-- Your Preferences -->
+        <div class="card" v-if="auth.isTourist">
+          <div class="section-header">
+            <h2>Your Preferences</h2>
+            <router-link to="/preferences" class="btn-link">Update</router-link>
+          </div>
+          <div v-if="preferences.length > 0" class="pref-tags">
+            <span class="pref-tag" v-for="p in preferences" :key="p">{{ p }}</span>
+          </div>
+          <p v-else class="empty-text">No preferences set yet. <router-link to="/preferences">Tell us what you love</router-link> to get personalized recommendations.</p>
+        </div>
+
+        <!-- Business Summary (Business Owner only) -->
+        <div class="card" v-if="auth.isBusinessOwner && ownerStats">
+          <h2>Business Summary</h2>
+          <div class="business-summary-grid">
+            <div class="bs-item">
+              <span class="bs-value">{{ ownerStats.total_hotspots }}</span>
+              <span class="bs-label">Total Hotspots</span>
+            </div>
+            <div class="bs-item">
+              <span class="bs-value active-v">{{ ownerStats.active_hotspots }}</span>
+              <span class="bs-label">Active</span>
+            </div>
+            <div class="bs-item">
+              <span class="bs-value pending-v">{{ ownerStats.pending_approval }}</span>
+              <span class="bs-label">Pending Approval</span>
+            </div>
+            <div class="bs-item">
+              <span class="bs-value">{{ ownerStats.total_ratings }}</span>
+              <span class="bs-label">Total Reviews</span>
+            </div>
+            <div class="bs-item">
+              <span class="bs-value">{{ ownerStats.avg_rating || '—' }}</span>
+              <span class="bs-label">Avg Rating</span>
+            </div>
+            <div class="bs-item">
+              <span class="bs-value">{{ ownerStats.total_categories }}</span>
+              <span class="bs-label">Categories</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card" v-if="auth.isTourist">
+          <h2>Quick Actions</h2>
+          <div class="quick-grid">
+            <router-link to="/plan-trip" class="quick-btn">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              <span>View My Itinerary</span>
+            </router-link>
+            <router-link to="/experiences" class="quick-btn">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span>Browse Experiences</span>
+            </router-link>
+            <router-link to="/preferences" class="quick-btn">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              <span>Update Preferences</span>
+            </router-link>
+            <a class="quick-btn" @click.prevent="scrollToHistory">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span>View Travel History</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── RIGHT COLUMN ── -->
+      <div class="right-col" v-if="auth.isTourist">
+
+        <!-- Recommended Experiences -->
+        <div class="card" v-if="!auth.isBusinessOwner">
+          <h2>Recommended for You</h2>
+          <div v-if="loadingRecs" class="loading-rec">
+            <div class="spinner"></div>
+          </div>
+          <div v-else-if="recommended.length > 0" class="rec-grid">
+            <router-link v-for="exp in recommended" :key="exp.id" :to="`/experience/${exp.id}`" class="rec-card">
+              <div class="rec-img" :style="{ backgroundImage: `url(${exp.image_url || getCategoryImage(exp.category)})` }">
+                <span class="rec-badge">{{ exp.category }}</span>
+              </div>
+              <div class="rec-body">
+                <h4>{{ exp.title }}</h4>
+                <p class="rec-loc">{{ exp.location }}</p>
+                <span class="rec-rating" v-if="exp.avg_rating">&#9733; {{ exp.avg_rating }}</span>
+              </div>
+            </router-link>
+          </div>
+          <div v-else class="empty-text">
+            <p>{{ hasPreferences ? 'No recommendations yet. Check back soon!' : 'Set your preferences to get personalized recommendations.' }}</p>
+          </div>
+        </div>
+
+        <!-- Travel History -->
+        <div ref="historySection" class="card travel-history-card" v-if="!auth.isBusinessOwner">
+          <div class="section-header">
+            <h2>Travel History</h2>
+            <span class="history-count">{{ travelHistory.length }} {{ travelHistory.length === 1 ? 'experience' : 'experiences' }}</span>
+          </div>
+          <p class="card-desc">Every experience you've added to your itinerary appears here. Only visited experiences can be reviewed.</p>
+
+          <div v-if="loadingHistory" class="loading-rec">
+            <div class="spinner"></div>
+          </div>
+
+          <div v-else-if="travelHistory.length === 0" class="empty-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+            </svg>
+            <p>No travel history yet.</p>
+            <router-link to="/experiences" class="btn-browse">Browse Experiences</router-link>
+          </div>
+
+          <div v-else class="history-list">
+            <div v-for="(item, idx) in travelHistory" :key="idx" class="history-item">
+              <div class="history-img" :style="{ backgroundImage: `url(${item.image || getCategoryImage(item.category)})` }">
+                <span class="history-cat">{{ item.category }}</span>
+              </div>
+              <div class="history-body">
+                <div class="history-top-row">
+                  <h3>{{ item.name }}</h3>
+                  <span class="history-province">{{ item.province || item.location }}</span>
+                </div>
+                <div class="history-meta">
+                  <span class="history-date" v-if="item.addedDate">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>
+                    Added: {{ item.addedDate }}
+                  </span>
+                  <span class="history-date" v-if="item.visitDate">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    Visit: {{ item.visitDate }}
+                  </span>
+                </div>
+
+                <!-- Review Section -->
+                <div class="history-review">
+                  <div v-if="submittingReview === item.experience_id" class="review-form">
+                    <div class="star-rating">
+                      <button v-for="n in 5" :key="n" type="button" class="star-btn" :class="{ filled: n <= (reviewForm.score) }" @click="reviewForm.score = n">
+                        <svg width="20" height="20" viewBox="0 0 24 24" :fill="n <= reviewForm.score ? 'var(--accent)' : 'none'" :stroke="n <= reviewForm.score ? 'var(--accent)' : '#E8E2DC'" stroke-width="2">
+                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                        </svg>
+                      </button>
+                    </div>
+                    <textarea v-model="reviewForm.comment" rows="2" maxlength="500" placeholder="Share your experience..." class="review-textarea"></textarea>
+                    <div class="review-actions">
+                      <button class="btn btn-primary btn-sm" @click="submitReview(item.experience_id)" :disabled="reviewForm.score === 0 || savingReview">Submit Review</button>
+                      <button class="btn btn-outline btn-sm" @click="cancelReview">Cancel</button>
+                    </div>
+                  </div>
+
+                  <div v-else-if="existingReview(item.experience_id)" class="existing-review">
+                    <div class="existing-stars">
+                      <span v-for="n in 5" :key="n" class="star" :class="{ filled: n <= existingReview(item.experience_id).score }">&#9733;</span>
+                      <span class="existing-score">{{ existingReview(item.experience_id).score }}/5</span>
+                    </div>
+                    <p class="existing-comment" v-if="existingReview(item.experience_id).comment">{{ existingReview(item.experience_id).comment }}</p>
+                    <button class="btn btn-link btn-xs" @click="editReview(item.experience_id)">Edit Review</button>
+                  </div>
+
+                  <div v-else>
+                    <button class="btn btn-outline btn-sm" @click="startReview(item.experience_id)">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                      Rate &amp; Review
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div v-if="showEditModal" class="modal-overlay" @click.self="showEditModal = false">
+      <div class="modal-card">
+        <h3>Edit Profile</h3>
+        <form @submit.prevent="handleUpdate">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input v-model="form.full_name" type="text" required />
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input :value="auth.user?.email" type="email" disabled class="disabled-input" />
+            <span class="field-note">Email cannot be changed</span>
+          </div>
+          <div class="form-group">
+            <label>Phone Number</label>
+            <input v-model="form.phone_number" type="tel" />
+          </div>
+          <div class="modal-actions">
+            <button type="submit" class="btn btn-primary" :disabled="loading">{{ loading ? 'Saving...' : 'Save Changes' }}</button>
+            <button type="button" class="btn btn-outline" @click="showEditModal = false">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, reactive, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '../stores/auth'
+import { useExperienceStore } from '../stores/experience'
+
+const auth = useAuthStore()
+const expStore = useExperienceStore()
+const router = useRouter()
+
+const form = reactive({
+  full_name: '',
+  phone_number: '',
+})
+
+const loading = ref(false)
+const showEditModal = ref(false)
+const success = ref('')
+const error = ref('')
+
+const preferences = ref([])
+const recommended = ref([])
+const hasPreferences = ref(false)
+const loadingRecs = ref(false)
+
+const travelHistory = ref([])
+const loadingHistory = ref(false)
+const ownerStats = ref(null)
+
+const submittingReview = ref(null)
+const savingReview = ref(false)
+const reviewForm = reactive({ score: 0, comment: '' })
+
+const historySection = ref(null)
+
+const initials = computed(() => {
+  const name = auth.user?.full_name || 'U'
+  return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
+})
+
+const categoryImages = {
+  'Traditional Cooking': '/img/cultures/Rural.jpg',
+  'Storytelling': '/img/cultures/KwaMaiMai.jpg',
+  'Music & Dance': '/img/cultures/Rasta.jpeg',
+  'Crafts & Art': '/img/cultures/Ndebele.jpg',
+  'Heritage Tours': '/img/cultures/Jepe.jpg',
+  'Township Life': '/img/cultures/KwaMaiMai.jpg',
+  'Rural Heritage': '/img/cultures/Rural.jpg',
+  'Traditional Healing': '/img/cultures/Xhosa.jpg',
+  'Textile & Weaving': '/img/cultures/Vhenda.jpg',
+  'Photography Tours': '/img/cultures/Safari.jpg',
+  'Nature & Wildlife': '/img/cultures/Safari.jpg',
+  'Accommodation & Lodging': '/img/cultures/Rural.jpg',
+}
+
+function getCategoryImage(cat) {
+  return categoryImages[cat] || '/img/cultures/Safari.jpg'
+}
+
+function formatDate(d) {
+  if (!d) return ''
+  return new Date(d).toLocaleDateString('en-ZA', { year: 'numeric', month: 'short', day: 'numeric' })
+}
+
+function formatShortDate(d) {
+  if (!d) return ''
+  return new Date(d).toLocaleDateString('en-ZA', { month: 'short', day: 'numeric' })
+}
+
+function scrollToHistory() {
+  if (historySection.value) {
+    historySection.value.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+}
+
+function existingReview(expId) {
+  return expStore.myReviews.find(r => r.experience_id === expId)
+}
+
+function startReview(expId) {
+  reviewForm.score = 0
+  reviewForm.comment = ''
+  submittingReview.value = expId
+}
+
+function editReview(expId) {
+  const existing = existingReview(expId)
+  if (existing) {
+    reviewForm.score = existing.score
+    reviewForm.comment = existing.comment || ''
+    submittingReview.value = expId
+  }
+}
+
+function cancelReview() {
+  submittingReview.value = null
+  reviewForm.score = 0
+  reviewForm.comment = ''
+}
+
+async function submitReview(expId) {
+  if (reviewForm.score === 0) return
+  savingReview.value = true
+  try {
+    await expStore.submitRating(expId, {
+      score: reviewForm.score,
+      comment: reviewForm.comment || null,
+    })
+    await expStore.fetchMyReviews()
+    submittingReview.value = null
+    reviewForm.score = 0
+    reviewForm.comment = ''
+    success.value = 'Review submitted!'
+    setTimeout(() => { success.value = '' }, 3000)
+  } catch (e) {
+    error.value = e.response?.data?.detail || 'Failed to submit review'
+    setTimeout(() => { error.value = '' }, 3000)
+  } finally {
+    savingReview.value = false
+  }
+}
+
+async function loadTravelHistory() {
+  loadingHistory.value = true
+  try {
+    await expStore.fetchMyTrips()
+    const items = []
+    const seen = new Set()
+
+    for (const trip of expStore.myTrips) {
+      const tripDate = trip.created_at || trip.start_date
+      let notesEntries = []
+      if (trip.notes) {
+        try {
+          const parsed = JSON.parse(trip.notes)
+          notesEntries = Array.isArray(parsed) ? parsed : []
+        } catch (e) { /* ignore */ }
+      }
+
+      for (const day of notesEntries) {
+        const entries = day.entries || []
+        for (const entry of entries) {
+          if (entry.type === 'experience' && entry.name) {
+            const key = entry.experience_id || entry.name
+            if (seen.has(key)) continue
+            seen.add(key)
+            items.push({
+              name: entry.name,
+              location: entry.location || '',
+              province: entry.province || '',
+              category: entry.category || 'Cultural Experience',
+              image: null,
+              experience_id: entry.experience_id || null,
+              addedDate: formatDate(tripDate),
+              visitDate: day.date ? formatDate(day.date) : null,
+              tripTitle: trip.title,
+            })
+          }
+        }
+      }
+
+      for (const day of trip.days || []) {
+        if (day.experience_id && !seen.has(day.experience_id)) {
+          seen.add(day.experience_id)
+          items.push({
+            name: day.experience_title || `Experience #${day.experience_id}`,
+            location: '',
+            province: '',
+            category: 'Cultural Experience',
+            image: null,
+            experience_id: day.experience_id,
+            addedDate: formatDate(tripDate),
+            visitDate: day.date ? formatDate(day.date) : null,
+            tripTitle: trip.title,
+          })
+        }
+      }
+    }
+
+    // Fetch details for experiences that have experience_id
+    for (const item of items) {
+      if (item.experience_id) {
+        try {
+          const exp = await expStore.getExperience(item.experience_id)
+          if (exp) {
+            item.image = exp.image_url || item.image
+            item.category = exp.category || item.category
+            item.province = exp.province || item.province
+            item.location = exp.location || item.location
+          }
+        } catch (e) { /* silently fail */ }
+      }
+    }
+
+    travelHistory.value = items
+  } catch (e) {
+    // silently fail
+  } finally {
+    loadingHistory.value = false
+  }
+}
+
+onMounted(async () => {
+  form.full_name = auth.user?.full_name || ''
+  form.phone_number = auth.user?.phone_number || ''
+
+  try {
+    await expStore.fetchPreferences()
+    preferences.value = expStore.preferences
+    hasPreferences.value = preferences.value.length > 0
+  } catch (e) { /* silently fail */ }
+
+  loadingRecs.value = true
+  try {
+    if (hasPreferences.value) {
+      await expStore.fetchRecommended()
+      recommended.value = expStore.recommended
+    }
+  } catch (e) { /* silently fail */ } finally {
+    loadingRecs.value = false
+  }
+
+  if (auth.isBusinessOwner) {
+    try {
+      await expStore.fetchOwnerStats()
+      ownerStats.value = expStore.ownerStats
+    } catch (e) { /* silently fail */ }
+  }
+
+  await Promise.all([
+    loadTravelHistory(),
+    expStore.fetchMyReviews(),
+  ])
+})
+
+async function handleUpdate() {
+  loading.value = true
+  error.value = ''
+  success.value = ''
+  try {
+    await auth.updateProfile(form)
+    success.value = 'Profile updated successfully!'
+    showEditModal.value = false
+    setTimeout(() => { success.value = '' }, 3000)
+  } catch (e) {
+    error.value = e.response?.data?.detail || 'Update failed.'
+    setTimeout(() => { error.value = '' }, 3000)
+  } finally {
+    loading.value = false
+  }
+}
+
+</script>
+
+<style scoped>
+.profile-page {
+  background: url('/img/cultures/woman.jpeg') no-repeat center center;
+  background-size: cover;
+  background-attachment: fixed;
+  position: relative;
+  min-height: 100vh;
+  padding: 100px 20px 60px;
+}
+
+.profile-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 0;
+}
+
+.profile-page > * {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-header {
+  text-align: center;
+  padding: 20px 20px 32px;
+}
+
+.hero-header h1 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.hero-header .accent-word {
+  font-family: 'Pacifico', cursive;
+  font-weight: 400;
+  color: var(--accent);
+}
+
+.hero-header p {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  max-width: 560px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.alert {
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin: 0 auto 16px;
+  font-size: 0.88rem;
+  max-width: 1100px;
+}
+
+.alert-error {
+  background: rgba(255, 77, 77, 0.2);
+  color: #ff6b6b;
+  border: 1px solid rgba(255, 77, 77, 0.3);
+}
+
+.alert-success {
+  background: rgba(76, 175, 80, 0.2);
+  color: #81c784;
+  border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+/* Layout */
+.profile-layout {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.profile-layout.single-col {
+  grid-template-columns: 1fr;
+  max-width: 600px;
+}
+
+.left-col, .right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Card */
+.card {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  padding: 24px;
+  color: #fff;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.card h2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.15rem;
+  color: #fff;
+  margin-bottom: 16px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.section-header h2 {
+  margin-bottom: 0;
+}
+
+/* User Info */
+.user-info-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.user-avatar-large {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: rgba(255, 182, 18, 0.2);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  flex-shrink: 0;
+}
+
+.user-info-text h2 {
+  margin: 0 0 4px;
+  font-size: 1.2rem;
+}
+
+.user-role-badge {
+  display: inline-block;
+  background: rgba(255, 182, 18, 0.2);
+  color: var(--accent);
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  text-transform: capitalize;
+  font-weight: 500;
+}
+
+.user-details {
+  margin-bottom: 20px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detail-value {
+  font-size: 0.88rem;
+  color: #fff;
+  text-align: right;
+}
+
+/* Preferences */
+.pref-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.pref-tag {
+  background: rgba(255, 182, 18, 0.2);
+  color: var(--accent);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* Quick Actions */
+.quick-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.quick-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  text-decoration: none;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s;
+  font-family: inherit;
+  text-align: center;
+}
+
+.quick-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.quick-btn svg {
+  color: var(--accent);
+}
+
+/* Business Summary */
+.business-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.bs-item {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 14px 10px;
+  text-align: center;
+}
+
+.bs-value {
+  display: block;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  line-height: 1;
+}
+
+.bs-value.active-v { color: #00E676; }
+.bs-value.pending-v { color: #FFD740; }
+
+.bs-label {
+  display: block;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Rec Grid */
+.rec-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.rec-card {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  overflow: hidden;
+  text-decoration: none;
+  color: #fff;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.rec-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.rec-img {
+  height: 90px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.rec-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 0.65rem;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.rec-body {
+  padding: 10px 12px;
+}
+
+.rec-body h4 {
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin: 0 0 2px;
+  color: #fff;
+}
+
+.rec-loc {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0 0 6px;
+}
+
+.rec-rating {
+  font-size: 0.72rem;
+  color: var(--accent);
+}
+
+/* Travel History */
+.travel-history-card .section-header {
+  margin-bottom: 4px;
+}
+
+.history-count {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.08);
+  padding: 2px 10px;
+  border-radius: 20px;
+}
+
+.card-desc {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.history-item {
+  display: flex;
+  gap: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.history-item:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.history-img {
+  width: 120px;
+  min-height: 120px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.history-cat {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 0.6rem;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.history-body {
+  flex: 1;
+  padding: 14px 14px 14px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.history-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.history-top-row h3 {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+}
+
+.history-province {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+  white-space: nowrap;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 1px 8px;
+  border-radius: 4px;
+}
+
+.history-meta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.history-date {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.history-date svg {
+  flex-shrink: 0;
+}
+
+/* Review */
+.history-review {
+  margin-top: 4px;
+}
+
+.review-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.star-rating {
+  display: flex;
+  gap: 2px;
+}
+
+.star-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px;
+  transition: transform 0.15s;
+}
+
+.star-btn:hover {
+  transform: scale(1.2);
+}
+
+.review-textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  font-size: 0.82rem;
+  font-family: inherit;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.review-textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.review-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.existing-review {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.existing-stars {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.star {
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 0.95rem;
+}
+
+.star.filled {
+  color: var(--accent);
+}
+
+.existing-score {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-left: 4px;
+}
+
+.existing-comment {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Buttons */
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 600;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background-color: var(--accent);
+  color: #1a1a1a;
+  width: 100%;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--accent-hover);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+}
+
+.btn-outline:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.btn-sm {
+  padding: 6px 14px;
+  font-size: 0.8rem;
+}
+
+.btn-xs {
+  padding: 4px 10px;
+  font-size: 0.72rem;
+  background: none;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 500;
+  width: fit-content;
+}
+
+.btn-xs:hover {
+  text-decoration: underline;
+}
+
+.btn-link {
+  font-size: 0.82rem;
+  color: var(--accent);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.btn-link:hover {
+  text-decoration: underline;
+}
+
+.btn-browse {
+  margin-top: 12px;
+  display: inline-block;
+  padding: 8px 18px;
+  background: var(--accent);
+  color: #1a1a1a;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-card {
+  width: 440px;
+  max-width: 95vw;
+  background: rgba(25, 25, 45, 0.98);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: 28px;
+  color: #fff;
+}
+
+.modal-card h3 {
+  font-size: 1.15rem;
+  margin-bottom: 18px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.form-group {
+  margin-bottom: 14px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 0.88rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.3s;
+  box-sizing: border-box;
+}
+
+.form-group input:focus {
+  border-color: var(--accent);
+}
+
+.disabled-input {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.field-note {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 4px;
+  display: block;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.modal-actions .btn {
+  flex: 1;
+}
+
+/* Empty / Loading */
+.empty-text {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.empty-text a {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 20px;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+}
+
+.empty-state p {
+  margin: 12px 0 0;
+  font-size: 0.88rem;
+}
+
+.loading-rec {
+  display: flex;
+  justify-content: center;
+  padding: 30px 0;
+}
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid rgba(255, 255, 255, 0.15);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .profile-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-header h1 {
+    font-size: 2rem;
+  }
+
+  .history-img {
+    width: 80px;
+    min-height: 80px;
+  }
+
+  .rec-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+</style>

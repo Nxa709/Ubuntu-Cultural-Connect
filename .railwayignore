@@ -1,0 +1,9 @@
+frontend/
+lib/
+__pycache__/
+*.pyc
+*.ps1
+*.bat
+*.vbs
+docker-compose.yml
+data.db

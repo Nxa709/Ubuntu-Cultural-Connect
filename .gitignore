@@ -1,0 +1,46 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+dist-ssr/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs and runtime output
+*.log
+*.err.txt
+*.out.txt
+*.err
+*.out
+backend_err.txt
+backend_out.txt
+stderr.txt
+stdout.txt
+vite-err.txt
+vite-out.txt
+
+# Env / secrets
+.env
+.env.*
+*.local
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Temp
+$null
