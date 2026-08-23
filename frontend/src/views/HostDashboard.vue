@@ -94,7 +94,7 @@
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
                 </svg>
-                <span>{{ exp.duration_hours ? exp.duration_hours + 'h' : '—' }}</span>
+                <span>{{ exp.duration_hours ? exp.duration_hours + 'h' : 'â€”' }}</span>
               </div>
             </div>
           </div>
@@ -247,7 +247,7 @@ onMounted(async () => {
 
 <style scoped>
 .host-page {
-  background: url('/img/cultures/woman.jpeg') no-repeat center center;
+  background: url('/img/cultures/woman.jpeg') no-repeat center top;
   background-size: cover;
   background-attachment: fixed;
   position: relative;

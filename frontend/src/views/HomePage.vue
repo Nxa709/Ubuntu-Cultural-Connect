@@ -208,7 +208,7 @@ function toggleWishlist(id) {
   display: flex;
   flex-direction: column;
   position: relative;
-  background: url('/img/cultures/woman.jpeg') no-repeat center center;
+  background: url('/img/cultures/woman.jpeg') no-repeat center top;
   background-size: cover;
 }
 
@@ -216,7 +216,7 @@ function toggleWishlist(id) {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(0, 0, 0, 0.22);
   z-index: 0;
   pointer-events: none;
 }

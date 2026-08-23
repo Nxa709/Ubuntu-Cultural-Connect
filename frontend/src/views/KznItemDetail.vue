@@ -45,7 +45,7 @@
           </svg>
           <div>
             <span class="banner-title">{{ currentTripInfo.title }}</span>
-            <span class="banner-meta">{{ formatDate(currentTripInfo.start_date) }} – {{ formatDate(currentTripInfo.end_date) }} &middot; {{ currentTripInfo.entryCount }} activit{{ currentTripInfo.entryCount === 1 ? 'y' : 'ies' }}</span>
+            <span class="banner-meta">{{ formatDate(currentTripInfo.start_date) }} â€“ {{ formatDate(currentTripInfo.end_date) }} &middot; {{ currentTripInfo.entryCount }} activit{{ currentTripInfo.entryCount === 1 ? 'y' : 'ies' }}</span>
           </div>
         </div>
         <router-link :to="`/plan-trip?trip=${currentTripInfo.id}`" class="banner-link">
@@ -112,7 +112,7 @@
               </div>
               <div class="info-text">
                 <span class="info-label">Rating</span>
-                <span class="info-value stars">{{ '★'.repeat(Math.round(item.rating)) }}{{ '☆'.repeat(5 - Math.round(item.rating)) }} {{ item.rating }}</span>
+                <span class="info-value stars">{{ 'â˜…'.repeat(Math.round(item.rating)) }}{{ 'â˜†'.repeat(5 - Math.round(item.rating)) }} {{ item.rating }}</span>
               </div>
             </div>
           </div>
@@ -217,7 +217,7 @@
               </div>
               <div class="mini-itinerary-body">
                 <div class="mini-trip-name">{{ currentTripInfo.title }}</div>
-                <div class="mini-trip-dates">{{ formatDate(currentTripInfo.start_date) }} – {{ formatDate(currentTripInfo.end_date) }}</div>
+                <div class="mini-trip-dates">{{ formatDate(currentTripInfo.start_date) }} â€“ {{ formatDate(currentTripInfo.end_date) }}</div>
                 <div class="mini-trip-entries">{{ currentTripInfo.entryCount }} activit{{ currentTripInfo.entryCount === 1 ? 'y' : 'ies' }}</div>
               </div>
               <router-link :to="`/plan-trip?trip=${currentTripInfo.id}`" class="mini-itinerary-link">
@@ -305,7 +305,7 @@ function openItineraryFor(kznItem) {
 </script>
 
 <style scoped>
-.detail-page { background: url('/img/cultures/woman.jpeg') no-repeat center center fixed; background-size: cover; position: relative; min-height: 100vh; }
+.detail-page { background: url('/img/cultures/woman.jpeg') no-repeat center top fixed; background-size: cover; position: relative; min-height: 100vh; }
 .detail-page::before { content: ""; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.15); z-index: 0; }
 .detail-page > * { position: relative; z-index: 1; }
 .loading-state { display: flex; justify-content: center; align-items: center; min-height: 60vh; color: rgba(255, 255, 255, 0.88); font-size: 1.1rem; }

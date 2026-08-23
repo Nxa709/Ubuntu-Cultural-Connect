@@ -33,7 +33,7 @@
           </svg>
           <div>
             <span class="banner-title">{{ currentTripInfo.title }}</span>
-            <span class="banner-meta">{{ formatDate(currentTripInfo.start_date) }} – {{ formatDate(currentTripInfo.end_date) }} &middot; {{ currentTripInfo.entryCount }} activit{{ currentTripInfo.entryCount === 1 ? 'y' : 'ies' }}</span>
+            <span class="banner-meta">{{ formatDate(currentTripInfo.start_date) }} â€“ {{ formatDate(currentTripInfo.end_date) }} &middot; {{ currentTripInfo.entryCount }} activit{{ currentTripInfo.entryCount === 1 ? 'y' : 'ies' }}</span>
           </div>
         </div>
         <router-link :to="`/plan-trip?trip=${currentTripInfo.id}`" class="banner-link">
@@ -112,7 +112,7 @@
 
               <div class="star-breakdown">
                 <div v-for="s in [5,4,3,2,1]" :key="s" class="bar-row">
-                  <span class="bar-label">{{ s }}★</span>
+                  <span class="bar-label">{{ s }}â˜…</span>
                   <div class="bar-track">
                     <div class="bar-fill" :style="{ width: getStarPercent(s) + '%' }"></div>
                   </div>
@@ -193,7 +193,7 @@
               </div>
               <div class="mini-itinerary-body">
                 <div class="mini-trip-name">{{ currentTripInfo.title }}</div>
-                <div class="mini-trip-dates">{{ formatDate(currentTripInfo.start_date) }} – {{ formatDate(currentTripInfo.end_date) }}</div>
+                <div class="mini-trip-dates">{{ formatDate(currentTripInfo.start_date) }} â€“ {{ formatDate(currentTripInfo.end_date) }}</div>
                 <div class="mini-trip-entries">{{ currentTripInfo.entryCount }} activit{{ currentTripInfo.entryCount === 1 ? 'y' : 'ies' }}</div>
               </div>
               <router-link :to="`/plan-trip?trip=${currentTripInfo.id}`" class="mini-itinerary-link">
@@ -318,7 +318,7 @@ onMounted(async () => {
 
 <style scoped>
 .detail-page {
-  background: url('/img/cultures/woman.jpeg') no-repeat center center;
+  background: url('/img/cultures/woman.jpeg') no-repeat center top;
   background-size: cover;
   background-attachment: fixed;
   position: relative;

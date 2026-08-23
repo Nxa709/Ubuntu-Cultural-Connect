@@ -215,7 +215,7 @@ function getCategoryImage(cat) {
 }
 
 .hero-header {
-  background: url('/img/cultures/woman.jpeg') no-repeat center center;
+  background: url('/img/cultures/woman.jpeg') no-repeat center top;
   background-size: cover;
   position: relative;
   text-align: center;

@@ -77,7 +77,7 @@ const navItems = computed(() => {
   if (auth.isAdmin) {
     return [
       { path: '/admin', label: 'Dashboard', icon: 'bi-grid-1x2' },
-      { path: '/admin/registered-hotspots', label: 'Listings', icon: 'bi-briefcase' },
+      { path: '/admin/hotspots', label: 'Listings', icon: 'bi-briefcase' },
       { path: '/admin/comments', label: 'Reviews', icon: 'bi-chat-square-text' },
       { path: '/analytics', label: 'Analytics', icon: 'bi-bar-chart-line' },
       { path: '/profile', label: 'Profile', icon: 'bi-person' },

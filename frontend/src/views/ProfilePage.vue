@@ -2,7 +2,7 @@
   <div class="profile-page">
     <div class="hero-header">
       <h1><span class="accent-word">My</span> Profile</h1>
-      <p>{{ auth.isBusinessOwner ? 'Manage your business account, view performance metrics, and keep your information up to date.' : auth.isAdmin ? 'Your administration center — monitor platform activity, manage users, and oversee registered hotspots.' : 'Your personal travel hub — manage preferences, view your travel history, and review experiences.' }}</p>
+      <p>{{ auth.isBusinessOwner ? 'Manage your business account, view performance metrics, and keep your information up to date.' : auth.isAdmin ? 'Your administration center â€” monitor platform activity, manage users, and oversee registered hotspots.' : 'Your personal travel hub â€” manage preferences, view your travel history, and review experiences.' }}</p>
     </div>
 
     <div v-if="success" class="alert alert-success">{{ success }}</div>
@@ -10,7 +10,7 @@
 
     <div class="profile-layout" :class="{ 'single-col': auth.isBusinessOwner || auth.isAdmin }">
 
-      <!-- ── LEFT COLUMN ── -->
+      <!-- â”€â”€ LEFT COLUMN â”€â”€ -->
       <div class="left-col">
 
         <!-- User Information -->
@@ -72,7 +72,7 @@
               <span class="bs-label">Total Reviews</span>
             </div>
             <div class="bs-item">
-              <span class="bs-value">{{ ownerStats.avg_rating || '—' }}</span>
+              <span class="bs-value">{{ ownerStats.avg_rating || 'â€”' }}</span>
               <span class="bs-label">Avg Rating</span>
             </div>
             <div class="bs-item">
@@ -112,7 +112,7 @@
 
       </div>
 
-      <!-- ── RIGHT COLUMN ── -->
+      <!-- â”€â”€ RIGHT COLUMN â”€â”€ -->
       <div class="right-col" v-if="auth.isTourist">
 
         <!-- Travel History -->
@@ -485,7 +485,7 @@ async function handleUpdate() {
 
 <style scoped>
 .profile-page {
-  background: url('/img/cultures/woman.jpeg') no-repeat center center;
+  background: url('/img/cultures/woman.jpeg') no-repeat center top;
   background-size: cover;
   background-attachment: fixed;
   position: relative;

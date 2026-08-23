@@ -96,7 +96,7 @@ const selectedKznCategoryLabel = computed(() => {
 </script>
 
 <style scoped>
-.kzn-page { background: url('/img/cultures/woman.jpeg') no-repeat center center; background-size: cover; position: relative; min-height: 100vh; padding: 100px 20px 40px; }
+.kzn-page { background: url('/img/cultures/woman.jpeg') no-repeat center top; background-size: cover; position: relative; min-height: 100vh; padding: 100px 20px 40px; }
 .kzn-page::before { content: ""; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.15); z-index: 0; }
 .kzn-page > * { position: relative; z-index: 1; }
 .back-btn { display: inline-flex; align-items: center; gap: 6px; background: rgba(255, 255, 255, 0.26); border: 1px solid rgba(255, 255, 255, 0.38); color: rgba(255, 255, 255, 0.97); padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-family: inherit; cursor: pointer; transition: all 0.2s; margin-bottom: 20px; }

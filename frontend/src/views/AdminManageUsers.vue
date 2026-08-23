@@ -203,7 +203,7 @@ onMounted(async () => {
 
 <style scoped>
 .admin-page {
-  background: url('/img/cultures/woman.jpeg') no-repeat center center;
+  background: url('/img/cultures/woman.jpeg') no-repeat center top;
   background-size: cover;
   background-attachment: fixed;
   position: relative;

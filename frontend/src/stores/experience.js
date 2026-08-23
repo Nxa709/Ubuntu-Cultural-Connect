@@ -149,8 +149,8 @@ export const useExperienceStore = defineStore('experience', () => {
     return r.data
   }
 
-  async function getAnalytics() {
-    const r = await api.get('/experiences/analytics/overview')
+  async function getAnalytics(range = 'all') {
+    const r = await api.get('/experiences/analytics/overview', { params: { range } })
     return r.data
   }
 

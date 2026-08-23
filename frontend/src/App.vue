@@ -120,9 +120,19 @@ main.sidebar-shifted {
   margin-left: 232px;
 }
 
+/* Keep the top-nav logo clear of the fixed sidebar */
+#app.has-sidebar .navbar .nav-container {
+  margin-left: 232px;
+  max-width: calc(100% - 232px);
+}
+
 @media (max-width: 768px) {
   main.sidebar-shifted {
     margin-left: 0;
+  }
+  #app.has-sidebar .navbar .nav-container {
+    margin-left: 0;
+    max-width: 1200px;
   }
 }
 
@@ -267,12 +277,29 @@ main.sidebar-shifted {
 .about-hero,
 .welcome,
 .dashboard-header,
-.ana-header,
 .exp-header {
-  background: linear-gradient(rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.6)), url('/img/cultures/woman.jpeg') no-repeat center center / cover !important;
+  background: linear-gradient(rgba(15, 23, 42, 0.25), rgba(15, 23, 42, 0.45)), url('/img/cultures/woman.jpeg') no-repeat center top / cover !important;
   background-size: cover !important;
   text-align: center !important;
-  padding: 140px 20px 80px !important;
+  padding: 60px 20px 56px !important;
+  position: relative !important;
+  min-height: 640px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+}
+
+.ana-header {
+  background: linear-gradient(rgba(15, 23, 42, 0.25), rgba(15, 23, 42, 0.45)), url('/img/cultures/woman.jpeg') no-repeat center top / cover !important;
+  background-size: cover !important;
+  min-height: 640px !important;
+  display: flex !important;
+  align-items: flex-end !important;
+  justify-content: space-between !important;
+  gap: 16px !important;
+  flex-wrap: wrap !important;
+  padding: 60px 28px 56px !important;
   position: relative !important;
 }
 
@@ -298,8 +325,8 @@ main.sidebar-shifted {
 .dashboard-header .accent-word,
 .ana-header .accent-word,
 .exp-header .accent-word {
-  font-family: 'Poppins', sans-serif !important;
-  font-weight: 700 !important;
+  font-family: 'Pacifico', cursive !important;
+  font-weight: 400 !important;
   color: var(--accent) !important;
 }
 
@@ -918,6 +945,50 @@ select.input-modern {
   background-position: right 12px center;
   background-size: 16px 12px;
   padding-right: 40px;
+}
+
+/* Admin pages: restore clear approve / reject / filter controls */
+.admin-page .filter-btn {
+  background: #ffffff !important;
+  border: 1px solid #d7dce3 !important;
+  color: #495057 !important;
+}
+
+.admin-page .filter-btn:hover {
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+}
+
+.admin-page .filter-btn.active {
+  background: #16212f !important;
+  border-color: #16212f !important;
+  color: #ffffff !important;
+}
+
+.admin-page .btn-details {
+  background: #16212f !important;
+  border-color: #16212f !important;
+  color: #ffffff !important;
+}
+
+.admin-page .btn-approve {
+  background: #2E7D32 !important;
+  border-color: #2E7D32 !important;
+  color: #ffffff !important;
+}
+
+.admin-page .btn-approve:hover:not(:disabled) {
+  background: #1B5E20 !important;
+}
+
+.admin-page .btn-reject {
+  background: #C62828 !important;
+  border-color: #C62828 !important;
+  color: #ffffff !important;
+}
+
+.admin-page .btn-reject:hover:not(:disabled) {
+  background: #B71C1C !important;
 }
 
 /* Scrollbar styling */

@@ -139,9 +139,9 @@
                       <span v-if="en.type === 'experience'" class="tl-tag tag-exp">{{ en.category }}</span>
                     </div>
                     <div class="tl-meta-line">
-                      <span class="tl-meta" v-if="en.location">&#128205; {{ en.location }}{{ en.province ? ', ' + en.province : '' }}</span>
-                      <span class="tl-meta" v-if="en.duration_hours">&#9201; {{ en.duration_hours }}h</span>
-                      <span class="tl-meta" v-if="en.cost">&#128176; R{{ en.cost }}</span>
+                      <span class="tl-meta" v-if="en.location">{{ en.location }}{{ en.province ? ', ' + en.province : '' }}</span>
+                      <span class="tl-meta" v-if="en.duration_hours">{{ en.duration_hours }}h</span>
+                      <span class="tl-meta" v-if="en.cost">R{{ en.cost }}</span>
                     </div>
                     <p class="tl-reason" v-if="en.reason">{{ en.reason }}</p>
                     <div class="tl-actions" v-if="en.type === 'experience' || en.type === 'meal'">
@@ -555,9 +555,14 @@ function moveEntry(dayNumber, idx, dir) {
   const target = idx + dir
   if (target < 0 || target >= day.entries.length) return
   const arr = day.entries
-  const tmp = arr[idx]
-  arr[idx] = arr[target]
-  arr[target] = tmp
+  const from = arr[idx]
+  const to = arr[target]
+  arr[idx] = to
+  arr[target] = from
+  // Swap times as well so each slot keeps its time; otherwise the moved
+  // activity drags its time along and the timeline falls out of order.
+  ;[from.start_time, to.start_time] = [to.start_time, from.start_time]
+  ;[from.end_time, to.end_time] = [to.end_time, from.end_time]
 }
 
 function openReplace(dayNumber, idx) {

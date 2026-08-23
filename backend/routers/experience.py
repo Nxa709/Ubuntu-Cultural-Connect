@@ -1,5 +1,5 @@
 import json
-from datetime import date, datetime
+from datetime import date, datetime, timedelta, timezone
 from collections import defaultdict
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -176,7 +176,7 @@ def get_home_data(
             Rating.experience_id, func.avg(Rating.score), func.count(Rating.id)
         ).filter(Rating.experience_id.in_(ids), Rating.is_approved == True).group_by(Rating.experience_id).all()
         rating_agg = {r[0]: (r[1], r[2]) for r in rating_rows}
-        itin_rows = db.query(ItineraryAdd.experience_id, func.count(ItineraryAdd.id)).filter(ItineraryAdd.experience_id.in_(ids)).group_by(TripDay.experience_id).all()
+        itin_rows = db.query(ItineraryAdd.experience_id, func.count(ItineraryAdd.id)).filter(ItineraryAdd.experience_id.in_(ids)).group_by(ItineraryAdd.experience_id).all()
         itinerary_counts = dict(itin_rows)
     else:
         rating_agg, itinerary_counts = {}, {}
@@ -266,7 +266,7 @@ def get_recommended(
             Rating.experience_id, func.avg(Rating.score), func.count(Rating.id)
         ).filter(Rating.experience_id.in_(ids), Rating.is_approved == True).group_by(Rating.experience_id).all()
         rating_agg = {r[0]: (r[1], r[2]) for r in rating_rows}
-        itin_rows = db.query(ItineraryAdd.experience_id, func.count(ItineraryAdd.id)).filter(ItineraryAdd.experience_id.in_(ids)).group_by(TripDay.experience_id).all()
+        itin_rows = db.query(ItineraryAdd.experience_id, func.count(ItineraryAdd.id)).filter(ItineraryAdd.experience_id.in_(ids)).group_by(ItineraryAdd.experience_id).all()
         itinerary_counts = dict(itin_rows)
     else:
         rating_agg, itinerary_counts = {}, {}
@@ -361,7 +361,7 @@ def list_experiences(
 
     itin_rows = db.query(
         ItineraryAdd.experience_id, func.count(ItineraryAdd.id)
-    ).filter(ItineraryAdd.experience_id.in_(ids)).group_by(TripDay.experience_id).all()
+    ).filter(ItineraryAdd.experience_id.in_(ids)).group_by(ItineraryAdd.experience_id).all()
     itinerary_counts = dict(itin_rows)
 
     return [_exp_to_response(e, rating_agg=rating_agg, itinerary_counts=itinerary_counts) for e in exps]
@@ -386,7 +386,7 @@ def list_my_experiences(
 
     itin_rows = db.query(
         ItineraryAdd.experience_id, func.count(ItineraryAdd.id)
-    ).filter(ItineraryAdd.experience_id.in_(ids)).group_by(TripDay.experience_id).all()
+    ).filter(ItineraryAdd.experience_id.in_(ids)).group_by(ItineraryAdd.experience_id).all()
     itinerary_counts = dict(itin_rows)
     return [_exp_to_response(e, rating_agg=rating_agg, itinerary_counts=itinerary_counts) for e in exps]
 
@@ -417,7 +417,7 @@ def get_owner_stats(
     if my_exp_ids:
         itin_rows = db.query(
             ItineraryAdd.experience_id, func.count(ItineraryAdd.id)
-        ).filter(ItineraryAdd.experience_id.in_(my_exp_ids)).group_by(TripDay.experience_id).all()
+        ).filter(ItineraryAdd.experience_id.in_(my_exp_ids)).group_by(ItineraryAdd.experience_id).all()
         itinerary_counts = {r[0]: r[1] for r in itin_rows}
 
     most_visited = None
@@ -845,7 +845,7 @@ def generate_itinerary(
         itinerary_counts = dict(
             db.query(ItineraryAdd.experience_id, func.count(ItineraryAdd.id))
             .filter(ItineraryAdd.experience_id.in_(ids))
-            .group_by(TripDay.experience_id).all()
+            .group_by(ItineraryAdd.experience_id).all()
         )
 
     scored = []
@@ -1099,29 +1099,79 @@ def rate_experience(
 
 
 # ── Business Analytics ────────────────────────────────────
+PERIOD_DAYS = {"7d": 7, "30d": 30, "90d": 90, "180d": 180, "365d": 365, "12m": 365}
+
+
+def _perf_status(avg):
+    if avg is None:
+        return "No reviews"
+    if avg >= 4.5:
+        return "Excellent"
+    if avg >= 3.5:
+        return "Good"
+    if avg >= 2.5:
+        return "Needs attention"
+    return "Critical"
+
+
 @router.get("/analytics/overview")
 def get_analytics_overview(
+    range: str = "all",
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     my_exp_ids = [e.id for e in db.query(Experience.id).filter(Experience.owner_id == current_user.id).all()]
 
-    if not my_exp_ids:
+    def _empty_overview():
         return {
             "total_customers": 0,
             "total_reviews": 0,
+            "prev_total_reviews": 0,
             "avg_rating": 0,
+            "prev_avg_rating": 0,
+            "positive_review_pct": 0,
+            "prev_positive_review_pct": 0,
+            "total_views": 0,
+            "prev_total_views": 0,
+            "unique_visitors": 0,
+            "prev_unique_visitors": 0,
             "star_distribution": {1: 0, 2: 0, 3: 0, 4: 0, 5: 0},
             "monthly_customers": [],
             "monthly_ratings": [],
+            "interest_over_time": [],
+            "interest_granularity": "month",
+            "experience_performance": [],
             "recent_reviews": [],
         }
 
-    ratings = db.query(Rating).filter(Rating.experience_id.in_(my_exp_ids)).all()
+    if not my_exp_ids:
+        return _empty_overview()
 
-    total_customers = len(set(r.user_id for r in ratings))
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
+    days = PERIOD_DAYS.get(range)
+    cutoff = now - timedelta(days=days) if days else None
+    prev_cutoff = now - timedelta(days=days * 2) if days else None
+
+    def _ratings_between(start, end=None):
+        q = db.query(Rating).filter(Rating.experience_id.in_(my_exp_ids))
+        if start:
+            q = q.filter(Rating.created_at >= start)
+        if end:
+            q = q.filter(Rating.created_at < end)
+        return q.all()
+
+    ratings = _ratings_between(cutoff)
+    prev_ratings = _ratings_between(prev_cutoff, cutoff) if prev_cutoff else []
+
     total_reviews = len(ratings)
+    prev_total_reviews = len(prev_ratings)
+    total_customers = len(set(r.user_id for r in ratings))
     avg_rating = round(sum(r.score for r in ratings) / len(ratings), 1) if ratings else 0
+    prev_avg_rating = round(sum(r.score for r in prev_ratings) / len(prev_ratings), 1) if prev_ratings else 0
+    positive_review_pct = round(
+        sum(1 for r in ratings if r.score >= 4) / len(ratings) * 100) if ratings else 0
+    prev_positive_review_pct = round(
+        sum(1 for r in prev_ratings if r.score >= 4) / len(prev_ratings) * 100) if prev_ratings else 0
 
     star_dist = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
     for r in ratings:
@@ -1142,7 +1192,75 @@ def get_analytics_overview(
         scores = monthly_rating_scores.get(m, [])
         mr_list.append({"month": m, "avg_rating": round(sum(scores) / len(scores), 1) if scores else 0, "count": len(scores)})
 
-    recent = db.query(Rating).filter(Rating.experience_id.in_(my_exp_ids)).order_by(Rating.created_at.desc()).limit(10).all()
+    # ── Interest ("views") — measured through itinerary adds ──
+    def _adds_between(start, end=None):
+        q = db.query(ItineraryAdd).filter(ItineraryAdd.experience_id.in_(my_exp_ids))
+        if start:
+            q = q.filter(ItineraryAdd.created_at >= start)
+        if end:
+            q = q.filter(ItineraryAdd.created_at < end)
+        return q.all()
+
+    itin_adds = _adds_between(cutoff)
+    prev_itin_adds = _adds_between(prev_cutoff, cutoff) if prev_cutoff else []
+
+    total_views = len(itin_adds)
+    prev_total_views = len(prev_itin_adds)
+    unique_visitors = len(set(a.user_id for a in itin_adds))
+    prev_unique_visitors = len(set(a.user_id for a in prev_itin_adds))
+
+    daily_buckets = days is not None and days <= 30
+    monthly_interest = defaultdict(int)
+    for a in itin_adds:
+        key = a.created_at.strftime("%Y-%m-%d") if daily_buckets else a.created_at.strftime("%Y-%m")
+        monthly_interest[key] += 1
+    interest_over_time = [{"period": k, "count": c} for k, c in sorted(monthly_interest.items())]
+    interest_granularity = "day" if daily_buckets else "month"
+
+    # ── Per-experience performance within the selected period ──
+    views_by_exp = defaultdict(int)
+    for a in itin_adds:
+        views_by_exp[a.experience_id] += 1
+    prev_views_by_exp = defaultdict(int)
+    for a in prev_itin_adds:
+        prev_views_by_exp[a.experience_id] += 1
+
+    scores_by_exp = defaultdict(list)
+    for r in ratings:
+        scores_by_exp[r.experience_id].append(r.score)
+    prev_scores_by_exp = defaultdict(list)
+    for r in prev_ratings:
+        prev_scores_by_exp[r.experience_id].append(r.score)
+
+    exps = db.query(Experience).filter(Experience.id.in_(my_exp_ids)).all()
+    experience_performance = []
+    for e in exps:
+        scores = scores_by_exp.get(e.id, [])
+        prev_scores = prev_scores_by_exp.get(e.id, [])
+        cur_avg = round(sum(scores) / len(scores), 1) if scores else None
+        prev_avg = round(sum(prev_scores) / len(prev_scores), 1) if prev_scores else None
+        trend = "stable"
+        if cur_avg is not None and prev_avg is not None and abs(cur_avg - prev_avg) >= 0.5:
+            trend = "improving" if cur_avg > prev_avg else "declining"
+        elif cur_avg is None and prev_avg is not None:
+            trend = "no ratings"
+        experience_performance.append({
+            "id": e.id,
+            "title": e.title,
+            "image_url": e.image_url,
+            "category": e.category.value if hasattr(e.category, "value") else e.category,
+            "views": views_by_exp.get(e.id, 0),
+            "reviews": len(scores),
+            "avg_rating": cur_avg,
+            "status": _perf_status(cur_avg),
+            "trend": trend,
+        })
+    experience_performance.sort(key=lambda x: (x["views"], x["avg_rating"] or 0), reverse=True)
+
+    recent_q = db.query(Rating).filter(Rating.experience_id.in_(my_exp_ids))
+    if cutoff:
+        recent_q = recent_q.filter(Rating.created_at >= cutoff)
+    recent = recent_q.order_by(Rating.created_at.desc()).limit(10).all()
     recent_exp_ids = list(set(r.experience_id for r in recent))
     recent_exp_map = {}
     if recent_exp_ids:
@@ -1163,10 +1281,21 @@ def get_analytics_overview(
     return {
         "total_customers": total_customers,
         "total_reviews": total_reviews,
+        "prev_total_reviews": prev_total_reviews,
         "avg_rating": avg_rating,
+        "prev_avg_rating": prev_avg_rating,
+        "positive_review_pct": positive_review_pct,
+        "prev_positive_review_pct": prev_positive_review_pct,
+        "total_views": total_views,
+        "prev_total_views": prev_total_views,
+        "unique_visitors": unique_visitors,
+        "prev_unique_visitors": prev_unique_visitors,
         "star_distribution": star_dist,
         "monthly_customers": mc_list,
         "monthly_ratings": mr_list,
+        "interest_over_time": interest_over_time,
+        "interest_granularity": interest_granularity,
+        "experience_performance": experience_performance,
         "recent_reviews": recent_reviews,
     }
 

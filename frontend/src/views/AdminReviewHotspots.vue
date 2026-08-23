@@ -77,7 +77,7 @@
           </div>
           <div class="detail-item">
             <span class="detail-label">Reviews</span>
-            <span class="detail-value">{{ hotspot.rating_count }} (avg {{ hotspot.avg_rating || '—' }})</span>
+            <span class="detail-value">{{ hotspot.rating_count }} (avg {{ hotspot.avg_rating || 'â€”' }})</span>
           </div>
 
           <div class="owner-section">
@@ -152,7 +152,7 @@
         <h3>Reject Hotspot</h3>
         <p class="modal-subtitle">
           <strong>{{ rejectTarget?.title }}</strong><br>
-          {{ rejectTarget?.owner_name || 'Unknown' }} · {{ rejectTarget?.category }}
+          {{ rejectTarget?.owner_name || 'Unknown' }} Â· {{ rejectTarget?.category }}
         </p>
 
         <div class="form-group">
@@ -268,7 +268,7 @@ onMounted(async () => {
 
 <style scoped>
 .admin-page {
-  background: url('/img/cultures/woman.jpeg') no-repeat center center;
+  background: url('/img/cultures/woman.jpeg') no-repeat center top;
   background-size: cover;
   background-attachment: fixed;
   position: relative;

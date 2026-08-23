@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 from database import get_db
 from models.user import User, UserRole
@@ -46,7 +47,8 @@ def get_current_user(
 # ── Register ──────────────────────────────────────────────
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def register(user_in: UserRegister, db: Session = Depends(get_db)):
-    existing = db.query(User).filter(User.email == user_in.email).first()
+    email = user_in.email.strip().lower()
+    existing = db.query(User).filter(func.lower(User.email) == email).first()
     if existing:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -60,7 +62,7 @@ def register(user_in: UserRegister, db: Session = Depends(get_db)):
         )
 
     user = User(
-        email=user_in.email,
+        email=email,
         hashed_password=hash_password(user_in.password),
         full_name=user_in.full_name,
         phone_number=user_in.phone_number,
@@ -75,7 +77,8 @@ def register(user_in: UserRegister, db: Session = Depends(get_db)):
 # ── Login ─────────────────────────────────────────────────
 @router.post("/login", response_model=Token)
 def login(user_in: UserLogin, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == user_in.email).first()
+    email = user_in.email.strip().lower()
+    user = db.query(User).filter(func.lower(User.email) == email).first()
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

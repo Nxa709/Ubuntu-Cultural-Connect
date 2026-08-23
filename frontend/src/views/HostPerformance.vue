@@ -41,9 +41,9 @@
             <div class="perf-title-row">
               <h3>{{ item.title }}</h3>
               <span :class="['trend-badge', item.trend]">
-                <template v-if="item.trend === 'improving'">↗ Improving</template>
-                <template v-else-if="item.trend === 'declining'">↘ Declining</template>
-                <template v-else>→ Stable</template>
+                <template v-if="item.trend === 'improving'">â†— Improving</template>
+                <template v-else-if="item.trend === 'declining'">â†˜ Declining</template>
+                <template v-else>â†’ Stable</template>
               </span>
             </div>
             <div class="perf-meta">
@@ -69,7 +69,7 @@
 
             <div class="star-bars">
               <div v-for="s in [5,4,3,2,1]" :key="s" class="bar-row">
-                <span class="bar-label">{{ s }}★</span>
+                <span class="bar-label">{{ s }}â˜…</span>
                 <div class="bar-track">
                   <div class="bar-fill" :style="{ width: getBarWidth(item.star_distribution[s] || 0, item.total_ratings) }"></div>
                 </div>
@@ -118,7 +118,7 @@ onMounted(async () => {
 
 <style scoped>
 .host-page {
-  background: url('/img/cultures/woman.jpeg') no-repeat center center;
+  background: url('/img/cultures/woman.jpeg') no-repeat center top;
   background-size: cover;
   background-attachment: fixed;
   position: relative;

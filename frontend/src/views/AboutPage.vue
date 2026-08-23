@@ -22,7 +22,7 @@
           <i class="bi bi-globe-africa"></i>
           <h3>Our Story</h3>
           <p>
-            Born from the spirit of Ubuntu — "I am because we are" — we believe travel should
+            Born from the spirit of Ubuntu â€” "I am because we are" â€” we believe travel should
             connect people, not just places.
           </p>
         </div>
@@ -49,7 +49,7 @@
 }
 
 .about-hero {
-  background: url('/img/cultures/woman.jpeg') no-repeat center center;
+  background: url('/img/cultures/woman.jpeg') no-repeat center top;
   background-size: cover;
   position: relative;
   text-align: center;

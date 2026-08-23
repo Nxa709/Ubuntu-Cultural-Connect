@@ -49,8 +49,8 @@
                 @keydown.esc="closeDropdown"
                 placeholder="Search for an experience..."
               />
-              <span class="combobox-chevron">▾</span>
-              <button v-if="form.experience_id" @click.stop="clearExperience" class="combobox-clear" aria-label="Clear">✕</button>
+              <span class="combobox-chevron">â–¾</span>
+              <button v-if="form.experience_id" @click.stop="clearExperience" class="combobox-clear" aria-label="Clear">âœ•</button>
             </div>
 
             <div v-if="expDropdownOpen" class="combobox-dropdown">
@@ -239,12 +239,12 @@ const filteredJournals = computed(() => {
 })
 
 const moods = [
-  { value: 'amazed', icon: '🤩', label: 'Amazed' },
-  { value: 'happy', icon: '😊', label: 'Happy' },
-  { value: 'inspired', icon: '✨', label: 'Inspired' },
-  { value: 'peaceful', icon: '😌', label: 'Peaceful' },
-  { value: 'excited', icon: '🔥', label: 'Excited' },
-  { value: 'nostalgic', icon: '🥹', label: 'Nostalgic' },
+  { value: 'amazed', icon: 'ðŸ¤©', label: 'Amazed' },
+  { value: 'happy', icon: 'ðŸ˜Š', label: 'Happy' },
+  { value: 'inspired', icon: 'âœ¨', label: 'Inspired' },
+  { value: 'peaceful', icon: 'ðŸ˜Œ', label: 'Peaceful' },
+  { value: 'excited', icon: 'ðŸ”¥', label: 'Excited' },
+  { value: 'nostalgic', icon: 'ðŸ¥¹', label: 'Nostalgic' },
 ]
 
 const form = ref({
@@ -326,7 +326,7 @@ onMounted(async () => {
 }
 
 .hero-header {
-  background: url('/img/cultures/woman.jpeg') no-repeat center center;
+  background: url('/img/cultures/woman.jpeg') no-repeat center top;
   background-size: cover;
   position: relative;
   text-align: center;

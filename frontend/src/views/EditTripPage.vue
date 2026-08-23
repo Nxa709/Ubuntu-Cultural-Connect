@@ -27,7 +27,7 @@
                   <option v-for="prov in provinceList" :key="prov.name" :value="prov.name">
                     {{ prov.name }}
                   </option>
-                  <optgroup v-for="prov in provinceList" :key="prov.name + '-loc'" :label="prov.name + ' — Locations'">
+                  <optgroup v-for="prov in provinceList" :key="prov.name + '-loc'" :label="prov.name + ' â€” Locations'">
                     <option v-for="loc in prov.locations" :key="loc" :value="loc">
                       {{ loc }}
                     </option>
@@ -382,7 +382,7 @@ function formatDate(d) {
 
 <style scoped>
 .edit-trip-page {
-  background: url('/img/cultures/woman.jpeg') no-repeat center center;
+  background: url('/img/cultures/woman.jpeg') no-repeat center top;
   background-size: cover;
   background-attachment: fixed;
   position: relative;

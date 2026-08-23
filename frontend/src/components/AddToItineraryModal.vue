@@ -113,7 +113,7 @@
         <h3>Choose a Time</h3>
         <p class="step-desc" v-if="experienceDuration">Duration: {{ experienceDuration }} hours</p>
 
-        <div v-if="dayEntries.length === 0" class="time-picker-simple">
+        <div v-if="!hasTimes" class="time-picker-simple">
           <div class="form-group">
             <label>Start Time</label>
             <input v-model="entryTime.start_time" type="time" />
@@ -128,39 +128,45 @@
         </div>
 
         <div v-else class="timeline-container">
-          <div v-if="noAvailableSlots" class="fully-booked">
+          <div v-if="noFreeTimeOnDay" class="fully-booked">
             <div class="booked-icon">&#128197;</div>
-            <p>This day is fully booked.</p>
+            <p>No free time remains on this day.</p>
             <div class="booked-actions">
-              <button class="btn btn-outline-sm" @click="modalStep = 2">Choose another day</button>
+              <button class="btn btn-outline-sm" @click="findFreeTimeAndContinue">Find free time on another day</button>
+              <button class="btn btn-primary-sm" @click="placeAtEndOfDay">Add at the end of this day anyway</button>
             </div>
           </div>
-          <div v-else class="timeline">
-            <div
-              v-for="(slot, si) in timeSlots"
-              :key="si"
-              class="timeline-slot"
-              :class="{
-                occupied: slot.type === 'occupied',
-                available: slot.type === 'available',
-                selected: selectedSlotIndex === si,
-                'fits-disabled': slot.type === 'available' && !slot.fits,
-                recommended: slot.recommended,
-              }"
-              @click="selectSlot(si)"
-            >
-              <div class="slot-indicator">
-                <span v-if="slot.type === 'occupied'" class="slot-dot occupied-dot"></span>
-                <span v-else class="slot-dot available-dot"></span>
-              </div>
-              <div class="slot-body">
-                <div class="slot-time-range">{{ slot.start }} – {{ slot.end }}</div>
-                <div class="slot-label">{{ slot.label }}</div>
-                <div v-if="slot.recommended" class="slot-recommended">&#9733; Recommended</div>
-                <div v-if="slot.type === 'available' && !slot.fits" class="slot-too-small">Experience too long for this gap</div>
+          <template v-else>
+            <div v-if="noAvailableSlots" class="slot-note">
+              No free window is large enough for the full {{ experienceDuration }}h experience — it will be placed in the largest free window below.
+            </div>
+            <div class="timeline">
+              <div
+                v-for="(slot, si) in timeSlots"
+                :key="si"
+                class="timeline-slot"
+                :class="{
+                  occupied: slot.type === 'occupied',
+                  available: slot.type === 'available',
+                  selected: selectedSlotIndex === si,
+                  'fits-disabled': slot.type === 'available' && !slot.fits,
+                  recommended: slot.recommended,
+                }"
+                @click="selectSlot(si)"
+              >
+                <div class="slot-indicator">
+                  <span v-if="slot.type === 'occupied'" class="slot-dot occupied-dot"></span>
+                  <span v-else class="slot-dot available-dot"></span>
+                </div>
+                <div class="slot-body">
+                  <div class="slot-time-range">{{ slot.start }} – {{ slot.end }}</div>
+                  <div class="slot-label">{{ slot.label }}</div>
+                  <div v-if="slot.recommended" class="slot-recommended">&#9733; Recommended</div>
+                  <div v-if="slot.type === 'available' && !slot.fits" class="slot-too-small">Smaller than the {{ experienceDuration }}h experience</div>
+                </div>
               </div>
             </div>
-          </div>
+          </template>
         </div>
 
         <div class="modal-actions">
@@ -299,6 +305,8 @@ const dayEntries = computed(() => {
   } catch { return [] }
 })
 
+const hasTimes = computed(() => dayEntries.value.some(e => e.start_time && e.end_time))
+
 const timeSlots = computed(() => {
   const entries = [...dayEntries.value].filter(e => e.start_time && e.end_time)
   if (entries.length === 0) return []
@@ -325,8 +333,12 @@ const timeSlots = computed(() => {
 })
 
 const noAvailableSlots = computed(() => {
-  return timeSlots.value.filter(s => s.type === 'available' && s.fits).length === 0
+  return availableSlots.value.filter(s => s.fits).length === 0
 })
+
+const availableSlots = computed(() => timeSlots.value.filter(s => s.type === 'available'))
+
+const noFreeTimeOnDay = computed(() => hasTimes.value && availableSlots.value.length === 0)
 
 function hoursBetween(t1, t2) {
   const [h1, m1] = t1.split(':').map(Number)
@@ -448,18 +460,86 @@ async function proceedToTimeSelection() {
       })
     } catch {}
   }
-  if (dayEntries.value.length === 0) {
+  await autoSelectTime()
+}
+
+/* Search for free time and place the experience there. Never blocks the add. */
+async function autoSelectTime() {
+  if (!hasTimes.value) {
     suggestDefaultTime()
-  } else {
-    // Auto-select a free slot so the experience lands in available free time.
-    const fitting = timeSlots.value.filter(s => s.type === 'available' && s.fits)
-    if (fitting.length > 0) {
-      const rec = fitting.find(s => s.recommended) || fitting[0]
-      selectSlot(timeSlots.value.indexOf(rec))
-    } else {
-      suggestDefaultTime()
-    }
+    return
   }
+  const fitting = availableSlots.value.filter(s => s.fits)
+  if (fitting.length > 0) {
+    const rec = fitting.find(s => s.recommended) || fitting[0]
+    selectSlot(timeSlots.value.indexOf(rec))
+    return
+  }
+  if (availableSlots.value.length > 0) {
+    const largest = [...availableSlots.value].sort(
+      (a, b) => hoursBetween(b.end, b.start) - hoursBetween(a.end, a.start)
+    )[0]
+    selectSlot(timeSlots.value.indexOf(largest))
+    return
+  }
+  await findFreeTimeAndContinue()
+}
+
+function freeSlotsForDayNumber(notes, dayNumber) {
+  let notesData = []
+  try { notesData = JSON.parse(notes || '[]') } catch {}
+  const dayData = notesData.find(d => d.day_number === dayNumber)
+  const entries = (dayData?.entries || []).filter(e => e.start_time && e.end_time)
+  if (entries.length === 0) return [{ start: DAY_START, end: DAY_END, fits: true }]
+  entries.sort((a, b) => a.start_time.localeCompare(b.start_time))
+  const slots = []
+  let cursor = DAY_START
+  for (const entry of entries) {
+    if (entry.start_time > cursor) slots.push({ start: cursor, end: entry.start_time })
+    if (entry.end_time > cursor) cursor = entry.end_time
+  }
+  if (cursor < DAY_END) slots.push({ start: cursor, end: DAY_END })
+  return slots
+}
+
+function findDayWithFreeTime(notes) {
+  if (!tripDays.value.length) return null
+  const candidates = [...tripDays.value].sort((a, b) => a.day_number - b.day_number)
+  for (const day of candidates) {
+    if (day.day_number === selectedDay.value?.day_number) continue
+    if (freeSlotsForDayNumber(notes, day.day_number).length > 0) return day
+  }
+  return null
+}
+
+async function findFreeTimeAndContinue() {
+  const found = findDayWithFreeTime(createdTrip.value?.notes || '[]')
+  if (!found) {
+    placeAtEndOfDay()
+    return
+  }
+  selectedDay.value = found
+  selectedSlotIndex.value = -1
+  entryTime.start_time = ''
+  entryTime.end_time = ''
+  await autoSelectTime()
+}
+
+function placeAtEndOfDay() {
+  const timed = dayEntries.value.filter(e => e.start_time && e.end_time)
+  const lastEnd = timed.length ? timed[timed.length - 1].end_time : DAY_START
+  const durMin = Math.max(60, Math.round((experienceDuration.value || 1) * 60))
+  entryTime.start_time = lastEnd
+  entryTime.end_time = fromMinutes(Math.min(toMinutes(lastEnd) + durMin, toMinutes('23:59')))
+}
+
+function toMinutes(time) {
+  const [h, m] = time.split(':').map(Number)
+  return h * 60 + m
+}
+
+function fromMinutes(total) {
+  return `${String(Math.floor(total / 60) % 24).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`
 }
 
 function suggestDefaultTime() {
@@ -469,7 +549,7 @@ function suggestDefaultTime() {
 
 function selectSlot(index) {
   const slot = timeSlots.value[index]
-  if (!slot || slot.type !== 'available' || !slot.fits) return
+  if (!slot || slot.type !== 'available') return
   selectedSlotIndex.value = index
   entryTime.start_time = slot.start
   entryTime.end_time = slot.end || ''
@@ -741,7 +821,8 @@ watch(() => props.visible, async (val) => {
 .timeline-slot.available.selected { background: rgba(76,175,80,0.18); border-color: #81c784; }
 .timeline-slot.recommended { border-color: var(--accent) !important; background: rgba(255,182,18,0.08) !important; }
 .timeline-slot.occupied { background: rgba(255, 255, 255, 0.18); border: 1px solid rgba(255, 255, 255, 0.20); opacity: 0.7; }
-.timeline-slot.fits-disabled { opacity: 0.35; cursor: not-allowed !important; }
+.timeline-slot.fits-disabled { border-style: dashed; border-color: rgba(255, 255, 255, 0.35); }
+.timeline-slot.fits-disabled:hover { background: rgba(76,175,80,0.08); border-color: #81c784; }
 .slot-indicator { padding-top: 3px; }
 .slot-dot { display: block; width: 10px; height: 10px; border-radius: 50%; }
 .occupied-dot { background: #ff6b6b; }
@@ -765,6 +846,17 @@ watch(() => props.visible, async (val) => {
   font-size: 0.82rem; cursor: pointer; font-family: inherit; transition: all 0.2s;
 }
 .btn-outline-sm:hover { border-color: var(--accent); color: var(--accent); }
+.btn-primary-sm {
+  background: var(--accent); border: 1px solid var(--accent);
+  color: #1a1a1a; padding: 6px 14px; border-radius: 6px;
+  font-size: 0.82rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.2s;
+}
+.btn-primary-sm:hover { background: #fff; border-color: #fff; }
+.slot-note {
+  font-size: 0.78rem; color: var(--accent); text-align: center;
+  background: rgba(255,182,18,0.1); border: 1px dashed rgba(255,182,18,0.4);
+  border-radius: 8px; padding: 8px 12px; margin-bottom: 8px;
+}
 .confirm-summary {
   background: rgba(255, 255, 255, 0.18); border: 1px solid rgba(255, 255, 255, 0.24);
   border-radius: 12px; padding: 16px 18px; margin: 8px 0 4px;
