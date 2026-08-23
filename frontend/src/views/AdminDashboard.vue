@@ -5,10 +5,7 @@
       <p>Monitor platform activity, manage users, and oversee registered hotspots.</p>
     </div>
 
-    <div v-if="loading" class="loading-state">
-      <div class="spinner"></div>
-      <p>Loading dashboard...</p>
-    </div>
+    <LoadingSpinner v-if="loading" message="Loading dashboard..." />
 
     <template v-else>
       <!-- Platform Growth Overview -->
@@ -187,7 +184,7 @@ onMounted(async () => {
   content: "";
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.15);
   z-index: 0;
 }
 
@@ -220,7 +217,7 @@ onMounted(async () => {
 
 .hero-header p {
   font-size: 1.05rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.94);
   max-width: 520px;
   margin: 0 auto;
 }
@@ -233,10 +230,10 @@ onMounted(async () => {
 }
 
 .stat-card {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.28);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 12px;
   padding: 1.25rem;
   display: flex;
@@ -268,7 +265,7 @@ onMounted(async () => {
 .stat-label {
   display: block;
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.88);
   margin-top: 2px;
 }
 
@@ -280,10 +277,10 @@ onMounted(async () => {
 }
 
 .card {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.28);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 14px;
   padding: 1.25rem;
   color: #fff;
@@ -308,11 +305,11 @@ onMounted(async () => {
   justify-content: space-between;
   align-items: center;
   padding: 6px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .metric-row.total {
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 1px solid rgba(255, 255, 255, 0.30);
   margin-top: 4px;
   padding-top: 10px;
   border-bottom: none;
@@ -320,7 +317,7 @@ onMounted(async () => {
 
 .metric-lbl {
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.94);
 }
 
 .metric-val {
@@ -394,7 +391,7 @@ onMounted(async () => {
 .pending-sub {
   display: block;
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.88);
 }
 
 .loading-state {
@@ -403,13 +400,13 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   padding: 4rem 2rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.88);
 }
 
 .spinner {
   width: 36px;
   height: 36px;
-  border: 3px solid rgba(255, 255, 255, 0.18);
+  border: 3px solid rgba(255, 255, 255, 0.45);
   border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;

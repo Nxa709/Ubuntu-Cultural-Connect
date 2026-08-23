@@ -78,8 +78,8 @@ function handleLogout() {
   background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.7);
+  border-top: 1px solid rgba(255, 255, 255, 0.24);
+  color: rgba(255, 255, 255, 0.94);
   padding: 3rem 1.5rem 1.5rem;
   margin-top: auto;
 }
@@ -94,7 +94,7 @@ function handleLogout() {
   grid-template-columns: 1.4fr 2fr;
   gap: 3rem;
   padding-bottom: 2rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.24);
 }
 
 .footer-logo {
@@ -106,7 +106,7 @@ function handleLogout() {
 .footer-tagline {
   font-size: 0.9rem;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.80);
   max-width: 280px;
 }
 
@@ -137,7 +137,7 @@ function handleLogout() {
 }
 
 .link-group a {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.80);
   text-decoration: none;
   font-size: 0.88rem;
   transition: color 0.2s;

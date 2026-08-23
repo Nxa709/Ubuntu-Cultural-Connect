@@ -19,10 +19,7 @@
       </button>
     </div>
 
-    <div v-if="loading" class="loading-state">
-      <div class="spinner"></div>
-      <p>Loading comments...</p>
-    </div>
+    <LoadingSpinner v-if="loading" message="Loading comments..." />
 
     <div v-else-if="admin.comments.length === 0" class="empty-state">
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -141,7 +138,7 @@ onMounted(async () => {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.15);
   z-index: 0;
 }
 
@@ -176,14 +173,14 @@ onMounted(async () => {
 
 .hero-header p {
   font-size: 1.05rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.94);
   max-width: 520px;
   margin: 0 auto;
   line-height: 1.6;
 }
 
 .subtitle {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.94);
 }
 
 .filter-bar {
@@ -195,12 +192,12 @@ onMounted(async () => {
 
 .filter-btn {
   padding: 0.5rem 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.28);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.97);
   cursor: pointer;
   font-size: 0.9rem;
   transition: all 0.2s;
@@ -214,7 +211,7 @@ onMounted(async () => {
 .filter-btn.active {
   background: var(--heading-color);
   color: #fff;
-  border-color: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.60);
 }
 
 .badge {
@@ -237,13 +234,13 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   padding: 4rem 2rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.88);
 }
 
 .spinner {
   width: 36px;
   height: 36px;
-  border: 3px solid rgba(255, 255, 255, 0.18);
+  border: 3px solid rgba(255, 255, 255, 0.45);
   border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -261,10 +258,10 @@ onMounted(async () => {
 }
 
 .comment-card {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.28);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 12px;
   padding: 1.25rem;
 }
@@ -290,7 +287,7 @@ onMounted(async () => {
 }
 
 .separator {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.80);
 }
 
 .exp-title {
@@ -299,7 +296,7 @@ onMounted(async () => {
 }
 
 .comment-date {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.80);
   font-size: 0.85rem;
   white-space: nowrap;
 }
@@ -309,7 +306,7 @@ onMounted(async () => {
 }
 
 .star {
-  color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.55);
   font-size: 1.1rem;
 }
 

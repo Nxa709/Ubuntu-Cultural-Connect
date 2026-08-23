@@ -12,7 +12,7 @@ from database import get_db #Import the function that creates the database sessi
 #Import the user database table and the user role enumeration
 #This all imports the models or the tables from the database
 from models.user import User, UserRole
-from models.experience import Experience, Rating, TripDay
+from models.experience import Experience, Rating, TripDay, ItineraryAdd
 from models.notification import Notification
 
 #Function allows sql aggregate functions such as sum, avg, count, max, min and sum
@@ -41,33 +41,41 @@ def require_admin(current_user: User = Depends(get_current_user)) -> User:
 
 
 # -- Comments (Ratings with comments) --
-
+#Response model , tells fastAPI exactly what the endpoint should return
 @router.get("/comments", response_model=list[CommentResponse])
 def list_comments(
-    status_filter: str = "pending",
-    db: Session = Depends(get_db),
-    current_user: User = Depends(require_admin),
+    status_filter: str = "pending", #This is the query parameter with the default status filter which is "pending"
+    db: Session = Depends(get_db), #Communicating with the database
+    current_user: User = Depends(require_admin), #Checks if the user is the admin
 ):
+    #This creates the query object
+    #This selects all from the rating where the comment is not null
+    #Only rating that actually contain comments are considered , The admin only reviews comments and not every rating
     q = db.query(Rating).filter(Rating.comment.isnot(None), Rating.comment != "")
 
+
     if status_filter == "pending":
-        q = q.filter(Rating.is_approved == False, Rating.rejected_at == None)
+        q = q.filter(Rating.is_approved == False, Rating.rejected_at == None) #The comment has never been reviewed
     elif status_filter == "approved":
-        q = q.filter(Rating.is_approved == True, Rating.rejected_at == None)
+        q = q.filter(Rating.is_approved == True, Rating.rejected_at == None) #The comment has beeen approved
     elif status_filter == "rejected":
-        q = q.filter(Rating.rejected_at.isnot(None))
+        q = q.filter(Rating.rejected_at.isnot(None)) #Rejected
     elif status_filter == "all":
         pass
     else:
         raise HTTPException(status_code=400, detail="Invalid status_filter. Use: pending, approved, rejected, all")
 
+    #Tells SQL Alchemy that execute the query and return every matching row
+    #The newest comments appear first
     ratings = q.order_by(Rating.created_at.desc()).all()
 
+    #This is called the list comprehension
+    #Instead of return raw database models , the developer creates a CommentResponse object for each rating
     return [
         CommentResponse(
             id=r.id,
             user_id=r.user_id,
-            user_name=r.user.full_name if r.user else None,
+            user_name=r.user.full_name if r.user else None, #Prevent the run time error by handling the case if r.user is None
             experience_id=r.experience_id,
             experience_title=r.experience.title if r.experience else None,
             score=r.score,
@@ -79,8 +87,22 @@ def list_comments(
         for r in ratings
     ]
 
+#Something to approve in the above function
+#I would need to import Python's Enum class first (from enum import Enum)
+#Replace the string values "pending","approved","rejected","all" with an Enum
+#class CommentStatus(str,Enum):
+    #pending = "pending"
+    #approved =  "approved"
+    #rejected = "rejected"
+    #all = "all"
 
+#This will count the pending comments
+#This endpoint will return only one value
 @router.get("/comments/pending/count")
+
+#This again acts as a bouncer at the door 
+#Since the number of comments is an administrative information
+#Every Admin endpoint is protected in the same way
 def pending_comments_count(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_admin),
@@ -91,7 +113,10 @@ def pending_comments_count(
         Rating.is_approved == False,
         Rating.rejected_at == None,
     ).count()
-    return {"count": count}
+    return {"count": count} #returns a json object
+    #example of designing an API with the future changes in mind
+
+#Possible improvements of the above is to use the response schema
 
 
 @router.put("/comments/{comment_id}/approve", response_model=AdminActionResponse)
@@ -115,7 +140,7 @@ def approve_comment(
     )
 
 
-@router.put("/comments/{comment_id}/reject", response_model=AdminActionResponse)
+@router.put("/comments/{comment_id}/reject", response_model=AdminActionResponse) #This is the fastAPI decorator
 def reject_comment(
     comment_id: int,
     db: Session = Depends(get_db),

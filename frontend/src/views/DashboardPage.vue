@@ -204,7 +204,7 @@ function getCategoryImage(cat) {
   content: "";
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.15);
   z-index: 0;
 }
 
@@ -230,15 +230,15 @@ function getCategoryImage(cat) {
 }
 
 .role-label {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.94);
   font-size: 0.9rem;
 }
 
 .info-card {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.28);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 16px;
   padding: 28px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -260,7 +260,7 @@ function getCategoryImage(cat) {
 }
 
 .card-desc {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.94);
   font-size: 0.88rem;
   margin-top: 4px;
 }
@@ -274,7 +274,7 @@ function getCategoryImage(cat) {
 .info-item label {
   display: block;
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.80);
   margin-bottom: 4px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -307,7 +307,7 @@ function getCategoryImage(cat) {
 }
 
 .btn-primary-sm:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.38);
   color: #fff;
   transform: translateY(-1px);
 }
@@ -336,10 +336,10 @@ function getCategoryImage(cat) {
 }
 
 .rec-card {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.26);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.38);
   border-radius: 12px;
   overflow: hidden;
   transition: transform 0.2s, box-shadow 0.2s;
@@ -371,7 +371,7 @@ function getCategoryImage(cat) {
 
 .rec-body { padding: 14px; }
 .rec-body h4 { font-size: 0.88rem; color: #fff; margin-bottom: 4px; }
-.rec-loc { font-size: 0.78rem; color: rgba(255, 255, 255, 0.6); margin-bottom: 8px; }
+.rec-loc { font-size: 0.78rem; color: rgba(255, 255, 255, 0.88); margin-bottom: 8px; }
 
 .rec-footer {
   display: flex;
@@ -381,10 +381,10 @@ function getCategoryImage(cat) {
 .rec-rate {
   font-size: 0.78rem;
   color: #fff;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.30);
   padding: 4px 12px;
   border-radius: 50px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.50);
   text-decoration: none;
   transition: all 0.2s;
 }
@@ -395,7 +395,7 @@ function getCategoryImage(cat) {
 }
 
 .empty-rec {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.80);
   font-size: 0.88rem;
   padding: 20px 0;
 }
@@ -415,10 +415,10 @@ function getCategoryImage(cat) {
   align-items: center;
   gap: 10px;
   padding: 20px 16px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.26);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.38);
   border-radius: 12px;
   text-decoration: none;
   color: #fff;

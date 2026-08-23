@@ -90,6 +90,21 @@ class TripDay(Base):
     experience = relationship("Experience")
 
 
+class ItineraryAdd(Base):
+    """Tracks each time a tourist adds an experience to a trip itinerary."""
+
+    __tablename__ = "itinerary_adds"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    experience_id = Column(Integer, ForeignKey("experiences.id"), nullable=False)
+    trip_id = Column(Integer, ForeignKey("trips.id"), nullable=True)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+    user = relationship("User", backref="itinerary_adds")
+    experience = relationship("Experience", backref="itinerary_adds")
+
+
 class Rating(Base):
     __tablename__ = "ratings"
 

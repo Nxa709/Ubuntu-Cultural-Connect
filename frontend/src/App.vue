@@ -24,17 +24,48 @@ const showSidebar = computed(() => auth.isBusinessOwner || auth.isAdmin)
 @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap');
 
 :root {
-  --bg-color: #ffffff;
-  --text-color: #212529;
-  --heading-color: #2d465e;
+  /* Surfaces */
+  --bg-color: #f5f7fa;
+  --surface: rgba(255, 182, 18, 0.06);
+  --surface-secondary: #f8fafc;
+  --border: rgba(255, 182, 18, 0.30);
+  --border-strong: rgba(255, 182, 18, 0.45);
+
+  /* Text */
+  --text-color: #1f2937;
+  --text-secondary: #4b5563;
+  --text-muted: #9ca3af;
+  --heading-color: #0f172a;
+
+  /* Brand */
   --accent: #FFB612;
   --accent-hover: #e5a310;
-  --surface: #ffffff;
+  --accent-light: rgba(255, 182, 18, 0.15);
+  --accent-dark: #b8860b;
+  --nav-bg: #0f172a;
+
+  /* Glass tokens kept for compatibility (now light) */
+  --glass-bg: #ffffff;
+  --glass-border: #e5e7eb;
+
+  /* Semantic */
+  --success: #16a34a;
+  --success-light: #dcfce7;
+  --warning: #d97706;
+  --warning-light: #fef3c7;
+  --error: #dc2626;
+  --error-light: #fee2e2;
+  --info: #3b82f6;
+  --info-light: #dbeafe;
+
   --contrast: #ffffff;
-  --nav-bg: rgba(0, 0, 0, 0.2);
-  --glass-bg: rgba(255, 255, 255, 0.12);
-  --glass-border: rgba(255, 255, 255, 0.18);
-  --overlay: rgba(0, 0, 0, 0.55);
+  --overlay: rgba(15, 23, 42, 0.55);
+
+  /* Radii & shadows */
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
+  --shadow: 0 1px 3px rgba(16, 24, 40, 0.10), 0 1px 2px rgba(16, 24, 40, 0.06);
 }
 
 * {
@@ -82,10 +113,11 @@ a:hover {
 
 main {
   flex: 1;
+  min-width: 0;
 }
 
 main.sidebar-shifted {
-  margin-left: 220px;
+  margin-left: 232px;
 }
 
 @media (max-width: 768px) {
@@ -100,24 +132,24 @@ main.sidebar-shifted {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 12px 32px;
+  padding: 12px 28px;
   border: none;
-  border-radius: 50px;
+  border-radius: var(--radius-sm);
   background-color: var(--accent);
   color: #1a1a1a;
   font-family: 'Poppins', sans-serif;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
   text-decoration: none;
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-gold:hover {
-  background-color: #ffffff;
+  background-color: var(--accent-hover);
   color: #1a1a1a;
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(255, 182, 18, 0.4);
+  box-shadow: var(--shadow);
 }
 
 .btn-gold:disabled {
@@ -131,74 +163,205 @@ main.sidebar-shifted {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 12px 32px;
-  border: 2px solid rgba(255, 255, 255, 0.5);
-  border-radius: 50px;
+  padding: 12px 28px;
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: var(--radius-sm);
   background: transparent;
   color: #ffffff;
   font-family: 'Poppins', sans-serif;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   text-decoration: none;
 }
 
 .btn-outline-light:hover {
   background-color: var(--accent);
   border-color: var(--accent);
-  color: #1a1a1a;
-  transform: translateY(-2px);
+  color: #ffffff;
 }
 
-/* Glass card mixin */
+/* Card mixin (light) */
 .glass-card {
-  background: var(--glass-bg);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid var(--glass-border);
-  border-radius: 18px;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
-  color: #fff;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  color: var(--text-color);
 }
 
 /* Light glass card for inner pages */
 .glass-card-light {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  color: var(--text-color);
 }
 
-/* Global glass overrides for inner pages */
+/* ============ Clean SaaS light theme (global) ============ */
+
+/* Page roots: very light neutral background */
+.experiences-page,
+.preferences-page,
+.plan-trip-page,
+.kzn-page,
+.province-page,
+.detail-page,
+.host-page,
+.profile-page,
+.review-page,
+.journal-page,
+.rate-page,
+.login-page,
+.register-page,
+.form-page,
+.edit-trip-page,
+.owner-dash,
+.ana-page,
+.admin-page,
+.dashboard,
+.about-page {
+  background: var(--bg-color) !important;
+  color: var(--text-color) !important;
+}
+
+/* Neutralize old dark page overlays */
+.experiences-page::before,
+.experiences-page::after,
+.preferences-page::before,
+.plan-trip-page::before,
+.plan-trip-page::after,
+.kzn-page::before,
+.kzn-page::after,
+.province-page::before,
+.province-page::after,
+.detail-page::before,
+.host-page::before,
+.host-page::after,
+.profile-page::before,
+.review-page::before,
+.journal-page::before,
+.rate-page::before,
+.login-page::before,
+.register-page::before,
+.form-page::before,
+.edit-trip-page::before,
+.owner-dash::before,
+.owner-dash::after,
+.ana-page::before,
+.admin-page::before,
+.dashboard::before,
+.hero-header::before,
+.about-hero::before,
+.welcome::before,
+.dashboard-header::before,
+.ana-header::before,
+.exp-header::before {
+  background: transparent !important;
+}
+
+/* Page headers: image banner with dark overlay */
+.hero-header,
+.about-hero,
+.welcome,
+.dashboard-header,
+.ana-header,
+.exp-header {
+  background: linear-gradient(rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.6)), url('/img/cultures/woman.jpeg') no-repeat center center / cover !important;
+  background-size: cover !important;
+  text-align: center !important;
+  padding: 140px 20px 80px !important;
+  position: relative !important;
+}
+
+.hero-header h1,
+.about-hero h1,
+.welcome h1,
+.dashboard-header h1,
+.ana-header h1,
+.exp-header h1 {
+  font-family: 'Poppins', sans-serif !important;
+  font-size: clamp(1.9rem, 4.5vw, 2.8rem) !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+  max-width: 800px !important;
+  margin: 0 auto 16px !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0 !important;
+}
+
+.hero-header .accent-word,
+.about-hero .accent-word,
+.welcome .accent-word,
+.dashboard-header .accent-word,
+.ana-header .accent-word,
+.exp-header .accent-word {
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 700 !important;
+  color: var(--accent) !important;
+}
+
+.hero-header p,
+.about-hero p,
+.welcome p,
+.dashboard-header p,
+.ana-header p,
+.exp-header p {
+  font-size: 1.02rem !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  max-width: 640px !important;
+  margin: 0 auto !important;
+  line-height: 1.65 !important;
+}
+
+/* Cards: clean white light surface */
 .info-card,
 .exp-card,
 .rec-card,
 .hotspot-card,
 .profile-card,
 .exp-info-card,
-.trip-card {
-  background: rgba(255, 255, 255, 0.12) !important;
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
-  color: #fff;
+.trip-card,
+.stat-card,
+.s-card,
+.kpi-card,
+.trip-day-card,
+.trip-overview,
+.admin-review-card,
+.comment-card,
+.analytics-card,
+.metric-card,
+.form-card,
+.form-section,
+.rate-form,
+.rating-section,
+.pref-category,
+.pref-option,
+.sidebar-card,
+.itinerary-banner,
+.mini-itinerary,
+.map-container,
+.card,
+.login-form,
+.register-form,
+.review-card,
+.journal-card,
+.stat,
+.combobox-dropdown,
+.quick-card,
+.ov-card {
+  background: var(--surface) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: var(--shadow-sm) !important;
+  color: var(--text-color) !important;
 }
 
-.stat-card {
-  background: rgba(255, 255, 255, 0.12) !important;
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
-  color: #fff;
-}
-
-/* Glass text overrides for inner pages */
+/* Card headings: navy */
 .info-card h1,
 .info-card h2,
 .info-card h3,
@@ -214,104 +377,391 @@ main.sidebar-shifted {
 .exp-info-card h1,
 .exp-info-card h2,
 .trip-card h2,
-.trip-card h3 {
-  color: #fff !important;
+.trip-card h3,
+.trip-day-card h3,
+.trip-day-card h4,
+.trip-overview h2,
+.trip-overview h3,
+.admin-review-card h3,
+.comment-card h3,
+.analytics-card h3,
+.analytics-card h4,
+.metric-card h3,
+.metric-lbl,
+.metric-val,
+.form-card h2,
+.form-card h3,
+.form-section h2,
+.rate-form h2,
+.rate-form h3,
+.rating-section h2,
+.card h1,
+.card h2,
+.card h3,
+.card h4,
+.card h5,
+.exp-body h3,
+.exp-price,
+.ov-value,
+.ov-label,
+.ov-title,
+.s-value,
+.stat-label,
+.stat-number,
+.quick-card h3,
+.stats-preview h2,
+.review-name,
+.reviews-card h3,
+.exp-cat-badge,
+.banner-title,
+.mini-trip-name,
+.mini-itinerary-header,
+.dashboard-header h1,
+.journal-title-row h3,
+.review-title-row h3,
+.hotspot-group-title,
+.hs-rating,
+.stat-lbl,
+.bar-count,
+.bar-label,
+.summary-lbl,
+.bs-value,
+.bs-value.active-v,
+.card-desc,
+.history-cat,
+.history-date,
+.history-province,
+.history-top-row,
+.travel-history-card,
+.journal-date,
+.journal-meta,
+.journal-title-row,
+.exp-link,
+.mood-btn,
+.journal-form,
+.review-comment,
+.review-location,
+.review-title-row,
+.avg-label,
+.avg-score,
+.exp-cat,
+.review-meta,
+.review-score,
+.appeal-hint,
+.appeal-reason,
+.file-title,
+.day-activity,
+.day-date,
+.day-notes,
+.action-label,
+.user-name-row,
+.comment-score,
+.exp-title,
+.subtitle,
+.user-name,
+.hotspot-body,
+.hotspot-title-row,
+.detail-label,
+.detail-value,
+.char-count,
+.modal-subtitle,
+.rejection-reason,
+.pending-title,
+.pending-sub,
+.success-message,
+.loading-state,
+.option-title,
+.journal-form h2,
+.banner-left,
+.description-full,
+.price-lbl,
+.summary-count,
+.no-reviews,
+.section,
+.host-label,
+.host-name,
+.review-location,
+.score-text,
+.option-meta {
+  color: var(--heading-color) !important;
 }
 
+/* Card body text: secondary gray */
 .info-card p,
 .info-card label,
 .info-item p,
 .info-item label,
+.info-label,
+.info-value,
 .exp-desc,
 .exp-details span,
+.exp-rating,
 .rec-body p,
 .hotspot-card p,
 .profile-card p,
+.profile-card label,
 .trip-card p,
+.trip-day-card p,
+.trip-overview p,
 .card-desc,
-.meta-item {
-  color: rgba(255, 255, 255, 0.8) !important;
+.meta-item,
+.admin-review-card p,
+.comment-card p,
+.comment-text,
+.analytics-card p,
+.form-card p,
+.form-section p,
+.form-label,
+.rate-form p,
+.rating-section p,
+.ov-sub,
+.ov-visits,
+.s-label,
+.quick-card p,
+.detail-row,
+.price-val,
+.sidebar-details,
+.sidebar-price,
+.mini-trip-dates,
+.mini-trip-entries,
+.banner-meta,
+.mini-itinerary-body,
+.journal-meta span,
+.journal-body p,
+.review-comment p,
+.review-location,
+.score-text,
+.stat-lbl,
+.search-box,
+.search-box input,
+.combobox-chevron,
+.combobox-clear,
+.combobox-option,
+.mood-btn,
+.btn-cancel,
+.history-item:hover,
+.existing-comment,
+.field-note,
+.rec-body,
+.rec-badge,
+.rec-loc,
+.journal-date,
+.option-meta,
+.review-date,
+.combobox-empty {
+  color: var(--text-secondary) !important;
 }
 
-.info-card .card-row h2,
-.info-card .card-row h3,
-.dashboard-header h1 {
-  color: #fff !important;
+.info-value.stars,
+.info-value.link {
+  color: var(--accent) !important;
 }
 
-.dashboard-header .role-label {
-  color: rgba(255, 255, 255, 0.7) !important;
+/* On-cream page headings */
+.dir-heading,
+.login-form h1,
+.register-form h1,
+.login-page h1,
+.register-page h1,
+.auth-heading,
+.desc-section h2,
+.services-section h2,
+.loc-section h2,
+.loc-main,
+.switch-text,
+.auth-subtitle {
+  color: var(--heading-color) !important;
 }
 
-/* Glass buttons on inner pages */
+.dir-sub,
+.switch-text,
+.auth-subtitle,
+.loc-province,
+.location-detail,
+.desc-section p,
+.services-list li,
+.loc-section p {
+  color: var(--text-secondary) !important;
+}
+
+/* Buttons: blue primary, light secondary, red destructive */
 .btn-link,
 .btn-primary-sm,
 .rec-rate,
 .btn-edit,
 .btn-toggle,
-.btn-delete,
 .btn-rate,
 .filter-btn,
-.quick-btn {
-  color: #fff !important;
-  border-color: rgba(255, 255, 255, 0.3) !important;
+.quick-btn,
+.btn-view,
+.btn-cancel,
+.btn-approve,
+.btn-details {
+  background: var(--surface) !important;
+  border: 1px solid var(--border-strong) !important;
+  color: var(--text-color) !important;
 }
 
 .btn-link:hover,
 .btn-rate:hover,
 .rec-rate:hover,
-.filter-btn.active {
-  color: var(--accent) !important;
+.filter-btn.active,
+.btn-view:hover,
+.btn-edit:hover,
+.btn-cancel:hover,
+.mood-btn:hover,
+.btn-details:hover {
   border-color: var(--accent) !important;
+  color: var(--accent) !important;
+  background: var(--accent-light) !important;
 }
 
 .btn-primary-sm {
   background: var(--accent) !important;
+  border-color: var(--accent) !important;
   color: #1a1a1a !important;
 }
 
 .btn-primary-sm:hover {
-  background: #fff !important;
+  background: var(--accent-hover) !important;
+  color: #1a1a1a !important;
 }
 
-/* Glass input overrides */
+.btn-delete {
+  background: var(--error-light) !important;
+  color: var(--error) !important;
+  border-color: transparent !important;
+}
+
+.btn-delete:hover {
+  background: #fecaca !important;
+  color: #b91c1c !important;
+}
+
+.btn-approve {
+  background: var(--success-light) !important;
+  color: var(--success) !important;
+}
+
+.mood-btn {
+  background: var(--surface-secondary) !important;
+}
+
+.mood-btn.active {
+  background: var(--accent-light) !important;
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+}
+
+/* Inputs: white, thin subtle border, gold focus */
 .search-input,
-.filter-select {
-  background: rgba(255, 255, 255, 0.15) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  color: #fff !important;
+.filter-select,
+.role-select,
+.search-box,
+.search-bar,
+.combobox-input-wrap,
+.form-group input,
+.form-group textarea,
+.form-group select,
+.review-textarea,
+.form-input,
+.input-modern {
+  background: #ffffff !important;
+  border: 1px solid var(--border-strong) !important;
+  color: var(--text-color) !important;
 }
 
 .search-input::placeholder,
-.filter-select {
-  color: rgba(255, 255, 255, 0.6) !important;
+.form-group input::placeholder,
+.form-group textarea::placeholder,
+.combobox-input-wrap input::placeholder,
+.input-modern::placeholder {
+  color: var(--text-muted) !important;
 }
 
 .search-input:focus,
-.filter-select:focus {
+.filter-select:focus,
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus,
+.input-modern:focus,
+.search-box:focus-within {
   border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px rgba(255, 182, 18, 0.18) !important;
 }
 
-.filter-select option {
-  background: #1a1a2e;
-  color: #fff;
+.filter-select option,
+.form-group select option,
+.role-select option,
+.combobox-input-wrap option {
+  background: #ffffff;
+  color: #1f2937;
 }
 
-/* Glass page headers */
-.page-header h1,
-.page-header h2 {
-  color: #fff !important;
+.form-group label {
+  color: var(--text-secondary) !important;
 }
 
-.page-header p {
-  color: rgba(255, 255, 255, 0.7) !important;
+/* Status badges: tinted */
+.status-badge.approved {
+  background: var(--success-light) !important;
+  color: var(--success) !important;
 }
 
-/* Glass empty states */
+.status-badge.pending {
+  background: var(--warning-light) !important;
+  color: var(--warning) !important;
+}
+
+.status-badge.rejected {
+  background: var(--error-light) !important;
+  color: var(--error) !important;
+}
+
+.status-badge,
+.category-tag,
+.rec-badge,
+.pref-tag,
+.exp-cat-badge,
+.exp-cat {
+  color: var(--text-secondary) !important;
+}
+
+/* Host / owner cards */
+.host-page .hotspot-card,
+.host-page .stat-card,
+.ov-card {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: var(--shadow-sm) !important;
+  color: var(--text-color) !important;
+}
+
+.ov-card.ov-most {
+  border-color: rgba(255, 182, 18, 0.5) !important;
+  background: var(--accent-light) !important;
+}
+
+/* Directories back buttons on light */
+.kzn-page .back-btn,
+.province-page .back-btn {
+  background: var(--surface) !important;
+  border: 1px solid var(--border-strong) !important;
+  color: var(--text-color) !important;
+}
+
+.kzn-page .back-btn:hover,
+.province-page .back-btn:hover {
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+}
+
+/* Empty states */
 .empty-state,
-.empty-rec,
-.empty-state p {
-  color: rgba(255, 255, 255, 0.6) !important;
+.empty-state p,
+.no-results {
+  color: var(--text-secondary) !important;
 }
 
 .empty-state a,
@@ -319,211 +769,128 @@ main.sidebar-shifted {
   color: var(--accent) !important;
 }
 
-/* Glass badges */
-.status-badge,
-.category-tag,
-.rec-badge,
-.exp-cat-badge,
-.exp-cat,
-.pref-tag {
-  color: #fff !important;
+/* Plan Trip page */
+.plan-trip-page .tl-start,
+.plan-trip-page .tl-name,
+.plan-trip-page .sum-value,
+.plan-trip-page .day-detail-header h3,
+.plan-trip-page .trip-title {
+  color: var(--heading-color) !important;
 }
 
-/* Glass star ratings */
+.plan-trip-page .tl-end,
+.plan-trip-page .tl-meta,
+.plan-trip-page .trip-dest,
+.plan-trip-page .sum-label,
+.plan-trip-page .booking-note,
+.plan-trip-page .day-cost,
+.plan-trip-page .form-group label {
+  color: var(--text-secondary) !important;
+}
+
+.plan-trip-page .tl-reason {
+  color: var(--accent) !important;
+}
+
+.plan-trip-page .tl-meal-suggest {
+  background: var(--accent-light) !important;
+  border-color: rgba(255, 182, 18, 0.4) !important;
+  color: var(--text-color) !important;
+}
+
+.plan-trip-page .meal-heading {
+  color: var(--text-secondary) !important;
+}
+
+.plan-trip-page .tl-btn-danger {
+  background: var(--error-light) !important;
+  color: var(--error) !important;
+}
+
+.plan-trip-page .tag-meal {
+  background: var(--accent) !important;
+  color: #1a1a1a !important;
+}
+
+/* Home page on light background */
+.home-page .category-box {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.home-page .category-name {
+  color: var(--heading-color) !important;
+}
+
+.home-page .category-desc {
+  color: var(--text-muted) !important;
+}
+
+.home-page .hotspot-location,
+.hotspot-location {
+  color: var(--text-secondary) !important;
+}
+
+.home-page .hotspot-rating,
+.hotspot-rating {
+  color: var(--warning) !important;
+}
+
+/* Stars / ratings: gold accent */
+.star,
+.rec-rating,
 .exp-rating,
 .avg-score,
-.avg-label,
-.rec-rating {
-  color: rgba(255, 255, 255, 0.8) !important;
+.hs-rating,
+.home-page .hotspot-rating,
+.hotspot-rating {
+  color: var(--accent) !important;
 }
 
-/* Glass trip page specific */
-.trip-day-card,
-.trip-overview {
-  background: rgba(255, 255, 255, 0.12) !important;
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
-  color: #fff;
+.star {
+  color: #d1d5db !important;
 }
 
-.trip-day-card h3,
-.trip-day-card h4,
-.trip-overview h2,
-.trip-overview h3 {
-  color: #fff !important;
+.star.filled {
+  color: var(--accent) !important;
 }
 
-.trip-day-card p,
-.trip-overview p {
-  color: rgba(255, 255, 255, 0.8) !important;
+.preferences-page .rec-cat-badge {
+  color: var(--heading-color) !important;
 }
 
-/* Glass admin pages */
-.admin-page h1,
-.admin-page h2,
-.admin-page h3,
-.admin-review-card h3,
-.comment-card h3 {
-  color: #fff !important;
+/* Context: keep white on image banners (detail hero, card photo overlays, flip-card fronts) */
+.detail-hero-content,
+.detail-hero-content h1,
+.detail-hero-content .meta-item,
+.detail-hero-content .back-link,
+.detail-hero-content .cat-badge,
+.hc-hero-content,
+.hc-hero-content h3,
+.hc-hero-content .hc-location,
+.hc-hero-content .hc-status,
+.hotspot-overlay,
+.hotspot-overlay h3,
+.province-overlay h3,
+.rec-front,
+.rec-front h3,
+.rec-front .rec-loc,
+.rec-cat,
+.rec-rating,
+.front-name-bar {
+  color: #ffffff !important;
 }
 
-.admin-page p,
-.admin-review-card p,
-.comment-card p,
-.comment-text {
-  color: rgba(255, 255, 255, 0.8) !important;
-}
-
-.admin-review-card,
-.comment-card {
-  background: rgba(255, 255, 255, 0.12) !important;
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
-  border-radius: 16px;
-}
-
-/* Glass analytics */
-.analytics-card,
-.metric-card {
-  background: rgba(255, 255, 255, 0.12) !important;
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
-  border-radius: 16px;
-  color: #fff;
-}
-
-.analytics-card h3,
-.analytics-card h4,
-.metric-card h3 {
-  color: #fff !important;
-}
-
-/* Glass form pages */
-.form-card,
-.form-section {
-  background: rgba(255, 255, 255, 0.12) !important;
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
-  border-radius: 16px;
-}
-
-.form-card h2,
-.form-card h3,
-.form-section h2 {
-  color: #fff !important;
-}
-
-.form-card p,
-.form-section p,
-.form-label {
-  color: rgba(255, 255, 255, 0.8) !important;
-}
-
-/* Glass rate page form */
-.rate-form,
-.rating-section {
-  background: rgba(255, 255, 255, 0.12) !important;
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
-  border-radius: 16px;
-  color: #fff;
-}
-
-.rate-form h2,
-.rate-form h3,
-.rating-section h2 {
-  color: #fff !important;
-}
-
-/* Glass preferences */
-.pref-category,
-.pref-option {
-  background: rgba(255, 255, 255, 0.12) !important;
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
-  border-radius: 12px;
-  color: #fff;
-}
-
-/* Glass profile */
-.profile-card {
-  background: rgba(255, 255, 255, 0.12) !important;
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
-  border-radius: 16px;
-}
-
-.profile-card h1,
-.profile-card h2 {
-  color: #fff !important;
-}
-
-.profile-card p,
-.profile-card label {
-  color: rgba(255, 255, 255, 0.8) !important;
-}
-
-/* Glass host page */
-.host-page .hotspot-card,
-.host-page .stat-card {
-  background: rgba(255, 255, 255, 0.12) !important;
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
-  color: #fff;
-}
-
-.host-page .stat-value {
-  color: #fff !important;
-}
-
-.host-page .stat-label {
-  color: rgba(255, 255, 255, 0.7) !important;
-}
-
-.host-page .hotspot-card h3 {
-  color: #fff !important;
-}
-
-.host-page .hotspot-card p {
-  color: rgba(255, 255, 255, 0.8) !important;
-}
-
-/* Background page wrapper */
+/* Page wrapper (light utility) */
 .page-bg {
-  min-height: 100vh;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  position: relative;
+  background-color: var(--bg-color) !important;
 }
-
 .page-bg::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--overlay);
-  z-index: 0;
+  background: transparent !important;
 }
 
-.page-bg > * {
-  position: relative;
-  z-index: 1;
-}
-
-/* Input styles */
-.input-modern {
+/* Input styles */.input-modern {
   width: 100%;
   padding: 14px 16px;
   border: none;

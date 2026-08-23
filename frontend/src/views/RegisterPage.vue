@@ -93,7 +93,7 @@ async function handleSubmit() {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.15);
   z-index: 0;
 }
 
@@ -124,7 +124,7 @@ async function handleSubmit() {
 .form-subtitle {
   text-align: center;
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.94);
   margin-bottom: 8px;
 }
 
@@ -156,7 +156,7 @@ async function handleSubmit() {
 .switch-text {
   text-align: center;
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.94);
 }
 
 .switch-text a {

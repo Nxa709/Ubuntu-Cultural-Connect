@@ -5,10 +5,7 @@
       <p>See how each of your experiences is performing.</p>
     </div>
 
-    <div v-if="loading" class="loading-state">
-      <div class="spinner"></div>
-      <p>Loading performance data...</p>
-    </div>
+    <LoadingSpinner v-if="loading" message="Loading performance data..." />
 
     <div v-else-if="store.hostPerformance.length === 0" class="empty-state">
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -133,7 +130,7 @@ onMounted(async () => {
   content: "";
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.15);
   z-index: 0;
 }
 
@@ -166,7 +163,7 @@ onMounted(async () => {
 
 .hero-header p {
   font-size: 1.05rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.94);
   max-width: 520px;
   margin: 0 auto;
   line-height: 1.6;
@@ -180,10 +177,10 @@ onMounted(async () => {
 }
 
 .summary-card {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.28);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 12px;
   padding: 1.25rem;
   text-align: center;
@@ -201,7 +198,7 @@ onMounted(async () => {
 .summary-lbl {
   display: block;
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.88);
   margin-top: 4px;
 }
 
@@ -211,7 +208,7 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   padding: 4rem 2rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.88);
 }
 
 .btn-primary {
@@ -227,7 +224,7 @@ onMounted(async () => {
 .spinner {
   width: 36px;
   height: 36px;
-  border: 3px solid rgba(255, 255, 255, 0.18);
+  border: 3px solid rgba(255, 255, 255, 0.45);
   border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -243,10 +240,10 @@ onMounted(async () => {
 }
 
 .perf-card {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.28);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 12px;
   padding: 1.25rem;
 }
@@ -280,7 +277,7 @@ onMounted(async () => {
 
 .trend-badge.improving { background: rgba(129, 199, 132, 0.2); color: #81C784; }
 .trend-badge.declining { background: rgba(239, 83, 80, 0.2); color: #EF9A9A; }
-.trend-badge.stable { background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.6); }
+.trend-badge.stable { background: rgba(255, 255, 255, 0.26); color: rgba(255, 255, 255, 0.88); }
 
 .perf-meta {
   display: flex;
@@ -290,18 +287,18 @@ onMounted(async () => {
 
 .category-tag {
   padding: 0.2rem 0.6rem;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 6px;
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.94);
 }
 
 .location-text {
   display: flex;
   align-items: center;
   gap: 4px;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.88);
   font-size: 0.85rem;
 }
 
@@ -311,7 +308,7 @@ onMounted(async () => {
   align-items: center;
   margin-bottom: 1rem;
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.20);
   border-radius: 10px;
 }
 
@@ -336,12 +333,12 @@ onMounted(async () => {
   margin: 4px 0;
 }
 
-.star { color: rgba(255, 255, 255, 0.25); font-size: 1rem; }
+.star { color: rgba(255, 255, 255, 0.55); font-size: 1rem; }
 .star.filled { color: var(--accent); }
 
 .review-count {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.80);
 }
 
 .star-bars {
@@ -357,7 +354,7 @@ onMounted(async () => {
 
 .bar-label {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.88);
   min-width: 28px;
   text-align: right;
 }
@@ -365,7 +362,7 @@ onMounted(async () => {
 .bar-track {
   flex: 1;
   height: 8px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.26);
   border-radius: 4px;
   overflow: hidden;
 }
@@ -379,17 +376,17 @@ onMounted(async () => {
 
 .bar-count {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.88);
   min-width: 20px;
 }
 
 .perf-footer {
   padding-top: 0.75rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.28);
 }
 
 .footer-stat {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.80);
   font-size: 0.85rem;
 }
 </style>

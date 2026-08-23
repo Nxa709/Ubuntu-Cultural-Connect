@@ -9,11 +9,14 @@
         <nav class="nav-menu" :class="{ open: menuOpen }">
           <ul>
             <li v-if="auth.isTourist || !auth.isLoggedIn"><router-link to="/" @click="menuOpen = false">Home</router-link></li>
+            <li><router-link to="/about" @click="menuOpen = false">About Us</router-link></li>
 
             <template v-if="auth.isLoggedIn">
               <!-- Tourist links -->
               <template v-if="auth.isTourist">
                 <li><router-link to="/experiences" @click="menuOpen = false">Experiences</router-link></li>
+                <li><router-link to="/preferences" @click="menuOpen = false">Set Preferences</router-link></li>
+                <li><router-link to="/plan-trip" class="plan-trip-link" @click="menuOpen = false">Plan Trip</router-link></li>
                 <li><router-link to="/journal" @click="menuOpen = false">Journal</router-link></li>
                 <li><router-link to="/reviews" @click="menuOpen = false">My Reviews</router-link></li>
               </template>
@@ -107,9 +110,8 @@ onUnmounted(() => {
   left: 0;
   width: 100%;
   z-index: 997;
-  background-color: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background-color: #ffffff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   transition: background-color 0.4s ease;
 }
 
@@ -153,7 +155,7 @@ onUnmounted(() => {
 
 .nav-menu a,
 .nav-menu button {
-  color: #ffffff;
+  color: #333333;
   font-family: 'Poppins', sans-serif;
   font-size: 0.85rem;
   font-weight: 400;
@@ -181,7 +183,7 @@ onUnmounted(() => {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  color: #ffffff;
+  color: #333333;
   font-family: 'Poppins', sans-serif;
   font-size: 0.85rem;
   font-weight: 400;
@@ -202,16 +204,14 @@ onUnmounted(() => {
   top: 100%;
   left: 0;
   min-width: 180px;
-  background: rgba(20, 20, 20, 0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 10px;
   padding: 6px;
   list-style: none;
   margin: 0;
   z-index: 1000;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 .dropdown-menu.show {
@@ -235,12 +235,27 @@ onUnmounted(() => {
   background-color: var(--accent) !important;
   color: #1a1a1a !important;
   font-weight: 600 !important;
-  border-radius: 50px !important;
+  border-radius: 8px !important;
   padding: 8px 20px !important;
 }
 
 .register-link:hover {
-  background-color: #ffffff !important;
+  background-color: var(--accent-hover) !important;
+  color: #1a1a1a !important;
+}
+
+.plan-trip-link {
+  background: var(--accent-light) !important;
+  color: var(--accent) !important;
+  font-weight: 600 !important;
+  border: 1px solid rgba(255, 182, 18, 0.4) !important;
+  border-radius: 8px !important;
+  padding: 8px 18px !important;
+}
+
+.plan-trip-link:hover {
+  background: var(--accent) !important;
+  color: #1a1a1a !important;
 }
 
 .notif-li {
@@ -264,7 +279,7 @@ onUnmounted(() => {
 }
 
 .role-tag {
-  background: rgba(255, 182, 18, 0.2);
+  background: rgba(255, 182, 18, 0.15);
   color: var(--accent);
   padding: 2px 8px;
   border-radius: 12px;
@@ -273,18 +288,18 @@ onUnmounted(() => {
 }
 
 .logout-btn {
-  color: rgba(255, 255, 255, 0.7) !important;
+  color: #555555 !important;
 }
 
 .logout-btn:hover {
-  color: #ff6b6b !important;
+  color: #ff4d4f !important;
 }
 
 .mobile-toggle {
   display: none;
   background: none;
   border: none;
-  color: #ffffff;
+  color: #333333;
   font-size: 24px;
   cursor: pointer;
   padding: 4px;
@@ -302,8 +317,8 @@ onUnmounted(() => {
     right: -100%;
     width: 280px;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.95);
-    backdrop-filter: blur(20px);
+    background: #ffffff;
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.1);
     transition: right 0.3s ease;
     padding: 80px 30px 30px;
     z-index: 9998;
@@ -337,7 +352,7 @@ onUnmounted(() => {
 
   .dropdown-menu {
     position: static;
-    background: rgba(255, 255, 255, 0.05);
+    background: #f5f5f5;
     border: none;
     border-radius: 0;
     padding: 0 0 0 16px;

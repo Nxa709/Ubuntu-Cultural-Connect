@@ -5,10 +5,7 @@
       <p>See what guests are saying about each of your hotspots.</p>
     </div>
 
-    <div v-if="loading" class="loading-state">
-      <div class="spinner"></div>
-      <p>Loading reviews...</p>
-    </div>
+    <LoadingSpinner v-if="loading" message="Loading reviews..." />
 
     <template v-else>
       <div class="stats-bar">
@@ -141,7 +138,7 @@ onMounted(async () => {
   content: "";
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.15);
   z-index: 0;
 }
 
@@ -174,7 +171,7 @@ onMounted(async () => {
 
 .hero-header p {
   font-size: 1.05rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.94);
   max-width: 520px;
   margin: 0 auto;
   line-height: 1.6;
@@ -188,10 +185,10 @@ onMounted(async () => {
 }
 
 .stat {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.28);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 12px;
   padding: 1.25rem;
   text-align: center;
@@ -209,7 +206,7 @@ onMounted(async () => {
 .stat-lbl {
   display: block;
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: #4b5563;
   margin-top: 4px;
 }
 
@@ -220,10 +217,8 @@ onMounted(async () => {
 }
 
 .hotspot-group {
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 1.25rem;
 }
@@ -234,7 +229,7 @@ onMounted(async () => {
   align-items: center;
   margin-bottom: 1rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.10);
 }
 
 .hotspot-group-title {
@@ -246,7 +241,7 @@ onMounted(async () => {
 .hotspot-group-title h2 {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #fff;
+  color: #111827;
   margin: 0;
   font-family: 'Poppins', sans-serif;
 }
@@ -257,7 +252,7 @@ onMounted(async () => {
 }
 
 .no-reviews {
-  color: rgba(255, 255, 255, 0.5);
+  color: #4b5563;
   font-size: 0.85rem;
   font-style: italic;
   padding: 8px 0;
@@ -270,8 +265,8 @@ onMounted(async () => {
 }
 
 .review-card {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 1rem;
 }
@@ -306,14 +301,14 @@ onMounted(async () => {
 .user-name {
   display: block;
   font-weight: 600;
-  color: #fff;
+  color: #111827;
   font-size: 0.9rem;
 }
 
 .review-date {
   display: block;
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: #6b7280;
 }
 
 .review-stars {
@@ -321,11 +316,11 @@ onMounted(async () => {
   gap: 2px;
 }
 
-.star { color: rgba(255, 255, 255, 0.25); font-size: 1rem; }
+.star { color: #d1d5db; font-size: 1rem; }
 .star.filled { color: var(--accent); }
 
 .review-comment p {
-  color: rgba(255, 255, 255, 0.85);
+  color: #374151;
   line-height: 1.6;
   margin: 0;
   font-size: 0.88rem;
@@ -337,13 +332,13 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   padding: 4rem 2rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: #4b5563;
 }
 
 .spinner {
   width: 36px;
   height: 36px;
-  border: 3px solid rgba(255, 255, 255, 0.18);
+  border: 3px solid rgba(255, 255, 255, 0.45);
   border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;

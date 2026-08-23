@@ -5,10 +5,7 @@
       <p>All cultural hotspots registered across the platform.</p>
     </div>
 
-    <div v-if="loading" class="loading-state">
-      <div class="spinner"></div>
-      <p>Loading hotspots...</p>
-    </div>
+    <LoadingSpinner v-if="loading" message="Loading hotspots..." />
 
     <div v-else class="hotspots-grid">
       <div v-for="h in hotspots" :key="h.id" class="hs-card">
@@ -32,7 +29,7 @@
             </div>
             <div class="hc-stat">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-              <span>R{{ h.price }}</span>
+              <span>{{ formatPrice(h.price) }}</span>
             </div>
             <div class="hc-stat">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -52,6 +49,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useAdminStore } from '../stores/admin'
+import { formatPrice } from '../utils/format'
 
 const admin = useAdminStore()
 const hotspots = ref([])
@@ -83,7 +81,7 @@ onMounted(async () => {
   content: "";
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.15);
   z-index: 0;
 }
 
@@ -116,7 +114,7 @@ onMounted(async () => {
 
 .hero-header p {
   font-size: 1.05rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.94);
   max-width: 520px;
   margin: 0 auto;
 }
@@ -132,10 +130,10 @@ onMounted(async () => {
 }
 
 .hs-card {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.28);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 16px;
   overflow: hidden;
   transition: transform 0.2s, box-shadow 0.2s;
@@ -179,7 +177,7 @@ onMounted(async () => {
 
 .hc-location {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(255, 255, 255, 0.95);
   text-shadow: 0 1px 4px rgba(0,0,0,0.5);
 }
 
@@ -218,7 +216,7 @@ onMounted(async () => {
   align-items: center;
   gap: 6px;
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.97);
 }
 
 .hc-stat svg {
@@ -232,13 +230,13 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   padding: 4rem 2rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.88);
 }
 
 .spinner {
   width: 36px;
   height: 36px;
-  border: 3px solid rgba(255, 255, 255, 0.18);
+  border: 3px solid rgba(255, 255, 255, 0.45);
   border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;

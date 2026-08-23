@@ -5,10 +5,7 @@
       <p>Modify your trip details and itinerary.</p>
     </div>
 
-    <div v-if="loading" class="loading-state">
-      <div class="spinner"></div>
-      <p>Loading trip...</p>
-    </div>
+    <LoadingSpinner v-if="loading" message="Loading trip..." />
 
     <template v-else-if="trip">
       <div v-if="error" class="alert alert-error">{{ error }}</div>
@@ -397,7 +394,7 @@ function formatDate(d) {
   content: "";
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.15);
   z-index: 0;
 }
 
@@ -427,7 +424,7 @@ function formatDate(d) {
 
 .hero-header p {
   font-size: 1.05rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.94);
   max-width: 520px;
   margin: 0 auto;
   line-height: 1.6;
@@ -442,10 +439,10 @@ function formatDate(d) {
 }
 
 .card, .form-card {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.28);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 16px;
   padding: 28px;
   color: #fff;
@@ -464,7 +461,7 @@ function formatDate(d) {
 .form-group label {
   display: block;
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.88);
   margin-bottom: 6px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -475,9 +472,9 @@ function formatDate(d) {
 .form-group textarea {
   width: 100%;
   padding: 12px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.26);
   color: #fff;
   font-size: 0.95rem;
   font-family: inherit;
@@ -489,6 +486,18 @@ function formatDate(d) {
 .form-group textarea:focus {
   outline: none;
   border-color: var(--accent);
+}
+
+.form-group input[type="date"] {
+  color-scheme: dark;
+}
+.form-group input[type="date"]::-webkit-calendar-picker-indicator {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'/%3E%3Cline x1='16' y1='2' x2='16' y2='6'/%3E%3Cline x1='8' y1='2' x2='8' y2='6'/%3E%3Cline x1='3' y1='10' x2='21' y2='10'/%3E%3C/svg%3E");
+  background-size: 20px 20px;
+  background-position: center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  opacity: 1;
 }
 
 .form-group select option {
@@ -533,7 +542,7 @@ function formatDate(d) {
 
 .btn-outline {
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.60);
   color: #fff;
 }
 
@@ -582,9 +591,9 @@ function formatDate(d) {
   display: flex;
   gap: 14px;
   padding: 14px;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.20);
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.24);
 }
 
 .day-badge {
@@ -616,7 +625,7 @@ function formatDate(d) {
 
 .day-date {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.80);
 }
 
 .day-actions {
@@ -632,14 +641,14 @@ function formatDate(d) {
   justify-content: center;
   border: none;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.26);
+  color: rgba(255, 255, 255, 0.88);
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .btn-icon:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.38);
   color: #fff;
 }
 
@@ -661,26 +670,26 @@ function formatDate(d) {
 
 .day-notes {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.80);
   font-style: italic;
 }
 
 .empty-state {
   text-align: center;
   padding: 40px;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.80);
 }
 
 .loading-state {
   text-align: center;
   padding: 60px;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.88);
 }
 
 .spinner {
   width: 36px;
   height: 36px;
-  border: 3px solid rgba(255, 255, 255, 0.15);
+  border: 3px solid rgba(255, 255, 255, 0.38);
   border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;

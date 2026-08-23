@@ -1,40 +1,53 @@
 <template>
   <aside class="sidebar" v-if="auth.isBusinessOwner || auth.isAdmin">
-    <nav class="sidebar-nav">
-      <router-link
-        v-for="item in navItems"
-        :key="item.path"
-        :to="item.path"
-        class="sidebar-link"
-        :class="{ active: isActive(item.path) }"
-      >
-        <span class="sidebar-icon" v-html="item.icon"></span>
-        <span class="sidebar-label">{{ item.label }}</span>
-        <span v-if="item.badge && item.badge > 0" class="sidebar-badge">{{ item.badge > 99 ? '99+' : item.badge }}</span>
-      </router-link>
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <img src="/img/Ubuntu_logo/Ubuntu-logo.png" alt="Ubuntu Cultural Connect" />
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">Ubuntu</span>
+        <span class="brand-sub">Cultural Connect</span>
+      </div>
+    </div>
 
-      <button class="sidebar-link notif-link" @click="toggleNotifPanel">
-        <span class="sidebar-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-          </svg>
-        </span>
-        <span class="sidebar-label">Notifications</span>
-        <span v-if="notifStore.unreadCount > 0" class="sidebar-badge">{{ notifStore.unreadCount > 99 ? '99+' : notifStore.unreadCount }}</span>
-      </button>
+    <div class="account-selector">
+      <span class="account-avatar">{{ initials }}</span>
+      <div class="account-meta">
+        <span class="account-name">{{ auth.user?.full_name || 'My Business' }}</span>
+        <span class="account-role">{{ roleLabel }}</span>
+      </div>
+      <i class="bi bi-chevron-down account-caret"></i>
+    </div>
+
+    <nav class="sidebar-nav">
+      <template v-for="item in navItems" :key="item.label">
+        <router-link
+          v-if="item.path"
+          :to="item.path"
+          class="sidebar-link"
+          :class="{ active: isActive(item.path) }"
+        >
+          <i :class="['bi', item.icon]"></i>
+          <span class="sidebar-label">{{ item.label }}</span>
+        </router-link>
+        <button v-else type="button" class="sidebar-link sidebar-link--muted">
+          <i :class="['bi', item.icon]"></i>
+          <span class="sidebar-label">{{ item.label }}</span>
+        </button>
+      </template>
     </nav>
 
-    <div class="sidebar-footer">
-      <button @click="handleLogout" class="sidebar-link logout-link">
-        <span class="sidebar-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-            <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
-          </svg>
-        </span>
-        <span class="sidebar-label">Logout</span>
-      </button>
+    <div class="sidebar-bottom">
+      <div class="user-card">
+        <span class="user-avatar">{{ initials }}</span>
+        <div class="user-meta">
+          <span class="user-name">{{ auth.user?.full_name || 'Account' }}</span>
+          <span class="user-role">{{ roleLabel }}</span>
+        </div>
+        <button class="logout-btn" @click="handleLogout" title="Logout">
+          <i class="bi bi-box-arrow-right"></i>
+        </button>
+      </div>
     </div>
   </aside>
 </template>
@@ -50,50 +63,38 @@ const router = useRouter()
 const auth = useAuthStore()
 const notifStore = useNotificationStore()
 
+const initials = computed(() => {
+  const name = auth.user?.full_name || 'U'
+  return name.trim().charAt(0).toUpperCase()
+})
+
+const roleLabel = computed(() => {
+  if (auth.isAdmin) return 'Administrator'
+  return 'Business Owner'
+})
+
 const navItems = computed(() => {
-  const items = []
-  if (auth.isBusinessOwner) {
-    items.push(
-      {
-        path: '/my-hotspots',
-        label: 'My Hotspots',
-        icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
-      },
-      {
-        path: '/analytics',
-        label: 'Analytics',
-        icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
-      },
-    )
-  }
   if (auth.isAdmin) {
-    items.push(
-      {
-        path: '/admin/registered-hotspots',
-        label: 'Registered Hotspots',
-        icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
-      },
-      {
-        path: '/admin',
-        label: 'Admin Dashboard',
-        icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
-      },
-    )
+    return [
+      { path: '/admin', label: 'Dashboard', icon: 'bi-grid-1x2' },
+      { path: '/admin/registered-hotspots', label: 'Listings', icon: 'bi-briefcase' },
+      { path: '/admin/comments', label: 'Reviews', icon: 'bi-chat-square-text' },
+      { path: '/analytics', label: 'Analytics', icon: 'bi-bar-chart-line' },
+      { path: '/profile', label: 'Profile', icon: 'bi-person' },
+      { path: null, label: 'Settings', icon: 'bi-gear' },
+    ]
   }
-  items.push({
-    path: '/profile',
-    label: 'Profile',
-    icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
-  })
-  return items
+  return [
+    { path: '/host/dashboard', label: 'Dashboard', icon: 'bi-grid-1x2' },
+    { path: '/my-hotspots', label: 'My Hotspots', icon: 'bi-briefcase' },
+    { path: '/host/reviews', label: 'Reviews', icon: 'bi-chat-square-text' },
+    { path: '/analytics', label: 'Analytics', icon: 'bi-bar-chart-line' },
+    { path: '/profile', label: 'Profile', icon: 'bi-person' },
+  ]
 })
 
 function isActive(path) {
-  return route.path.startsWith(path)
-}
-
-function toggleNotifPanel() {
-  document.querySelector('.notif-bell')?.click()
+  return route.path === path || route.path.startsWith(path + '/')
 }
 
 function handleLogout() {
@@ -108,42 +109,130 @@ function handleLogout() {
   position: fixed;
   top: 0;
   left: 0;
-  width: 220px;
+  width: 232px;
   height: 100vh;
-  background: rgba(10, 10, 25, 0.95);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
-  z-index: 998;
-  padding-top: 80px;
+  background: #16212f;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  z-index: 998;
+  padding: 20px 14px 16px;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 8px;
+  margin-bottom: 18px;
+}
+
+.brand-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.brand-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.brand-name {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #ffffff;
+}
+
+.brand-sub {
+  font-size: 0.7rem;
+  color: #9fb0c3;
+  letter-spacing: 0.04em;
+}
+
+.account-selector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 18px;
+}
+
+.account-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: var(--accent);
+  color: #1a1a1a;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.account-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.account-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.account-role {
+  font-size: 0.7rem;
+  color: #9fb0c3;
+}
+
+.account-caret {
+  color: #9fb0c3;
+  font-size: 0.8rem;
 }
 
 .sidebar-nav {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding: 12px;
-}
-
-.sidebar-footer {
-  padding: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  flex: 1;
+  overflow-y: auto;
 }
 
 .sidebar-link {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 14px;
-  border-radius: 10px;
-  color: rgba(255, 255, 255, 0.65);
+  padding: 10px 12px;
+  border-radius: 9px;
+  color: #c3cfdd;
   text-decoration: none;
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   font-weight: 500;
-  transition: all 0.2s;
+  transition: all 0.18s;
   font-family: 'Poppins', sans-serif;
   background: none;
   border: none;
@@ -152,52 +241,94 @@ function handleLogout() {
   text-align: left;
 }
 
+.sidebar-link i {
+  font-size: 1.05rem;
+  width: 20px;
+  text-align: center;
+}
+
 .sidebar-link:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.07);
+  color: #ffffff;
 }
 
 .sidebar-link.active {
-  background: rgba(255, 182, 18, 0.12);
-  color: var(--accent);
+  background: var(--accent);
+  color: #1a1a1a;
+  font-weight: 600;
 }
 
-.sidebar-link.logout-link:hover {
-  background: rgba(198, 40, 40, 0.15);
-  color: #EF5350;
+.sidebar-link--muted {
+  cursor: default;
+  opacity: 0.6;
 }
 
-.notif-link {
-  position: relative;
+.sidebar-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.sidebar-icon {
+.user-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 2px;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #2d465e;
+  color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
   flex-shrink: 0;
 }
 
-.sidebar-label {
-  white-space: nowrap;
+.user-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
   flex: 1;
+  line-height: 1.2;
 }
 
-.sidebar-badge {
-  background: #FF5252;
-  color: #fff;
-  font-size: 0.65rem;
-  font-weight: 700;
-  min-width: 18px;
-  height: 18px;
-  border-radius: 9px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 5px;
-  line-height: 1;
+.user-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-role {
+  font-size: 0.7rem;
+  color: #9fb0c3;
+}
+
+.logout-btn {
+  background: none;
+  border: none;
+  color: #9fb0c3;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  transition: all 0.18s;
+}
+
+.logout-btn:hover {
+  color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.1);
 }
 
 @media (max-width: 768px) {

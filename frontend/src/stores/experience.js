@@ -9,6 +9,7 @@ export const useExperienceStore = defineStore('experience', () => {
   const preferences = ref([])
   const myTrips = ref([])
   const categories = ref([])
+  const provinces = ref([])
   const ownerStats = ref(null)
   const myJournals = ref([])
   const myReviews = ref([])
@@ -18,6 +19,11 @@ export const useExperienceStore = defineStore('experience', () => {
   async function fetchCategories() {
     const r = await api.get('/experiences/categories')
     categories.value = r.data
+  }
+
+  async function fetchProvinces() {
+    const r = await api.get('/experiences/provinces')
+    provinces.value = r.data
   }
 
   async function fetchExperiences(params = {}) {
@@ -34,6 +40,15 @@ export const useExperienceStore = defineStore('experience', () => {
     const r = await api.post('/experiences/', data)
     experiences.value.push(r.data)
     return r.data
+  }
+
+  async function uploadImage(file) {
+    const formData = new FormData()
+    formData.append('file', file)
+    const r = await api.post('/upload/image', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+    return r.data.url
   }
 
   async function updateExperience(id, data) {
@@ -188,10 +203,10 @@ export const useExperienceStore = defineStore('experience', () => {
   }
 
   return {
-    experiences, myExperiences, recommended, preferences, myTrips, categories, ownerStats,
+    experiences, myExperiences, recommended, preferences, myTrips, categories, provinces, ownerStats,
     myJournals, myReviews, hostReviews, hostPerformance,
-    fetchCategories, fetchExperiences, getExperience, createExperience,
-    updateExperience, deleteExperience, toggleActive, fetchMyExperiences, fetchOwnerStats,
+    fetchCategories, fetchProvinces, fetchExperiences, getExperience, createExperience,
+    uploadImage, updateExperience, deleteExperience, toggleActive, fetchMyExperiences, fetchOwnerStats,
     fetchPreferences, savePreferences, fetchRecommended,
     fetchMyTrips, createTrip, deleteTrip, updateTrip, addTripDay, updateTripDay, deleteTripDay, getItinerary, addExperienceToTrip,
     getRatings, submitRating, getAnalytics,

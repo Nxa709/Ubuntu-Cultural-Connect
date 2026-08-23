@@ -98,6 +98,10 @@ class AddExperienceToTripRequest(BaseModel):
     destination: Optional[str] = None
 
 
+class TrackItineraryAddsRequest(BaseModel):
+    experience_ids: list[int] = []
+
+
 class TripDayUpdate(BaseModel):
     day_number: Optional[int] = None
     date: Optional[date] = None
@@ -158,6 +162,44 @@ class OwnerStats(BaseModel):
     total_ratings: int
     avg_rating: Optional[float] = None
     total_categories: int
+
+
+# ── Itinerary Generation ─────────────────────────────────
+class GenerateItineraryRequest(BaseModel):
+    destination: str
+    start_date: date
+    end_date: date
+    title: Optional[str] = None
+    day_number: Optional[int] = None
+    exclude_ids: list[int] = []
+
+
+class ItineraryEntry(BaseModel):
+    type: str = "experience"
+    name: str
+    location: Optional[str] = None
+    province: Optional[str] = None
+    category: Optional[str] = None
+    meal: Optional[str] = None
+    start_time: Optional[str] = None
+    end_time: Optional[str] = None
+    cost: float = 0
+    duration_hours: Optional[float] = None
+    description: Optional[str] = None
+    experience_id: Optional[int] = None
+    reason: Optional[str] = None
+
+
+class GeneratedDay(BaseModel):
+    day_number: int
+    date: date
+    entries: list[ItineraryEntry] = []
+
+
+class GenerateItineraryResponse(BaseModel):
+    days: list[GeneratedDay] = []
+    total_cost: float = 0
+    activity_count: int = 0
 
 
 # ── Travel Journal ────────────────────────────────────────

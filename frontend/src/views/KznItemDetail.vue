@@ -1,18 +1,16 @@
 <template>
   <div class="detail-page">
-    <div v-if="!item" class="loading-state">
-      <p>Loading...</p>
-    </div>
+    <LoadingSpinner v-if="!item" message="Loading..." />
 
     <template v-else>
       <div class="detail-hero" :style="{ backgroundImage: `url(${item.image})` }">
         <div class="detail-hero-overlay"></div>
         <div class="detail-hero-content">
-          <button class="back-link" @click="$router.push('/kzn-directory')">
+          <button class="back-link" @click="goBack">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
             </svg>
-            Back to KZN Directory
+            Back
           </button>
           <span class="cat-badge">{{ item.category }}</span>
           <h1>{{ item.name }}</h1>
@@ -135,6 +133,39 @@
               </li>
             </ul>
           </div>
+
+          <div class="loc-section" v-if="mapQuery">
+            <h2>Location</h2>
+            <div class="location-detail">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+              </svg>
+              <div>
+                <span class="loc-main">{{ item.location }}</span>
+                <span class="loc-province">KwaZulu-Natal, South Africa</span>
+              </div>
+            </div>
+            <div class="map-container">
+              <iframe
+                :src="`https://www.google.com/maps?q=${mapQuery}&output=embed`"
+                title="Google Map"
+                loading="lazy"
+                allowfullscreen
+                referrerpolicy="no-referrer-when-downgrade"
+              ></iframe>
+              <a
+                class="map-open-link"
+                :href="`https://www.google.com/maps?q=${mapQuery}`"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open in Google Maps
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+                </svg>
+              </a>
+            </div>
+          </div>
         </div>
 
         <div class="sidebar">
@@ -209,18 +240,27 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { getAllKznItems } from '../data/kznCulturalData'
 import { itemImages } from '../data/kznImages'
 import { useAuthStore } from '../stores/auth'
 import AddToItineraryModal from '../components/AddToItineraryModal.vue'
 
 const route = useRoute()
+const router = useRouter()
 const auth = useAuthStore()
 const allItems = getAllKznItems()
 const showItineraryModal = ref(false)
 const selectedForItinerary = ref(null)
 const currentTripInfo = ref(null)
+
+function goBack() {
+  if (window.history.length > 1) {
+    router.back()
+  } else {
+    router.push('/kzn-directory')
+  }
+}
 
 function slugify(text) {
   return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
@@ -233,6 +273,12 @@ const item = computed(() => {
     return { ...found, image: itemImages[found.name] || found.image }
   }
   return null
+})
+
+const mapQuery = computed(() => {
+  if (!item.value || !item.value.location) return ''
+  const parts = [item.value.location, 'KwaZulu-Natal', 'South Africa'].filter(Boolean)
+  return encodeURIComponent(parts.join(', '))
 })
 
 function handleItinerarySuccess(tripInfo) {
@@ -260,36 +306,46 @@ function openItineraryFor(kznItem) {
 
 <style scoped>
 .detail-page { background: url('/img/cultures/woman.jpeg') no-repeat center center fixed; background-size: cover; position: relative; min-height: 100vh; }
-.detail-page::before { content: ""; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.55); z-index: 0; }
+.detail-page::before { content: ""; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.15); z-index: 0; }
 .detail-page > * { position: relative; z-index: 1; }
-.loading-state { display: flex; justify-content: center; align-items: center; min-height: 60vh; color: rgba(255,255,255,0.6); font-size: 1.1rem; }
+.loading-state { display: flex; justify-content: center; align-items: center; min-height: 60vh; color: rgba(255, 255, 255, 0.88); font-size: 1.1rem; }
 .detail-hero { position: relative; height: 400px; background-size: cover; background-position: center; }
 .detail-hero-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.8)); }
 .detail-hero-content { position: relative; z-index: 1; max-width: 1000px; margin: 0 auto; padding: 100px 24px 40px; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; }
-.back-link { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.8); padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-family: inherit; cursor: pointer; transition: all 0.2s; width: fit-content; margin-bottom: 20px; }
-.back-link:hover { background: rgba(255,255,255,0.18); color: #fff; }
+.back-link { display: inline-flex; align-items: center; gap: 6px; background: rgba(255, 255, 255, 0.26); border: 1px solid rgba(255, 255, 255, 0.38); color: rgba(255, 255, 255, 0.97); padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-family: inherit; cursor: pointer; transition: all 0.2s; width: fit-content; margin-bottom: 20px; }
+.back-link:hover { background: rgba(255, 255, 255, 0.36); color: #fff; }
 .cat-badge { display: inline-block; background: var(--accent); color: #1a1a1a; padding: 4px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: 600; width: fit-content; margin-bottom: 12px; }
 .detail-hero-content h1 { font-family: 'Poppins', sans-serif; font-size: 2.5rem; font-weight: 800; color: #fff; margin: 0 0 8px; text-shadow: 0 2px 8px rgba(0,0,0,0.3); }
 .hero-meta { display: flex; gap: 20px; flex-wrap: wrap; }
-.meta-item { display: flex; align-items: center; gap: 6px; color: rgba(255,255,255,0.8); font-size: 0.88rem; }
+.meta-item { display: flex; align-items: center; gap: 6px; color: rgba(255, 255, 255, 0.97); font-size: 0.88rem; }
 .meta-item svg { flex-shrink: 0; }
 .detail-body { max-width: 1000px; margin: 0 auto; padding: 40px 24px 60px; }
 .info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-bottom: 32px; }
-.info-card { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 18px; display: flex; align-items: flex-start; gap: 14px; }
+.info-card { background: rgba(255, 255, 255, 0.22); border: 1px solid rgba(255, 255, 255, 0.28); border-radius: 12px; padding: 18px; display: flex; align-items: flex-start; gap: 14px; }
 .info-icon { width: 42px; height: 42px; border-radius: 10px; background: rgba(255,182,18,0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--accent); }
 .info-text { display: flex; flex-direction: column; gap: 2px; }
-.info-label { font-size: 0.72rem; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.5px; }
+.info-label { font-size: 0.72rem; color: rgba(255, 255, 255, 0.80); text-transform: uppercase; letter-spacing: 0.5px; }
 .info-value { font-size: 0.92rem; color: #fff; line-height: 1.4; word-break: break-word; }
 .info-value.link { color: var(--accent); text-decoration: none; font-size: 0.82rem; }
 .info-value.link:hover { text-decoration: underline; }
 .info-value.stars { color: var(--accent); }
 .desc-section { margin-bottom: 32px; }
 .desc-section h2 { font-family: 'Poppins', sans-serif; font-size: 1.3rem; color: #fff; margin-bottom: 14px; }
-.desc-section p { color: rgba(255,255,255,0.8); line-height: 1.8; font-size: 0.95rem; }
+.desc-section p { color: rgba(255, 255, 255, 0.97); line-height: 1.8; font-size: 0.95rem; }
 .services-section h2 { font-family: 'Poppins', sans-serif; font-size: 1.3rem; color: #fff; margin-bottom: 14px; }
 .services-list { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.services-list li { display: flex; align-items: flex-start; gap: 8px; color: rgba(255,255,255,0.8); font-size: 0.88rem; line-height: 1.5; }
+.services-list li { display: flex; align-items: flex-start; gap: 8px; color: rgba(255, 255, 255, 0.97); font-size: 0.88rem; line-height: 1.5; }
 .services-list li svg { margin-top: 3px; flex-shrink: 0; }
+.loc-section { margin-bottom: 32px; }
+.loc-section h2 { font-family: 'Poppins', sans-serif; font-size: 1.3rem; color: #fff; margin-bottom: 14px; }
+.location-detail { display: flex; align-items: flex-start; gap: 0.75rem; color: rgba(255, 255, 255, 0.97); margin-bottom: 14px; }
+.location-detail svg { flex-shrink: 0; color: var(--accent); }
+.loc-main { display: block; font-weight: 600; color: #fff; }
+.loc-province { display: block; font-size: 0.9rem; color: rgba(255, 255, 255, 0.88); }
+.map-container { background: rgba(255, 255, 255, 0.28); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid rgba(255, 255, 255, 0.45); border-radius: 12px; padding: 0.75rem; }
+.map-container iframe { width: 100%; height: 320px; border: none; border-radius: 10px; display: block; background: #dde3e8; }
+.map-open-link { display: inline-flex; align-items: center; gap: 0.4rem; margin-top: 0.75rem; font-size: 0.9rem; font-weight: 600; color: var(--accent); text-decoration: none; }
+.map-open-link:hover { color: var(--accent-hover); }
 
 /* Itinerary Banner */
 .itinerary-banner {
@@ -307,7 +363,7 @@ function openItineraryFor(kznItem) {
 .banner-left { display: flex; align-items: center; gap: 10px; color: var(--accent); }
 .banner-left svg { flex-shrink: 0; }
 .banner-title { display: block; font-size: 0.88rem; font-weight: 600; color: #fff; }
-.banner-meta { font-size: 0.75rem; color: rgba(255, 255, 255, 0.5); }
+.banner-meta { font-size: 0.75rem; color: rgba(255, 255, 255, 0.80); }
 .banner-link { font-size: 0.82rem; color: var(--accent); text-decoration: none; font-weight: 600; white-space: nowrap; transition: opacity 0.2s; }
 .banner-link:hover { opacity: 0.8; }
 
@@ -315,29 +371,29 @@ function openItineraryFor(kznItem) {
 .mini-itinerary {
   margin-top: 12px;
   padding: 12px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.30);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.20);
   animation: fadeIn 0.35s ease;
 }
 .mini-itinerary-header { display: flex; align-items: center; gap: 6px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent); font-weight: 600; margin-bottom: 8px; }
 .mini-itinerary-body { margin-bottom: 8px; }
 .mini-trip-name { font-size: 0.9rem; font-weight: 600; color: #fff; }
-.mini-trip-dates { font-size: 0.75rem; color: rgba(255, 255, 255, 0.5); margin-top: 1px; }
+.mini-trip-dates { font-size: 0.75rem; color: rgba(255, 255, 255, 0.80); margin-top: 1px; }
 .mini-trip-entries { font-size: 0.75rem; color: var(--accent); margin-top: 3px; }
-.mini-itinerary-link { display: block; text-align: center; font-size: 0.8rem; color: var(--accent); text-decoration: none; padding: 6px 0; border-top: 1px solid rgba(255, 255, 255, 0.08); margin-top: 6px; font-weight: 500; transition: opacity 0.2s; }
+.mini-itinerary-link { display: block; text-align: center; font-size: 0.8rem; color: var(--accent); text-decoration: none; padding: 6px 0; border-top: 1px solid rgba(255, 255, 255, 0.24); margin-top: 6px; font-weight: 500; transition: opacity 0.2s; }
 .mini-itinerary-link:hover { opacity: 0.8; }
 
 .sidebar { position: sticky; top: 90px; }
-.sidebar-card { background: rgba(255,255,255,0.12); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid rgba(255,255,255,0.18); border-radius: 12px; padding: 1.5rem; }
-.sidebar-price { text-align: center; margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.sidebar-card { background: rgba(255, 255, 255, 0.28); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid rgba(255, 255, 255, 0.45); border-radius: 12px; padding: 1.5rem; }
+.sidebar-price { text-align: center; margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid rgba(255, 255, 255, 0.28); }
 .price-val { display: block; font-size: 1.3rem; font-weight: 700; font-family: 'Poppins', sans-serif; color: var(--accent); }
 .sidebar-details { margin-bottom: 1.25rem; }
-.detail-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem 0; color: rgba(255,255,255,0.8); font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.detail-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem 0; color: rgba(255, 255, 255, 0.97); font-size: 0.9rem; border-bottom: 1px solid rgba(255, 255, 255, 0.20); }
 .detail-row:last-child { border-bottom: none; }
 .detail-row svg { color: var(--accent); flex-shrink: 0; width: 16px; height: 16px; }
-.btn-trip-full { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 0.75rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; text-decoration: none; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: #fff; cursor: pointer; font-family: inherit; }
-.btn-trip-full:hover { background: rgba(255,255,255,0.2); }
+.btn-trip-full { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 0.75rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; text-decoration: none; transition: all 0.2s; border: 1px solid rgba(255, 255, 255, 0.50); background: rgba(255, 255, 255, 0.26); color: #fff; cursor: pointer; font-family: inherit; }
+.btn-trip-full:hover { background: var(--accent); color: #1a1a1a; border-color: var(--accent); }
 .detail-body { display: grid; grid-template-columns: 1fr 300px; gap: 2rem; align-items: start; }
 @media (max-width: 768px) { .detail-hero { height: 280px; } .detail-hero-content h1 { font-size: 1.6rem; } .info-grid { grid-template-columns: 1fr; } .services-list { grid-template-columns: 1fr; } .hero-meta { flex-direction: column; gap: 8px; } .detail-body { grid-template-columns: 1fr; } }
 </style>

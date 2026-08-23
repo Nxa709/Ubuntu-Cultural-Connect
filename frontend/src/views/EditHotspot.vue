@@ -19,10 +19,7 @@
         </div>
       </div>
 
-      <div v-if="loading" class="loading-state">
-        <div class="spinner"></div>
-        <p>Loading hotspot...</p>
-      </div>
+      <LoadingSpinner v-if="loading" message="Loading hotspot..." />
 
       <div v-else-if="notFound" class="empty-state">
         <p>Hotspot not found or you don't have permission to edit it.</p>
@@ -155,14 +152,31 @@
         </div>
 
         <div class="form-group">
-          <label for="image">Image URL (optional)</label>
-          <input
-            id="image"
-            v-model="form.image_url"
-            type="url"
-            class="form-input"
-            placeholder="https://example.com/image.jpg"
-          />
+          <label for="image">Hotspot Image (optional)</label>
+          <div class="file-drop" :class="{ dragging: dragActive }" @dragover.prevent="dragActive = true" @dragleave.prevent="dragActive = false" @drop.prevent="handleDrop">
+            <input
+              id="image"
+              type="file"
+              accept="image/*"
+              class="file-input"
+              @change="handleFile"
+            />
+            <div v-if="imagePreview" class="file-preview">
+              <img :src="imagePreview" alt="Hotspot preview" />
+              <button type="button" class="file-remove" @click.prevent="clearImage" title="Remove image">&times;</button>
+            </div>
+            <template v-else>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
+              <span class="file-title">{{ uploading ? 'Uploading...' : 'Browse files' }}</span>
+              <span class="file-hint">Click to open your file explorer (JPG, PNG, WEBP &middot; max 5 MB)</span>
+            </template>
+          </div>
+          <span v-if="imageError" class="field-error">{{ imageError }}</span>
+          <span class="field-hint">Choose a new picture from your computer, or leave it to keep the current image</span>
         </div>
 
         <div class="form-notice">
@@ -200,6 +214,10 @@ const submitting = ref(false)
 const serverError = ref('')
 const saveSuccess = ref(false)
 const rejectionReason = ref('')
+const uploading = ref(false)
+const uploadError = ref('')
+const imagePreview = ref('')
+const dragActive = ref(false)
 
 const form = reactive({
   title: '',
@@ -274,6 +292,48 @@ function validateAll() {
   return !Object.values(errors).some(e => e)
 }
 
+async function handleFile(event) {
+  const file = event.target.files?.[0]
+  if (!file) return
+  await uploadSelectedFile(file)
+}
+
+function handleDrop(event) {
+  dragActive.value = false
+  const file = event.dataTransfer.files?.[0]
+  if (file) uploadSelectedFile(file)
+}
+
+async function uploadSelectedFile(file) {
+  uploadError.value = ''
+  const allowed = /\.(jpe?g|png|gif|webp|bmp|svg)$/i
+  if (!allowed.test(file.name)) {
+    uploadError.value = 'Please choose an image file (JPG, PNG, GIF, WEBP, BMP, or SVG)'
+    return
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    uploadError.value = 'Image must be 5 MB or smaller'
+    return
+  }
+
+  imagePreview.value = URL.createObjectURL(file)
+  uploading.value = true
+  try {
+    form.image_url = await store.uploadImage(file)
+  } catch (err) {
+    imagePreview.value = ''
+    uploadError.value = err.response?.data?.detail || 'Failed to upload image. Please try again.'
+  } finally {
+    uploading.value = false
+  }
+}
+
+function clearImage() {
+  form.image_url = ''
+  imagePreview.value = ''
+  uploadError.value = ''
+}
+
 async function handleSubmit() {
   serverError.value = ''
   saveSuccess.value = ''
@@ -290,7 +350,7 @@ async function handleSubmit() {
       price: form.price,
       duration_hours: form.duration_hours || null,
       max_participants: form.max_participants,
-      image_url: form.image_url.trim() || null,
+      image_url: form.image_url || null,
     }
     await store.updateExperience(route.params.id, data)
     saveSuccess.value = true
@@ -318,6 +378,7 @@ onMounted(async () => {
     form.duration_hours = exp.duration_hours
     form.max_participants = exp.max_participants
     form.image_url = exp.image_url || ''
+    imagePreview.value = exp.image_url || ''
     rejectionReason.value = exp.rejection_reason || ''
   } catch {
     notFound.value = true
@@ -340,7 +401,7 @@ onMounted(async () => {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.15);
   z-index: 0;
 }
 
@@ -375,7 +436,7 @@ onMounted(async () => {
 
 .hero-header p {
   font-size: 1.05rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.94);
   max-width: 520px;
   margin: 0 auto;
   line-height: 1.6;
@@ -402,9 +463,9 @@ onMounted(async () => {
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .hotspot-form {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(18, 24, 38, 0.82);
   backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 16px;
   padding: 2rem;
 }
@@ -422,11 +483,11 @@ onMounted(async () => {
 .form-input {
   width: 100%;
   padding: 0.65rem 0.9rem;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 8px;
   font-size: 0.95rem;
   color: #fff;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.28);
   transition: border-color 0.2s;
   box-sizing: border-box;
 }
@@ -434,13 +495,13 @@ onMounted(async () => {
 .form-input:focus {
   outline: none;
   border-color: var(--accent);
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
 }
 
 .form-input.error {
   border-color: #C62828;
-  background: #FFF5F5;
+  background: rgba(198, 40, 40, 0.18);
 }
 
 .textarea {
@@ -457,6 +518,11 @@ select.form-input {
   padding-right: 36px;
 }
 
+select.form-input option {
+  background: #1a1a2e;
+  color: #fff;
+}
+
 .form-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -470,12 +536,95 @@ select.form-input {
   margin-top: 0.3rem;
 }
 
+.field-hint {
+  display: block;
+  color: #999;
+  font-size: 0.8rem;
+  margin-top: 0.3rem;
+}
+
 .char-count {
   text-align: right;
   font-size: 0.8rem;
   color: #999;
   margin-top: 0.2rem;
 }
+
+.file-drop {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 1.5rem;
+  border: 1.5px dashed rgba(255, 255, 255, 0.55);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.28);
+  color: rgba(255, 255, 255, 0.94);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  min-height: 140px;
+}
+
+.file-drop:hover,
+.file-drop.dragging {
+  border-color: var(--accent);
+  background: rgba(0, 0, 0, 0.20);
+}
+
+.file-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.file-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.file-hint {
+  font-size: 0.8rem;
+  color: #999;
+}
+
+.file-preview {
+  position: relative;
+  width: 100%;
+  max-width: 280px;
+}
+
+.file-preview img {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+}
+
+.file-remove {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 50%;
+  background: #C62828;
+  color: #fff;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.file-remove:hover { background: #B71C1C; }
 
 .char-count.warn { color: #E65100; }
 
@@ -485,7 +634,7 @@ select.form-input {
   gap: 8px;
   padding: 0.75rem 1rem;
   background: #FFF8E1;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 8px;
   color: #F57F17;
   font-size: 0.85rem;
@@ -505,13 +654,13 @@ select.form-input {
 .alert-error {
   background: #FFEBEE;
   color: #C62828;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.45);
 }
 
 .alert-success {
   background: #E8F5E9;
   color: #2E7D32;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.45);
 }
 
 .appeal-banner {
@@ -549,7 +698,7 @@ select.form-input {
 
 .appeal-hint {
   margin: 0;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.88);
   font-size: 0.82rem;
 }
 
@@ -559,7 +708,7 @@ select.form-input {
   gap: 0.75rem;
   margin-top: 1.5rem;
   padding-top: 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  border-top: 1px solid rgba(255, 255, 255, 0.45);
 }
 
 .btn {
@@ -588,7 +737,7 @@ select.form-input {
 
 .btn-spinner {
   width: 16px; height: 16px;
-  border: 2px solid rgba(255,255,255,0.3);
+  border: 2px solid rgba(255, 255, 255, 0.60);
   border-top-color: #fff;
   border-radius: 50%;
   animation: spin 0.6s linear infinite;

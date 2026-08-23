@@ -9,17 +9,18 @@ from sqlalchemy import func, extract
 from database import get_db
 from models.user import User
 from models.experience import (
-    Experience, UserPreference, Trip, TripDay, Rating, CulturalCategory, TravelJournal,
+    Experience, UserPreference, Trip, TripDay, ItineraryAdd, Rating, CulturalCategory, TravelJournal,
 )
 from models.notification import Notification
 from schemas.experience import (
     ExperienceCreate, ExperienceUpdate, ExperienceResponse,
     PreferenceSet, PreferenceResponse,
     TripCreate, TripUpdate, TripDayUpdate, TripDayInput, TripResponse, TripDayResponse,
-    AddExperienceToTripRequest,
+    AddExperienceToTripRequest, TrackItineraryAddsRequest,
     RatingCreate, RatingResponse,
     JournalCreate, JournalUpdate, JournalResponse, ReviewHistoryItem,
     HostReviewItem, ExperiencePerformance,
+    GenerateItineraryRequest, GenerateItineraryResponse, GeneratedDay, ItineraryEntry,
 )
 from routers.auth import get_current_user
 
@@ -41,8 +42,8 @@ def _exp_to_response(exp, db=None, rating_agg=None, itinerary_counts=None):
     if itinerary_counts and exp.id in itinerary_counts:
         ic = itinerary_counts[exp.id]
     elif db:
-        ic = db.query(func.count(TripDay.id)).filter(
-            TripDay.experience_id == exp.id).scalar()
+        ic = db.query(func.count(ItineraryAdd.id)).filter(
+            ItineraryAdd.experience_id == exp.id).scalar()
     else:
         ic = 0
 
@@ -92,6 +93,23 @@ def _trip_to_response(trip: Trip) -> TripResponse:
         created_at=trip.created_at,
         days=days,
     )
+
+
+# ── Itinerary-add tracking helper ──────────────────────────
+def _record_itinerary_adds(trip_id: int, experience_ids, tourist: User, db: Session):
+    """Record that the tourist added these experiences to this trip (deduped per trip)."""
+    ids = [i for i in (experience_ids or []) if i]
+    if not ids:
+        return
+    existing = set(r[0] for r in db.query(ItineraryAdd.experience_id).filter(
+        ItineraryAdd.trip_id == trip_id,
+        ItineraryAdd.experience_id.in_(ids),
+    ).all())
+    for eid in ids:
+        if eid in existing:
+            continue
+        db.add(ItineraryAdd(user_id=tourist.id, experience_id=eid, trip_id=trip_id))
+    db.flush()
 
 
 # ── Notification helper ────────────────────────────────────
@@ -158,7 +176,7 @@ def get_home_data(
             Rating.experience_id, func.avg(Rating.score), func.count(Rating.id)
         ).filter(Rating.experience_id.in_(ids), Rating.is_approved == True).group_by(Rating.experience_id).all()
         rating_agg = {r[0]: (r[1], r[2]) for r in rating_rows}
-        itin_rows = db.query(TripDay.experience_id, func.count(TripDay.id)).filter(TripDay.experience_id.in_(ids)).group_by(TripDay.experience_id).all()
+        itin_rows = db.query(ItineraryAdd.experience_id, func.count(ItineraryAdd.id)).filter(ItineraryAdd.experience_id.in_(ids)).group_by(TripDay.experience_id).all()
         itinerary_counts = dict(itin_rows)
     else:
         rating_agg, itinerary_counts = {}, {}
@@ -173,6 +191,18 @@ def get_home_data(
 @router.get("/categories")
 def list_categories():
     return [{"value": c.value, "label": c.value} for c in CulturalCategory]
+
+
+# ── Provinces ─────────────────────────────────────────────
+@router.get("/provinces")
+def list_provinces(db: Session = Depends(get_db)):
+    rows = db.query(Experience.province).filter(
+        Experience.province.isnot(None),
+        Experience.is_active == True,
+        Experience.is_approved == True,
+    ).distinct().all()
+    provinces = sorted({r[0] for r in rows if r[0].strip()})
+    return [{"value": p, "label": p} for p in provinces]
 
 
 # ── Preferences (must be before /{exp_id}) ────────────────
@@ -236,7 +266,7 @@ def get_recommended(
             Rating.experience_id, func.avg(Rating.score), func.count(Rating.id)
         ).filter(Rating.experience_id.in_(ids), Rating.is_approved == True).group_by(Rating.experience_id).all()
         rating_agg = {r[0]: (r[1], r[2]) for r in rating_rows}
-        itin_rows = db.query(TripDay.experience_id, func.count(TripDay.id)).filter(TripDay.experience_id.in_(ids)).group_by(TripDay.experience_id).all()
+        itin_rows = db.query(ItineraryAdd.experience_id, func.count(ItineraryAdd.id)).filter(ItineraryAdd.experience_id.in_(ids)).group_by(TripDay.experience_id).all()
         itinerary_counts = dict(itin_rows)
     else:
         rating_agg, itinerary_counts = {}, {}
@@ -293,6 +323,10 @@ def create_trip(
     if any(d.experience_id for d in data.days):
         db.commit()
 
+    _record_itinerary_adds(trip.id, [d.experience_id for d in data.days], current_user, db)
+    if any(d.experience_id for d in data.days):
+        db.commit()
+
     db.refresh(trip)
     return _trip_to_response(trip)
 
@@ -302,11 +336,14 @@ def create_trip(
 def list_experiences(
     category: str = None,
     search: str = None,
+    province: str = None,
     db: Session = Depends(get_db),
 ):
     q = db.query(Experience).filter(Experience.is_active == True, Experience.is_approved == True)
     if category:
         q = q.filter(Experience.category == category)
+    if province:
+        q = q.filter(Experience.province == province)
     if search:
         q = q.filter(Experience.title.ilike(f"%{search}%"))
     exps = q.all()
@@ -323,8 +360,8 @@ def list_experiences(
     rating_agg = {r[0]: (r[1], r[2]) for r in rating_rows}
 
     itin_rows = db.query(
-        TripDay.experience_id, func.count(TripDay.id)
-    ).filter(TripDay.experience_id.in_(ids)).group_by(TripDay.experience_id).all()
+        ItineraryAdd.experience_id, func.count(ItineraryAdd.id)
+    ).filter(ItineraryAdd.experience_id.in_(ids)).group_by(TripDay.experience_id).all()
     itinerary_counts = dict(itin_rows)
 
     return [_exp_to_response(e, rating_agg=rating_agg, itinerary_counts=itinerary_counts) for e in exps]
@@ -348,8 +385,8 @@ def list_my_experiences(
     rating_agg = {r[0]: (r[1], r[2]) for r in rating_rows}
 
     itin_rows = db.query(
-        TripDay.experience_id, func.count(TripDay.id)
-    ).filter(TripDay.experience_id.in_(ids)).group_by(TripDay.experience_id).all()
+        ItineraryAdd.experience_id, func.count(ItineraryAdd.id)
+    ).filter(ItineraryAdd.experience_id.in_(ids)).group_by(TripDay.experience_id).all()
     itinerary_counts = dict(itin_rows)
     return [_exp_to_response(e, rating_agg=rating_agg, itinerary_counts=itinerary_counts) for e in exps]
 
@@ -376,14 +413,39 @@ def get_owner_stats(
         cat = e.category.value if hasattr(e.category, "value") else e.category
         categories.add(cat)
 
+    itinerary_counts = {}
+    if my_exp_ids:
+        itin_rows = db.query(
+            ItineraryAdd.experience_id, func.count(ItineraryAdd.id)
+        ).filter(ItineraryAdd.experience_id.in_(my_exp_ids)).group_by(TripDay.experience_id).all()
+        itinerary_counts = {r[0]: r[1] for r in itin_rows}
+
+    most_visited = None
+    if my_exps:
+        best = max(my_exps, key=lambda e: itinerary_counts.get(e.id, 0))
+        visits = itinerary_counts.get(best.id, 0)
+        if visits > 0:
+            most_visited = {
+                "id": best.id,
+                "title": best.title,
+                "visits": visits,
+                "image_url": best.image_url,
+                "category": best.category.value if hasattr(best.category, "value") else best.category,
+                "location": best.location,
+                "province": best.province,
+            }
+
     return {
         "total_hotspots": total,
+        "registered_hotspots": total,
         "active_hotspots": active,
         "inactive_hotspots": inactive,
         "pending_approval": pending,
         "total_ratings": total_ratings,
         "avg_rating": avg_rating,
         "total_categories": len(categories),
+        "total_itinerary_adds": sum(itinerary_counts.values()),
+        "most_visited_hotspot": most_visited,
     }
 
 
@@ -604,6 +666,7 @@ def add_experience_to_trip(
     db.commit()
 
     _notify_owner_on_itinerary_add(exp.id, current_user, db, visit_date=data.start_date.isoformat())
+    _record_itinerary_adds(trip.id, [exp.id], current_user, db)
     db.commit()
 
     db.refresh(trip)
@@ -695,6 +758,7 @@ def add_trip_day(
 
     if data.experience_id:
         _notify_owner_on_itinerary_add(data.experience_id, current_user, db, visit_date=data.date.isoformat())
+        _record_itinerary_adds(trip.id, [data.experience_id], current_user, db)
         db.commit()
 
     db.refresh(td)
@@ -708,6 +772,246 @@ def add_trip_day(
         notes=td.notes,
         experience_title=td.experience.title if td.experience else None,
     )
+
+
+# ── Itinerary generation (uses existing preferences + real experiences) ──
+def _fmt_minutes(mins: int) -> str:
+    return f"{mins // 60:02d}:{mins % 60:02d}"
+
+
+def _break_entry(name: str, start: int, end: int, cost: float = 0):
+    return ItineraryEntry(
+        type="break",
+        name=name,
+        start_time=_fmt_minutes(start),
+        end_time=_fmt_minutes(end),
+        cost=cost,
+        duration_hours=round((end - start) / 60, 2),
+    )
+
+
+def _travel_hours(a: str, b: str) -> float:
+    if not a or not b:
+        return 0
+    return 0.5 if a.strip().lower() != b.strip().lower() else 0
+
+
+@router.post("/trips/generate", response_model=GenerateItineraryResponse)
+def generate_itinerary(
+    data: GenerateItineraryRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    if data.end_date < data.start_date:
+        raise HTTPException(status_code=400, detail="End date must be after start date")
+    if not (data.destination or "").strip():
+        raise HTTPException(status_code=400, detail="Destination is required")
+    days_count = (data.end_date - data.start_date).days + 1
+    if days_count > 30:
+        raise HTTPException(status_code=400, detail="Itinerary is too long (max 30 days)")
+
+    # Reuse the traveller's already-saved preferences (no new onboarding step).
+    pref = db.query(UserPreference).filter(UserPreference.user_id == current_user.id).first()
+    prefs = [c.strip() for c in (pref.categories.split(",") if pref and pref.categories else []) if c.strip()]
+
+    q = db.query(Experience).filter(Experience.is_active == True, Experience.is_approved == True)
+    if data.exclude_ids:
+        q = q.filter(~Experience.id.in_(data.exclude_ids))
+    exps = q.all()
+
+    dest = data.destination.strip().lower()
+    matched = [
+        e for e in exps
+        if (e.province and e.province.lower() == dest)
+        or (e.location and e.location.lower() == dest)
+        or (e.province and dest in e.province.lower())
+        or (e.location and dest in e.location.lower())
+    ]
+    if matched:
+        exps = matched
+    if not exps:
+        # No experiences in that area yet: fall back to all live listings (still real data).
+        exps = db.query(Experience).filter(Experience.is_active == True, Experience.is_approved == True).all()
+
+    ids = [e.id for e in exps]
+    rating_agg = {}
+    itinerary_counts = {}
+    if ids:
+        rating_agg = dict(
+            db.query(Rating.experience_id, func.avg(Rating.score))
+            .filter(Rating.experience_id.in_(ids), Rating.is_approved == True)
+            .group_by(Rating.experience_id).all()
+        )
+        itinerary_counts = dict(
+            db.query(ItineraryAdd.experience_id, func.count(ItineraryAdd.id))
+            .filter(ItineraryAdd.experience_id.in_(ids))
+            .group_by(TripDay.experience_id).all()
+        )
+
+    scored = []
+    for e in exps:
+        cat = e.category.value if hasattr(e.category, "value") else e.category
+        pref_match = 2 if cat in prefs else (1 if any(p in cat or cat in p for p in prefs) else 0)
+        rating = rating_agg.get(e.id) or 0
+        popularity = itinerary_counts.get(e.id) or 0
+        score = pref_match * 3.0 + rating * 2.0 + min(popularity, 20) * 0.3
+        scored.append({"exp": e, "cat": cat, "pref": pref_match, "rating": rating, "score": score})
+    scored.sort(key=lambda x: -x["score"])
+
+    used_ids = set(data.exclude_ids or [])
+
+    # Traditional Cooking spots are reserved for meals only — never scheduled as
+    # standalone activities. Everything else is a normal activity.
+    activity_pool = [c for c in scored if c["cat"] != "Traditional Cooking"]
+    meal_pool = [c for c in scored if c["cat"] == "Traditional Cooking"]
+
+    def build_day(day_index: int):
+        entries = []
+        cursor = 9 * 60  # 09:00
+        last_loc = None
+        day_cats = set()
+        lunch_added = False
+        day_cost = 0
+        placed = 0
+
+        def meal_entry(meal_label: str, start: int, end: int):
+            for c in meal_pool:
+                e = c["exp"]
+                if e.id in used_ids:
+                    continue
+                used_ids.add(e.id)
+                return ItineraryEntry(
+                    type="meal",
+                    name=e.title,
+                    meal=meal_label,
+                    location=e.location,
+                    province=e.province,
+                    category="Traditional Cooking",
+                    start_time=_fmt_minutes(start),
+                    end_time=_fmt_minutes(end),
+                    cost=e.price,
+                    duration_hours=e.duration_hours,
+                    description=e.description,
+                    experience_id=e.id,
+                    reason=f"Suggested {meal_label} at a Traditional Cooking spot that matches your interests.",
+                )
+            return _break_entry(meal_label, start, end)
+
+        entries.append(meal_entry("Breakfast", cursor, cursor + 30))
+        cursor += 30
+
+        def pick_next():
+            for c in activity_pool:
+                if c["exp"].id in used_ids:
+                    continue
+                if c["cat"] in day_cats:
+                    continue
+                return c
+            for c in activity_pool:
+                if c["exp"].id not in used_ids:
+                    return c
+            return None
+
+        while placed < 4:
+            cand = pick_next()
+            if not cand:
+                break
+            e = cand["exp"]
+            dur = e.duration_hours or 2.0
+            dur_min = int(round(dur * 60))
+            travel = _travel_hours(last_loc, e.location)
+            travel_min = int(travel * 60)
+
+            # Insert lunch if we are crossing the lunch window.
+            if not lunch_added and 12 * 60 <= cursor + travel_min <= 14 * 60:
+                entries.append(meal_entry("Lunch", cursor, cursor + 60))
+                cursor += 60
+                lunch_added = True
+
+            start = cursor + travel_min
+            end = start + dur_min
+            if end > 20 * 60:  # don't run past 20:00
+                break
+            if travel_min > 0:
+                entries.append(_break_entry("Free Time", cursor, cursor + travel_min))
+
+            if cand["pref"] >= 2:
+                reason = f"Recommended because it matches your interest in {cand['cat']}."
+            elif cand["rating"] and cand["rating"] >= 4.5:
+                reason = "Selected for its high rating from other travellers."
+            else:
+                reason = "Selected as a well-rated cultural experience near your destination."
+
+            entries.append(ItineraryEntry(
+                type="experience",
+                name=e.title,
+                location=e.location,
+                province=e.province,
+                category=cand["cat"],
+                start_time=_fmt_minutes(start),
+                end_time=_fmt_minutes(end),
+                cost=e.price,
+                duration_hours=dur,
+                description=e.description,
+                experience_id=e.id,
+                reason=reason,
+            ))
+            used_ids.add(e.id)
+            day_cats.add(cand["cat"])
+            last_loc = e.location
+            cursor = end
+            placed += 1
+            day_cost += e.price
+
+        if cursor < 17 * 60:
+            entries.append(_break_entry("Free Time", cursor, 17 * 60))
+            cursor = 17 * 60
+        if placed >= 1 and cursor <= 19 * 60:
+            entries.append(meal_entry("Dinner", cursor, cursor + 60))
+        return entries, day_cost
+
+    days_out = []
+    total_cost = 0
+    activity_count = 0
+
+    if data.day_number is not None:
+        if data.day_number < 1 or data.day_number > days_count:
+            raise HTTPException(status_code=400, detail="Invalid day number")
+        entries, day_cost = build_day(data.day_number - 1)
+        days_out.append(GeneratedDay(
+            day_number=data.day_number,
+            date=date.fromordinal(data.start_date.toordinal() + data.day_number - 1),
+            entries=entries,
+        ))
+        total_cost = day_cost
+        activity_count = sum(1 for en in entries if en.type in ("experience", "meal"))
+    else:
+        for i in range(days_count):
+            entries, day_cost = build_day(i)
+            days_out.append(GeneratedDay(
+                day_number=i + 1,
+                date=date.fromordinal(data.start_date.toordinal() + i),
+                entries=entries,
+            ))
+            total_cost += day_cost
+            activity_count += sum(1 for en in entries if en.type in ("experience", "meal"))
+
+    return GenerateItineraryResponse(days=days_out, total_cost=total_cost, activity_count=activity_count)
+
+
+@router.post("/trips/{trip_id}/track-itinerary-adds")
+def track_itinerary_adds(
+    trip_id: int,
+    data: TrackItineraryAddsRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    trip = db.query(Trip).filter(Trip.id == trip_id, Trip.user_id == current_user.id).first()
+    if not trip:
+        raise HTTPException(status_code=404, detail="Trip not found")
+    _record_itinerary_adds(trip_id, data.experience_ids, current_user, db)
+    db.commit()
+    return {"message": "Itinerary adds recorded", "count": len(data.experience_ids)}
 
 
 # ── Ratings ───────────────────────────────────────────────

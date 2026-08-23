@@ -2,7 +2,9 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import router from './router'
 import App from './App.vue'
+import LoadingSpinner from './components/LoadingSpinner.vue'
 import { useAuthStore } from './stores/auth'
+import 'bootstrap-icons/font/bootstrap-icons.css'
 
 async function validateStoredToken() {
   const auth = useAuthStore()
@@ -37,6 +39,7 @@ if ('serviceWorker' in navigator) {
 const app = createApp(App)
 app.use(createPinia())
 app.use(router)
+app.component('LoadingSpinner', LoadingSpinner)
 app.mount('#app')
 
 validateStoredToken()

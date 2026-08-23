@@ -5,6 +5,8 @@
       <p>Share your feedback to help other tourists discover great cultural experiences.</p>
     </div>
 
+    <LoadingSpinner v-if="loading" message="Loading experience..." />
+
     <div class="rate-layout" v-if="experience">
       <div class="card exp-info-card">
         <div class="exp-header" :style="{ backgroundImage: `url(${experience.image_url || getCategoryImage(experience.category)})` }">
@@ -207,7 +209,7 @@ function getCategoryImage(cat) {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.15);
   z-index: 0;
 }
 
@@ -239,7 +241,7 @@ function getCategoryImage(cat) {
 
 .hero-header p {
   font-size: 1.05rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.94);
   max-width: 520px;
   margin: 0 auto;
   line-height: 1.6;
@@ -252,7 +254,7 @@ function getCategoryImage(cat) {
 }
 
 .card {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.28);
   backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
   border-radius: 12px;
   padding: 28px;
@@ -285,13 +287,13 @@ function getCategoryImage(cat) {
 
 .exp-body { padding: 20px; }
 .exp-body h2 { color: #fff; font-size: 1.2rem; margin-bottom: 8px; }
-.exp-desc { color: rgba(255, 255, 255, 0.7); font-size: 0.88rem; line-height: 1.5; margin-bottom: 14px; }
+.exp-desc { color: rgba(255, 255, 255, 0.94); font-size: 0.88rem; line-height: 1.5; margin-bottom: 14px; }
 
 .exp-meta {
   display: flex;
   gap: 16px;
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.88);
   margin-bottom: 16px;
 }
 
@@ -300,7 +302,7 @@ function getCategoryImage(cat) {
   align-items: center;
   gap: 10px;
   padding-top: 14px;
-  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  border-top: 1px solid rgba(255, 255, 255, 0.45);
 }
 
 .avg-score {
@@ -309,7 +311,7 @@ function getCategoryImage(cat) {
   color: var(--accent);
 }
 
-.avg-label { font-size: 0.82rem; color: rgba(255, 255, 255, 0.6); }
+.avg-label { font-size: 0.82rem; color: rgba(255, 255, 255, 0.88); }
 
 .rate-form-card h2 { color: #fff; font-size: 1.1rem; margin-bottom: 20px; }
 
@@ -339,20 +341,20 @@ function getCategoryImage(cat) {
 textarea {
   width: 100%;
   padding: 10px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 8px;
   font-size: 0.9rem;
   font-family: inherit;
   resize: vertical;
 }
 
-textarea:focus { outline: none; border-color: rgba(255, 255, 255, 0.3); }
+textarea:focus { outline: none; border-color: rgba(255, 255, 255, 0.60); }
 
 .char-count {
   display: block;
   text-align: right;
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.88);
   margin-top: 4px;
 }
 
@@ -369,7 +371,7 @@ textarea:focus { outline: none; border-color: rgba(255, 255, 255, 0.3); }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-primary { background: var(--accent); color: #1a1a1a; }
 .btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
-.btn-outline { background: transparent; color: #fff; border: 1px solid rgba(255, 255, 255, 0.18); }
+.btn-outline { background: transparent; color: #fff; border: 1px solid rgba(255, 255, 255, 0.45); }
 
 .alert { padding: 10px 14px; border-radius: 8px; margin-bottom: 16px; font-size: 0.88rem; }
 .alert-error { background: #FDE8E8; color: #C0392B; }
@@ -382,16 +384,16 @@ textarea:focus { outline: none; border-color: rgba(255, 255, 255, 0.3); }
 
 .success-icon { margin-bottom: 16px; }
 .success-message h3 { color: #2E7D32; margin-bottom: 8px; }
-.success-message p { color: rgba(255, 255, 255, 0.7); margin-bottom: 20px; }
+.success-message p { color: rgba(255, 255, 255, 0.94); margin-bottom: 20px; }
 
 .reviews-card h3 { color: #fff; font-size: 1.05rem; margin-bottom: 16px; }
-.no-reviews { color: rgba(255, 255, 255, 0.6); font-size: 0.88rem; }
+.no-reviews { color: rgba(255, 255, 255, 0.88); font-size: 0.88rem; }
 
 .review-list { display: flex; flex-direction: column; gap: 14px; }
 
 .review-item {
   padding: 14px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.45);
 }
 
 .review-item:last-child { border-bottom: none; }
@@ -420,18 +422,18 @@ textarea:focus { outline: none; border-color: rgba(255, 255, 255, 0.3); }
 .review-meta { flex: 1; }
 
 .review-name { display: block; font-weight: 500; font-size: 0.88rem; color: #fff; }
-.review-date { font-size: 0.75rem; color: rgba(255, 255, 255, 0.6); }
+.review-date { font-size: 0.75rem; color: rgba(255, 255, 255, 0.88); }
 
 .review-score { display: flex; gap: 1px; }
 
 .mini-star { color: #E8E2DC; font-size: 0.9rem; }
 .mini-star.filled { color: var(--accent); }
 
-.review-comment { font-size: 0.88rem; color: rgba(255, 255, 255, 0.7); line-height: 1.5; }
+.review-comment { font-size: 0.88rem; color: rgba(255, 255, 255, 0.94); line-height: 1.5; }
 
 .empty-state {
   text-align: center;
   padding: 60px 20px;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.88);
 }
 </style>

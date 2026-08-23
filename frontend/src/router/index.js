@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 
 import HomePage from '../views/HomePage.vue'
+import AboutPage from '../views/AboutPage.vue'
 import LoginPage from '../views/LoginPage.vue'
 import RegisterPage from '../views/RegisterPage.vue'
 
@@ -33,6 +34,7 @@ import KznItemDetail from '../views/KznItemDetail.vue'
 
 const routes = [
   { path: '/', name: 'Home', component: HomePage },
+  { path: '/about', name: 'About', component: AboutPage },
   { path: '/login', name: 'Login', component: LoginPage, meta: { guest: true } },
   { path: '/register', name: 'Register', component: RegisterPage, meta: { guest: true } },
   { path: '/profile', name: 'Profile', component: ProfilePage, meta: { requiresAuth: true } },

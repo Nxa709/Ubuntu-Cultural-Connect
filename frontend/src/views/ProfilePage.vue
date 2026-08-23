@@ -82,26 +82,31 @@
           </div>
         </div>
 
-        <!-- Quick Actions -->
+        <!-- My Favorites -->
         <div class="card" v-if="auth.isTourist">
-          <h2>Quick Actions</h2>
-          <div class="quick-grid">
-            <router-link to="/plan-trip" class="quick-btn">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-              <span>View My Itinerary</span>
+          <div class="section-header">
+            <h2>My Favorites</h2>
+            <span class="history-count">{{ favorites.length }} {{ favorites.length === 1 ? 'hotspot' : 'hotspots' }}</span>
+          </div>
+          <p v-if="favorites.length === 0" class="empty-text">No favorites yet. Tap the heart on any hotspot to save it here.</p>
+          <div v-else class="favorites-grid">
+            <router-link v-for="fav in favorites" :key="fav.id" :to="`/destination/${fav.id}`" class="favorite-card">
+              <div class="favorite-img" :style="{ backgroundImage: `url(${fav.image})` }">
+                <span class="favorite-badge">{{ fav.category }}</span>
+                <button
+                  class="favorite-remove"
+                  :aria-label="'Remove from favorites'"
+                  @click.prevent.stop="toggleFavorite(fav.id)"
+                >
+                  <i class="bi bi-heart-fill"></i>
+                </button>
+              </div>
+              <div class="favorite-body">
+                <h4>{{ fav.name }}</h4>
+                <p class="favorite-loc">{{ fav.location }}</p>
+                <span class="favorite-rating" v-if="fav.rating">&#9733; {{ fav.rating }}</span>
+              </div>
             </router-link>
-            <router-link to="/experiences" class="quick-btn">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              <span>Browse Experiences</span>
-            </router-link>
-            <router-link to="/preferences" class="quick-btn">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-              <span>Update Preferences</span>
-            </router-link>
-            <a class="quick-btn" @click.prevent="scrollToHistory">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              <span>View Travel History</span>
-            </a>
           </div>
         </div>
 
@@ -109,29 +114,6 @@
 
       <!-- ── RIGHT COLUMN ── -->
       <div class="right-col" v-if="auth.isTourist">
-
-        <!-- Recommended Experiences -->
-        <div class="card" v-if="!auth.isBusinessOwner">
-          <h2>Recommended for You</h2>
-          <div v-if="loadingRecs" class="loading-rec">
-            <div class="spinner"></div>
-          </div>
-          <div v-else-if="recommended.length > 0" class="rec-grid">
-            <router-link v-for="exp in recommended" :key="exp.id" :to="`/experience/${exp.id}`" class="rec-card">
-              <div class="rec-img" :style="{ backgroundImage: `url(${exp.image_url || getCategoryImage(exp.category)})` }">
-                <span class="rec-badge">{{ exp.category }}</span>
-              </div>
-              <div class="rec-body">
-                <h4>{{ exp.title }}</h4>
-                <p class="rec-loc">{{ exp.location }}</p>
-                <span class="rec-rating" v-if="exp.avg_rating">&#9733; {{ exp.avg_rating }}</span>
-              </div>
-            </router-link>
-          </div>
-          <div v-else class="empty-text">
-            <p>{{ hasPreferences ? 'No recommendations yet. Check back soon!' : 'Set your preferences to get personalized recommendations.' }}</p>
-          </div>
-        </div>
 
         <!-- Travel History -->
         <div ref="historySection" class="card travel-history-card" v-if="!auth.isBusinessOwner">
@@ -141,9 +123,7 @@
           </div>
           <p class="card-desc">Every experience you've added to your itinerary appears here. Only visited experiences can be reviewed.</p>
 
-          <div v-if="loadingHistory" class="loading-rec">
-            <div class="spinner"></div>
-          </div>
+          <LoadingSpinner v-if="loadingHistory" size="sm" />
 
           <div v-else-if="travelHistory.length === 0" class="empty-state">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -247,6 +227,7 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useExperienceStore } from '../stores/experience'
+import { getAllDestinations } from '../data/provinces'
 
 const auth = useAuthStore()
 const expStore = useExperienceStore()
@@ -263,9 +244,8 @@ const success = ref('')
 const error = ref('')
 
 const preferences = ref([])
-const recommended = ref([])
-const hasPreferences = ref(false)
-const loadingRecs = ref(false)
+
+const favorites = ref([])
 
 const travelHistory = ref([])
 const loadingHistory = ref(false)
@@ -276,7 +256,6 @@ const savingReview = ref(false)
 const reviewForm = reactive({ score: 0, comment: '' })
 
 const historySection = ref(null)
-
 const initials = computed(() => {
   const name = auth.user?.full_name || 'U'
   return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
@@ -311,10 +290,27 @@ function formatShortDate(d) {
   return new Date(d).toLocaleDateString('en-ZA', { month: 'short', day: 'numeric' })
 }
 
-function scrollToHistory() {
-  if (historySection.value) {
-    historySection.value.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }
+function loadFavorites() {
+  let ids = []
+  try {
+    ids = JSON.parse(localStorage.getItem('ucc_wishlist') || '[]')
+  } catch (e) { /* ignore */ }
+  const all = getAllDestinations()
+  favorites.value = ids
+    .map(id => all.find(d => d.id === id))
+    .filter(Boolean)
+}
+
+function toggleFavorite(id) {
+  let ids = []
+  try {
+    ids = JSON.parse(localStorage.getItem('ucc_wishlist') || '[]')
+  } catch (e) { /* ignore */ }
+  ids = ids.filter(i => i !== id)
+  try {
+    localStorage.setItem('ucc_wishlist', JSON.stringify(ids))
+  } catch (e) { /* ignore */ }
+  loadFavorites()
 }
 
 function existingReview(expId) {
@@ -448,21 +444,12 @@ onMounted(async () => {
   form.full_name = auth.user?.full_name || ''
   form.phone_number = auth.user?.phone_number || ''
 
+  loadFavorites()
+
   try {
     await expStore.fetchPreferences()
     preferences.value = expStore.preferences
-    hasPreferences.value = preferences.value.length > 0
   } catch (e) { /* silently fail */ }
-
-  loadingRecs.value = true
-  try {
-    if (hasPreferences.value) {
-      await expStore.fetchRecommended()
-      recommended.value = expStore.recommended
-    }
-  } catch (e) { /* silently fail */ } finally {
-    loadingRecs.value = false
-  }
 
   if (auth.isBusinessOwner) {
     try {
@@ -510,7 +497,7 @@ async function handleUpdate() {
   content: "";
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.15);
   z-index: 0;
 }
 
@@ -540,7 +527,7 @@ async function handleUpdate() {
 
 .hero-header p {
   font-size: 1rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.94);
   max-width: 560px;
   margin: 0 auto;
   line-height: 1.6;
@@ -589,10 +576,10 @@ async function handleUpdate() {
 
 /* Card */
 .card {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.28);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 16px;
   padding: 24px;
   color: #fff;
@@ -665,7 +652,7 @@ async function handleUpdate() {
   justify-content: space-between;
   align-items: center;
   padding: 8px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.24);
 }
 
 .detail-row:last-child {
@@ -674,7 +661,7 @@ async function handleUpdate() {
 
 .detail-label {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.80);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -702,40 +689,91 @@ async function handleUpdate() {
   font-weight: 500;
 }
 
-/* Quick Actions */
-.quick-grid {
+/* Favorites */
+.favorites-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 12px;
+  margin-top: 8px;
 }
 
-.quick-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 18px 12px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 12px;
+.favorite-card {
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.30);
+  border-radius: 10px;
+  overflow: hidden;
   text-decoration: none;
   color: #fff;
-  font-size: 0.8rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.favorite-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.favorite-img {
+  height: 90px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.favorite-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 0.65rem;
+  padding: 2px 7px;
+  border-radius: 4px;
   font-weight: 500;
+}
+
+.favorite-remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  border: none;
+  border-radius: 50%;
+  color: #ff4d4f;
+  font-size: 0.85rem;
   cursor: pointer;
-  transition: all 0.25s;
-  font-family: inherit;
-  text-align: center;
+  transition: all 0.2s;
 }
 
-.quick-btn:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+.favorite-remove:hover {
+  background: #ff4d4f;
+  color: #fff;
+  transform: scale(1.1);
 }
 
-.quick-btn svg {
+.favorite-body {
+  padding: 10px 12px;
+}
+
+.favorite-body h4 {
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin: 0 0 2px;
+  color: #fff;
+}
+
+.favorite-loc {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.80);
+  margin: 0 0 6px;
+}
+
+.favorite-rating {
+  font-size: 0.72rem;
   color: var(--accent);
 }
 
@@ -748,8 +786,8 @@ async function handleUpdate() {
 }
 
 .bs-item {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.28);
   border-radius: 10px;
   padding: 14px 10px;
   text-align: center;
@@ -770,73 +808,10 @@ async function handleUpdate() {
 .bs-label {
   display: block;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.88);
   margin-top: 4px;
   text-transform: uppercase;
   letter-spacing: 0.3px;
-}
-
-/* Rec Grid */
-.rec-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.rec-card {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 10px;
-  overflow: hidden;
-  text-decoration: none;
-  color: #fff;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.rec-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-}
-
-.rec-img {
-  height: 90px;
-  background-size: cover;
-  background-position: center;
-  position: relative;
-}
-
-.rec-badge {
-  position: absolute;
-  top: 6px;
-  left: 6px;
-  background: rgba(0, 0, 0, 0.6);
-  color: #fff;
-  font-size: 0.65rem;
-  padding: 2px 7px;
-  border-radius: 4px;
-  font-weight: 500;
-}
-
-.rec-body {
-  padding: 10px 12px;
-}
-
-.rec-body h4 {
-  font-size: 0.82rem;
-  font-weight: 600;
-  margin: 0 0 2px;
-  color: #fff;
-}
-
-.rec-loc {
-  font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.5);
-  margin: 0 0 6px;
-}
-
-.rec-rating {
-  font-size: 0.72rem;
-  color: var(--accent);
 }
 
 /* Travel History */
@@ -846,8 +821,8 @@ async function handleUpdate() {
 
 .history-count {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.5);
-  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.80);
+  background: rgba(255, 255, 255, 0.22);
   padding: 2px 10px;
   border-radius: 20px;
 }
@@ -868,15 +843,15 @@ async function handleUpdate() {
 .history-item {
   display: flex;
   gap: 14px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.20);
+  border: 1px solid rgba(255, 255, 255, 0.28);
   border-radius: 12px;
   overflow: hidden;
   transition: border-color 0.2s;
 }
 
 .history-item:hover {
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.50);
 }
 
 .history-img {
@@ -924,9 +899,9 @@ async function handleUpdate() {
 
 .history-province {
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.80);
   white-space: nowrap;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.22);
   padding: 1px 8px;
   border-radius: 4px;
 }
@@ -942,7 +917,7 @@ async function handleUpdate() {
   align-items: center;
   gap: 4px;
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.80);
 }
 
 .history-date svg {
@@ -980,9 +955,9 @@ async function handleUpdate() {
 .review-textarea {
   width: 100%;
   padding: 8px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.38);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.20);
   color: #fff;
   font-size: 0.82rem;
   font-family: inherit;
@@ -1013,7 +988,7 @@ async function handleUpdate() {
 }
 
 .star {
-  color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.55);
   font-size: 0.95rem;
 }
 
@@ -1023,13 +998,13 @@ async function handleUpdate() {
 
 .existing-score {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.80);
   margin-left: 4px;
 }
 
 .existing-comment {
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.94);
   line-height: 1.5;
   margin: 0;
 }
@@ -1063,7 +1038,7 @@ async function handleUpdate() {
 
 .btn-outline {
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.55);
   color: #fff;
 }
 
@@ -1132,7 +1107,7 @@ async function handleUpdate() {
   max-width: 95vw;
   background: rgba(25, 25, 45, 0.98);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.38);
   border-radius: 16px;
   padding: 28px;
   color: #fff;
@@ -1151,7 +1126,7 @@ async function handleUpdate() {
 .form-group label {
   display: block;
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.88);
   margin-bottom: 5px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -1160,9 +1135,9 @@ async function handleUpdate() {
 .form-group input {
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.38);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.22);
   color: #fff;
   font-size: 0.88rem;
   font-family: inherit;
@@ -1182,7 +1157,7 @@ async function handleUpdate() {
 
 .field-note {
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.70);
   margin-top: 4px;
   display: block;
 }
@@ -1199,7 +1174,7 @@ async function handleUpdate() {
 
 /* Empty / Loading */
 .empty-text {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.80);
   font-size: 0.85rem;
   line-height: 1.5;
 }
@@ -1214,7 +1189,7 @@ async function handleUpdate() {
   flex-direction: column;
   align-items: center;
   padding: 30px 20px;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.80);
   text-align: center;
 }
 
@@ -1223,16 +1198,10 @@ async function handleUpdate() {
   font-size: 0.88rem;
 }
 
-.loading-rec {
-  display: flex;
-  justify-content: center;
-  padding: 30px 0;
-}
-
 .spinner {
   width: 28px;
   height: 28px;
-  border: 3px solid rgba(255, 255, 255, 0.15);
+  border: 3px solid rgba(255, 255, 255, 0.38);
   border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -1257,12 +1226,8 @@ async function handleUpdate() {
     min-height: 80px;
   }
 
-  .rec-grid {
+  .favorites-grid {
     grid-template-columns: 1fr;
-  }
-
-  .quick-grid {
-    grid-template-columns: 1fr 1fr;
   }
 }
 </style>

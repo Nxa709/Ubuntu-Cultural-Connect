@@ -1,9 +1,6 @@
 <template>
   <div class="detail-page">
-    <div v-if="loading" class="loading-state">
-      <div class="spinner"></div>
-      <p>Loading experience...</p>
-    </div>
+    <LoadingSpinner v-if="loading" message="Loading experience..." />
 
     <template v-else-if="exp">
       <div class="detail-hero" :style="{ backgroundImage: `url(${exp.image_url || getCategoryImage(exp.category)})` }">
@@ -23,19 +20,6 @@
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
               </svg>
               {{ exp.location }}<template v-if="exp.province">, {{ exp.province }}</template>
-            </span>
-            <span class="meta-item" v-if="exp.duration_hours">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-              </svg>
-              {{ exp.duration_hours }} hours
-            </span>
-            <span class="meta-item" v-if="exp.max_participants">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-              </svg>
-              Max {{ exp.max_participants }} participants
             </span>
           </div>
         </div>
@@ -59,56 +43,6 @@
 
       <div class="detail-body">
         <div class="main-content">
-          <div class="info-grid">
-            <div class="info-card">
-              <div class="info-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                </svg>
-              </div>
-              <div class="info-data">
-                <span class="info-val">{{ exp.avg_rating || 'No ratings' }}</span>
-                <span class="info-lbl">{{ exp.rating_count }} review{{ exp.rating_count !== 1 ? 's' : '' }}</span>
-              </div>
-            </div>
-
-            <div class="info-card">
-              <div class="info-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                </svg>
-              </div>
-              <div class="info-data">
-                <span class="info-val">R {{ exp.price }}</span>
-                <span class="info-lbl">per person</span>
-              </div>
-            </div>
-
-            <div class="info-card" v-if="exp.duration_hours">
-              <div class="info-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-                </svg>
-              </div>
-              <div class="info-data">
-                <span class="info-val">{{ exp.duration_hours }}h</span>
-                <span class="info-lbl">duration</span>
-              </div>
-            </div>
-
-            <div class="info-card">
-              <div class="info-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
-                </svg>
-              </div>
-              <div class="info-data">
-                <span class="info-val">{{ exp.max_participants }}</span>
-                <span class="info-lbl">max group</span>
-              </div>
-            </div>
-          </div>
-
           <div class="section">
             <h2>About This Experience</h2>
             <div class="description-full">
@@ -116,7 +50,7 @@
             </div>
           </div>
 
-          <div class="section" v-if="exp.province">
+          <div class="section" v-if="exp.location">
             <h2>Location</h2>
             <div class="location-detail">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -124,8 +58,28 @@
               </svg>
               <div>
                 <span class="loc-main">{{ exp.location }}</span>
-                <span class="loc-province">{{ exp.province }} Province, South Africa</span>
+                <span class="loc-province">{{ exp.province ? exp.province + ' Province' : 'South Africa' }}</span>
               </div>
+            </div>
+            <div class="map-container" v-if="mapQuery">
+              <iframe
+                :src="`https://www.google.com/maps?q=${mapQuery}&output=embed`"
+                title="Google Map"
+                loading="lazy"
+                allowfullscreen
+                referrerpolicy="no-referrer-when-downgrade"
+              ></iframe>
+              <a
+                class="map-open-link"
+                :href="`https://www.google.com/maps?q=${mapQuery}`"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open in Google Maps
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+                </svg>
+              </a>
             </div>
           </div>
 
@@ -192,23 +146,11 @@
         <div class="sidebar">
           <div class="sidebar-card sticky">
             <div class="sidebar-price">
-              <span class="price-val">R {{ exp.price }}</span>
-              <span class="price-lbl">per person</span>
+              <span class="price-val">{{ formatPrice(exp.price) }}</span>
+              <span class="price-lbl" v-if="exp.price > 0">Our services range from this price</span>
             </div>
 
             <div class="sidebar-details">
-              <div class="detail-row">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-                </svg>
-                <span>{{ exp.duration_hours ? exp.duration_hours + ' hours' : 'Duration TBD' }}</span>
-              </div>
-              <div class="detail-row">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
-                </svg>
-                <span>Up to {{ exp.max_participants }} people</span>
-              </div>
               <div class="detail-row">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
@@ -280,11 +222,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useExperienceStore } from '../stores/experience'
 import { useAuthStore } from '../stores/auth'
 import AddToItineraryModal from '../components/AddToItineraryModal.vue'
+import { formatPrice } from '../utils/format'
 
 const route = useRoute()
 const router = useRouter()
@@ -304,6 +247,12 @@ const loading = ref(true)
 const addingToTrip = ref(false)
 const currentTripInfo = ref(null)
 const showItineraryModal = ref(false)
+
+const mapQuery = computed(() => {
+  if (!exp.value || !exp.value.location) return ''
+  const parts = [exp.value.location, exp.value.province, 'South Africa'].filter(Boolean)
+  return encodeURIComponent(parts.join(', '))
+})
 
 const categoryImages = {
   'Traditional Cooking': '/img/cultures/Rural.jpg',
@@ -380,7 +329,7 @@ onMounted(async () => {
   content: "";
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.15);
   z-index: 0;
 }
 
@@ -395,13 +344,13 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   padding: 8rem 2rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.88);
 }
 
 .spinner {
   width: 36px;
   height: 36px;
-  border: 3px solid rgba(255, 255, 255, 0.18);
+  border: 3px solid rgba(255, 255, 255, 0.45);
   border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -440,8 +389,8 @@ onMounted(async () => {
   gap: 8px;
   color: #fff;
   text-decoration: none;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.55);
   cursor: pointer;
   font-family: inherit;
   font-size: 0.9rem;
@@ -498,7 +447,7 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: rgba(255, 255, 255, 0.8);
+  color: #fff;
   font-size: 0.95rem;
 }
 
@@ -530,7 +479,7 @@ onMounted(async () => {
 }
 .banner-meta {
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: #fff;
 }
 .banner-link {
   font-size: 0.82rem;
@@ -552,51 +501,6 @@ onMounted(async () => {
   align-items: start;
 }
 
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-
-.info-card {
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 12px;
-  padding: 1.25rem;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.info-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
-  background: rgba(255, 182, 18, 0.15);
-  color: var(--accent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.info-val {
-  display: block;
-  font-size: 1.3rem;
-  font-weight: 700;
-  font-family: 'Poppins', sans-serif;
-  color: #fff;
-}
-
-.info-lbl {
-  display: block;
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.6);
-}
-
 .section {
   margin-bottom: 2rem;
 }
@@ -610,7 +514,7 @@ onMounted(async () => {
 }
 
 .description-full p {
-  color: rgba(255, 255, 255, 0.85);
+  color: #fff;
   line-height: 1.8;
   font-size: 1rem;
 }
@@ -619,7 +523,7 @@ onMounted(async () => {
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
-  color: rgba(255, 255, 255, 0.8);
+  color: #fff;
 }
 
 .loc-main {
@@ -631,17 +535,51 @@ onMounted(async () => {
 .loc-province {
   display: block;
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: #fff;
+}
+
+.map-container {
+  margin-top: 1.25rem;
+  background: rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 12px;
+  padding: 0.75rem;
+}
+
+.map-container iframe {
+  width: 100%;
+  height: 320px;
+  border: none;
+  border-radius: 10px;
+  display: block;
+  background: #dde3e8;
+}
+
+.map-open-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.map-open-link:hover {
+  color: var(--accent-hover);
 }
 
 .host-card {
   display: flex;
   align-items: center;
   gap: 1rem;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.28);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 12px;
   padding: 1.25rem;
 }
@@ -669,11 +607,11 @@ onMounted(async () => {
 .host-label {
   display: block;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: #fff;
 }
 
 .no-reviews p {
-  color: rgba(255, 255, 255, 0.5);
+  color: #fff;
   font-style: italic;
 }
 
@@ -681,7 +619,7 @@ onMounted(async () => {
   display: flex;
   gap: 2rem;
   align-items: center;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.22);
   border-radius: 12px;
   padding: 1.25rem;
   margin-bottom: 1.5rem;
@@ -710,7 +648,7 @@ onMounted(async () => {
 
 .summary-count {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: #fff;
 }
 
 .star-breakdown { flex: 1; }
@@ -724,7 +662,7 @@ onMounted(async () => {
 
 .bar-label {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: #fff;
   min-width: 28px;
   text-align: right;
 }
@@ -732,7 +670,7 @@ onMounted(async () => {
 .bar-track {
   flex: 1;
   height: 8px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.26);
   border-radius: 4px;
   overflow: hidden;
 }
@@ -746,7 +684,7 @@ onMounted(async () => {
 
 .bar-count {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: #fff;
   min-width: 20px;
 }
 
@@ -757,10 +695,10 @@ onMounted(async () => {
 }
 
 .review-card {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.26);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.38);
   border-radius: 10px;
   padding: 1rem;
 }
@@ -802,7 +740,7 @@ onMounted(async () => {
 .review-date {
   display: block;
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: #fff;
 }
 
 .review-stars {
@@ -810,11 +748,11 @@ onMounted(async () => {
   gap: 2px;
 }
 
-.star { color: rgba(255, 255, 255, 0.25); font-size: 1rem; }
+.star { color: rgba(255, 255, 255, 0.55); font-size: 1rem; }
 .star.filled { color: var(--accent); }
 
 .review-comment p {
-  color: rgba(255, 255, 255, 0.8);
+  color: #fff;
   line-height: 1.6;
   margin: 0;
   font-size: 0.95rem;
@@ -826,10 +764,10 @@ onMounted(async () => {
 }
 
 .sidebar-card {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.28);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 12px;
   padding: 1.5rem;
 }
@@ -838,7 +776,7 @@ onMounted(async () => {
   text-align: center;
   margin-bottom: 1.25rem;
   padding-bottom: 1.25rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.28);
 }
 
 .price-val {
@@ -850,7 +788,7 @@ onMounted(async () => {
 }
 
 .price-lbl {
-  color: rgba(255, 255, 255, 0.6);
+  color: #fff;
   font-size: 0.9rem;
 }
 
@@ -863,9 +801,9 @@ onMounted(async () => {
   align-items: center;
   gap: 0.6rem;
   padding: 0.6rem 0;
-  color: rgba(255, 255, 255, 0.8);
+  color: #fff;
   font-size: 0.95rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.20);
 }
 
 .detail-row:last-child { border-bottom: none; }
@@ -879,9 +817,9 @@ onMounted(async () => {
 .mini-itinerary {
   margin-top: 12px;
   padding: 12px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.30);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.20);
   animation: fadeIn 0.35s ease;
 }
 .mini-itinerary-header {
@@ -905,7 +843,7 @@ onMounted(async () => {
 }
 .mini-trip-dates {
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: #fff;
   margin-top: 1px;
 }
 .mini-trip-entries {
@@ -920,7 +858,7 @@ onMounted(async () => {
   color: var(--accent);
   text-decoration: none;
   padding: 6px 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.24);
   margin-top: 6px;
   font-weight: 500;
   transition: opacity 0.2s;
@@ -954,13 +892,15 @@ onMounted(async () => {
 }
 
 .btn-trip-full {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--accent);
+  color: #1a1a1a;
+  border: 1px solid var(--accent);
 }
 
 .btn-trip-full:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: #fff;
+  color: #1a1a1a;
+  border-color: #fff;
 }
 
 .btn-trip-full.edit-btn {
@@ -976,9 +916,6 @@ onMounted(async () => {
 @media (max-width: 900px) {
   .detail-body {
     grid-template-columns: 1fr;
-  }
-  .info-grid {
-    grid-template-columns: repeat(2, 1fr);
   }
   .detail-hero-content h1 {
     font-size: 1.8rem;

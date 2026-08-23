@@ -39,19 +39,22 @@
     </div>
 
     <div class="card" v-if="recommended.length > 0">
-      <h2>Recommended for you</h2>
+      <h2>Handpicked Experiences Just for You</h2>
       <p class="card-sub">Based on your preferences</p>
       <div class="rec-grid">
-        <div class="rec-card" v-for="exp in recommended" :key="exp.id">
+        <div class="rec-card" v-for="exp in recommended" :key="exp.id" @click="$router.push(`/experience/${exp.id}`)" style="cursor: pointer;">
           <div class="rec-cat-badge">{{ exp.category }}</div>
           <h4>{{ exp.title }}</h4>
-          <p class="rec-loc">{{ exp.location }}</p>
+          <p class="rec-loc">{{ exp.location }}{{ exp.province ? ', ' + exp.province : '' }}</p>
           <div class="rec-meta">
             <span class="rec-rating" v-if="exp.avg_rating">
               {{ exp.avg_rating }} ({{ exp.rating_count }})
             </span>
           </div>
         </div>
+      </div>
+      <div class="browse-actions">
+        <router-link to="/experiences" class="btn btn-primary browse-btn">Browse all experiences</router-link>
       </div>
     </div>
   </div>
@@ -66,7 +69,11 @@ const router = useRouter()
 const store = useExperienceStore()
 
 function goBack() {
-  router.push('/')
+  if (window.history.length > 1) {
+    router.back()
+  } else {
+    router.push('/')
+  }
 }
 const allCategories = ref([])
 const selected = ref([])
@@ -111,7 +118,7 @@ async function save() {
     await store.savePreferences(selected.value)
     await store.fetchRecommended()
     recommended.value = store.recommended
-    success.value = 'Preferences saved! Here are your recommendations.'
+    success.value = 'Preferences saved! Here are your handpicked experiences.'
   } catch (e) {
     error.value = e.response?.data?.detail || 'Failed to save preferences'
   } finally {
@@ -142,38 +149,46 @@ function getIcon(cat) {
   background-size: cover;
   position: relative;
   min-height: 100vh;
-  padding: 100px 20px 40px;
+  padding: 0;
 }
 
 .preferences-page::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.15);
   z-index: 0;
 }
 
 .preferences-page > * {
   position: relative;
   z-index: 1;
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.preferences-page > .hero-header {
+  max-width: none;
+  margin: 0;
+  padding: 120px 20px 60px;
 }
 
 .hero-header {
   text-align: center;
-  padding: 40px 20px 48px;
   position: relative;
 }
 
 .back-btn {
   position: absolute;
-  top: 40px;
+  top: 96px;
   left: 20px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.26);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.97);
   padding: 6px 14px;
   border-radius: 8px;
   font-size: 0.82rem;
@@ -183,7 +198,7 @@ function getIcon(cat) {
 }
 
 .back-btn:hover {
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.36);
   color: #fff;
 }
 
@@ -205,22 +220,34 @@ function getIcon(cat) {
 
 .hero-header p {
   font-size: 1.05rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.94);
   max-width: 520px;
   margin: 0 auto;
   line-height: 1.6;
 }
 
 .card {
-  background: rgba(255, 255, 255, 0.12);
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.24);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 12px;
   padding: 30px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   margin-bottom: 24px;
   color: #fff;
+}
+
+.card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent), #EC407A, #29B6F6);
 }
 
 .card h2 {
@@ -230,7 +257,7 @@ function getIcon(cat) {
 }
 
 .card-sub {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.88);
   font-size: 0.85rem;
   margin-bottom: 20px;
 }
@@ -248,39 +275,46 @@ function getIcon(cat) {
   align-items: center;
   gap: 8px;
   padding: 20px 12px;
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  border: 2px solid var(--accent);
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--accent);
   cursor: pointer;
   transition: all 0.2s;
   font-family: inherit;
-  color: #fff;
+  color: #1a1a1a;
 }
 
 .cat-btn:hover {
-  border-color: var(--accent);
-  background: rgba(255, 255, 255, 0.15);
+  border-color: var(--accent-hover);
+  background: var(--accent-hover);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 }
 
 .cat-btn.selected {
-  border-color: var(--accent);
-  background: rgba(255, 182, 18, 0.2);
-  color: #fff;
+  border-color: var(--accent-hover);
+  background: var(--accent-hover);
+  color: #1a1a1a;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
 }
 
 .cat-icon {
-  color: rgba(255, 255, 255, 0.8);
+  color: #1a1a1a;
+}
+
+.cat-btn:hover .cat-icon {
+  color: #1a1a1a;
 }
 
 .cat-btn.selected .cat-icon {
-  color: var(--accent);
+  color: #1a1a1a;
 }
 
 .cat-label {
   font-size: 0.78rem;
   font-weight: 500;
   text-align: center;
-  color: #fff;
+  color: #1a1a1a;
 }
 
 .card-actions {
@@ -313,7 +347,7 @@ function getIcon(cat) {
 .btn-primary:hover:not(:disabled) { background-color: var(--accent-hover); }
 
 .hint {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.88);
   font-size: 0.85rem;
 }
 
@@ -334,13 +368,27 @@ function getIcon(cat) {
 }
 
 .rec-card {
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--accent);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid var(--accent);
   border-radius: 10px;
   padding: 18px;
-  color: #fff;
+  color: #1a1a1a;
+  transition: transform 0.2s;
+}
+
+.rec-card:hover {
+  transform: translateY(-4px);
+}
+
+.browse-actions {
+  margin-top: 22px;
+  text-align: center;
+}
+
+.browse-btn {
+  text-decoration: none;
 }
 
 .rec-cat-badge {
@@ -348,21 +396,21 @@ function getIcon(cat) {
   font-size: 0.7rem;
   padding: 2px 8px;
   border-radius: 6px;
-  background: rgba(255, 182, 18, 0.2);
-  color: var(--accent);
-  font-weight: 500;
+  font-weight: 600;
   margin-bottom: 10px;
+  background: #1a1a1a;
+  color: var(--accent);
 }
 
 .rec-card h4 {
   font-size: 0.92rem;
-  color: #fff;
+  color: #1a1a1a;
   margin-bottom: 4px;
 }
 
 .rec-loc {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(0, 0, 0, 0.72);
   margin-bottom: 10px;
 }
 
@@ -373,6 +421,45 @@ function getIcon(cat) {
 
 .rec-rating {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: #1a1a1a;
+}
+
+@media (max-width: 900px) {
+  .categories-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .rec-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .preferences-page {
+    padding: 0;
+  }
+  .hero-header {
+    padding: 90px 12px 36px;
+  }
+  .hero-header h1 {
+    font-size: 2rem;
+  }
+  .back-btn {
+    top: 70px;
+    left: 12px;
+  }
+  .card {
+    padding: 20px 16px;
+  }
+  .categories-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .rec-grid {
+    grid-template-columns: 1fr;
+  }
+  .card-actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 </style>

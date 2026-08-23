@@ -3,7 +3,7 @@
     <div class="modal-overlay" v-if="visible" @click.self="close">
     <div class="modal-card itinerary-modal">
 
-      <!-- Step 1: Select Trip Dates -->
+      <!-- Step 1: Choose an Itinerary -->
       <div v-if="modalStep === 1" class="modal-step">
         <button class="modal-close-btn" @click="close">&times;</button>
         <div class="step-indicator">
@@ -15,28 +15,50 @@
           <span class="step-line"></span>
           <span class="step-badge">4</span>
         </div>
-        <h3>Select Trip Dates</h3>
-        <p class="step-desc">Choose when you'd like to take this trip.</p>
-        <div class="date-inputs">
+        <h3>Add to Itinerary</h3>
+        <p class="step-desc">Choose an existing itinerary or create a new one for {{ experience?.title }}.</p>
+
+        <div v-if="existingTrips.length" class="trip-options">
+          <label
+            v-for="t in existingTrips"
+            :key="t.id"
+            class="option-card"
+            :class="{ selected: tripChoice === t.id }"
+          >
+            <input type="radio" name="trip-choice" :value="t.id" v-model="tripChoice" />
+            <div class="option-body">
+              <span class="option-title">{{ t.title }}</span>
+              <span class="option-sub">{{ t.destination }} &middot; {{ formatCardDay(t.start_date) }} – {{ formatCardDay(t.end_date) }}</span>
+            </div>
+          </label>
+        </div>
+
+        <label class="option-card" :class="{ selected: tripChoice === 'new' }">
+          <input type="radio" name="trip-choice" value="new" v-model="tripChoice" />
+          <span class="option-title">Create a new trip</span>
+        </label>
+
+        <div v-if="tripChoice === 'new'" class="date-inputs new-date-block">
           <div class="form-group">
             <label>Start Date</label>
-            <input v-model="tripDates.start_date" type="date" :min="todayStr" @change="onDateChange" />
+            <input v-model="tripDates.start_date" type="date" :min="todayStr" />
           </div>
           <div class="form-group">
             <label>End Date</label>
-            <input v-model="tripDates.end_date" type="date" :min="tripDates.start_date || todayStr" @change="onDateChange" />
+            <input v-model="tripDates.end_date" type="date" :min="tripDates.start_date || todayStr" />
           </div>
         </div>
-        <div v-if="tripDayCount > 0" class="day-count-badge">
+        <div v-if="tripChoice === 'new' && tripDayCount > 0" class="day-count-badge">
           <span class="day-count-num">{{ tripDayCount }}</span>
           {{ tripDayCount === 1 ? 'day' : 'days' }}
         </div>
-        <div v-else-if="tripDates.start_date && tripDates.end_date && !datesValid" class="date-error">
+        <div v-else-if="tripChoice === 'new' && tripDates.start_date && tripDates.end_date && !datesValid" class="date-error">
           End date must be after start date
         </div>
+
         <div class="modal-actions">
-          <button class="btn btn-primary" :disabled="!datesValid || modalLoading" @click="createTripAndProceed">
-            {{ modalLoading ? 'Creating...' : 'Continue' }}
+          <button class="btn btn-primary" :disabled="!selectionValid || modalLoading" @click="continueToDay">
+            {{ modalLoading ? 'Loading...' : 'Continue' }}
           </button>
           <button class="btn btn-outline" @click="close">Cancel</button>
         </div>
@@ -206,7 +228,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch } from 'vue'
+import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useExperienceStore } from '../stores/experience'
 import { useAuthStore } from '../stores/auth'
@@ -229,6 +251,9 @@ const tripDays = ref([])
 const selectedDay = ref(null)
 const selectedSlotIndex = ref(-1)
 
+const existingTrips = ref([])
+const tripChoice = ref('new')
+
 const tripDates = reactive({
   start_date: '',
   end_date: '',
@@ -243,6 +268,13 @@ const DAY_START = '06:00'
 const DAY_END = '22:00'
 
 const todayStr = computed(() => new Date().toISOString().split('T')[0])
+
+const selectedTrip = computed(() => existingTrips.value.find(t => t.id === tripChoice.value) || null)
+
+const selectionValid = computed(() => {
+  if (tripChoice.value === 'new') return datesValid.value
+  return !!selectedTrip.value
+})
 
 const datesValid = computed(() => {
   if (!tripDates.start_date || !tripDates.end_date) return false
@@ -331,9 +363,50 @@ function done() {
   emit('close')
 }
 
-function onDateChange() {}
+async function loadTrips() {
+  try {
+    await store.fetchMyTrips()
+    existingTrips.value = store.myTrips || []
+  } catch (e) {
+    existingTrips.value = []
+  }
+}
 
-async function createTripAndProceed() {
+function buildTripDays(startIso, endIso) {
+  const s = new Date(startIso)
+  const e = new Date(endIso)
+  const count = Math.max(1, Math.ceil((e - s) / 86400000) + 1)
+  let notesData = []
+  try { notesData = JSON.parse(createdTrip.value?.notes || '[]') } catch {}
+  const days = []
+  for (let i = 0; i < count; i++) {
+    const d = new Date(s)
+    d.setDate(d.getDate() + i)
+    const dayNum = i + 1
+    const dayFromNotes = notesData.find(n => n.day_number === dayNum)
+    days.push({
+      day_number: dayNum,
+      date: d.toISOString().split('T')[0],
+      entryCount: dayFromNotes?.entries?.length || 0,
+    })
+  }
+  tripDays.value = days
+}
+
+async function continueToDay() {
+  if (!selectionValid.value) return
+  if (tripChoice.value === 'new') {
+    await createNewTripAndProceed()
+    return
+  }
+  const trip = selectedTrip.value
+  if (!trip) return
+  createdTrip.value = trip
+  buildTripDays(trip.start_date, trip.end_date)
+  modalStep.value = 2
+}
+
+async function createNewTripAndProceed() {
   if (!datesValid.value) return
   modalLoading.value = true
   try {
@@ -347,22 +420,7 @@ async function createTripAndProceed() {
       days: [],
     })
     createdTrip.value = trip
-    let notesData = []
-    try { notesData = JSON.parse(trip.notes || '[]') } catch {}
-    const s = new Date(tripDates.start_date)
-    const days = []
-    for (let i = 0; i < tripDayCount.value; i++) {
-      const d = new Date(s)
-      d.setDate(d.getDate() + i)
-      const dayNum = i + 1
-      const dayFromNotes = notesData.find(n => n.day_number === dayNum)
-      days.push({
-        day_number: dayNum,
-        date: d.toISOString().split('T')[0],
-        entryCount: dayFromNotes?.entries?.length || 0,
-      })
-    }
-    tripDays.value = days
+    buildTripDays(tripDates.start_date, tripDates.end_date)
     modalStep.value = 2
   } catch (e) {
     console.error('Create trip failed:', e)
@@ -392,6 +450,15 @@ async function proceedToTimeSelection() {
   }
   if (dayEntries.value.length === 0) {
     suggestDefaultTime()
+  } else {
+    // Auto-select a free slot so the experience lands in available free time.
+    const fitting = timeSlots.value.filter(s => s.type === 'available' && s.fits)
+    if (fitting.length > 0) {
+      const rec = fitting.find(s => s.recommended) || fitting[0]
+      selectSlot(timeSlots.value.indexOf(rec))
+    } else {
+      suggestDefaultTime()
+    }
   }
 }
 
@@ -405,7 +472,7 @@ function selectSlot(index) {
   if (!slot || slot.type !== 'available' || !slot.fits) return
   selectedSlotIndex.value = index
   entryTime.start_time = slot.start
-  entryTime.end_time = ''
+  entryTime.end_time = slot.end || ''
 }
 
 async function confirmAddToItinerary() {
@@ -452,8 +519,19 @@ async function confirmAddToItinerary() {
   }
 }
 
-watch(() => props.visible, (val) => {
-  if (!val) {
+onMounted(() => {
+  loadTrips()
+})
+
+watch(() => props.visible, async (val) => {
+  if (val) {
+    await loadTrips()
+    if (existingTrips.value.length) {
+      tripChoice.value = existingTrips.value[0].id
+    } else {
+      tripChoice.value = 'new'
+    }
+  } else {
     modalStep.value = 1
     tripDates.start_date = ''
     tripDates.end_date = ''
@@ -487,7 +565,7 @@ watch(() => props.visible, (val) => {
   background: rgba(20, 20, 35, 0.98);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.30);
   border-radius: 20px;
   padding: 32px 28px;
   color: #fff;
@@ -498,7 +576,7 @@ watch(() => props.visible, (val) => {
 .modal-close-btn {
   position: absolute; top: -8px; right: -6px;
   background: none; border: none;
-  color: rgba(255,255,255,0.5); font-size: 1.6rem;
+  color: rgba(255, 255, 255, 0.80); font-size: 1.6rem;
   cursor: pointer; line-height: 1; padding: 4px 8px;
   transition: color 0.2s;
 }
@@ -511,43 +589,116 @@ watch(() => props.visible, (val) => {
   width: 32px; height: 32px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   font-size: 0.8rem; font-weight: 700;
-  background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.4);
+  background: rgba(255, 255, 255, 0.22); color: rgba(255, 255, 255, 0.70);
   transition: all 0.3s;
 }
 .step-badge.active { background: var(--accent); color: #1a1a1a; }
 .step-badge.done { background: rgba(76,175,80,0.3); color: #81c784; }
-.step-line { width: 40px; height: 2px; background: rgba(255,255,255,0.1); margin: 0 4px; }
+.step-line { width: 40px; height: 2px; background: rgba(255, 255, 255, 0.26); margin: 0 4px; }
 .step-line.done { background: #81c784; }
 .itinerary-modal h3 {
   font-family: 'Poppins', sans-serif; font-size: 1.25rem;
   font-weight: 700; text-align: center; margin-bottom: 6px;
 }
-.step-desc { text-align: center; color: rgba(255,255,255,0.5); font-size: 0.85rem; margin-bottom: 20px; }
+.step-desc { text-align: center; color: rgba(255, 255, 255, 0.80); font-size: 0.85rem; margin-bottom: 20px; }
 .date-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 12px; }
 .itinerary-modal .form-group { margin-bottom: 10px; }
 .itinerary-modal .form-group label {
   display: block; font-size: 0.75rem; text-transform: uppercase;
-  letter-spacing: 0.5px; color: rgba(255,255,255,0.5); margin-bottom: 4px;
+  letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.80); margin-bottom: 4px;
 }
 .itinerary-modal .form-group input,
 .itinerary-modal .form-group select {
   width: 100%; padding: 10px 12px;
-  border: 1px solid rgba(255,255,255,0.15); border-radius: 8px;
-  background: rgba(255,255,255,0.08); color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.38); border-radius: 8px;
+  background: rgba(255, 255, 255, 0.22); color: #fff;
   font-size: 0.9rem; font-family: inherit; outline: none;
   transition: border-color 0.2s; box-sizing: border-box;
 }
+.itinerary-modal input[type="date"] {
+  color-scheme: dark;
+}
+.itinerary-modal input[type="date"]::-webkit-calendar-picker-indicator {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'/%3E%3Cline x1='16' y1='2' x2='16' y2='6'/%3E%3Cline x1='8' y1='2' x2='8' y2='6'/%3E%3Cline x1='3' y1='10' x2='21' y2='10'/%3E%3C/svg%3E");
+  background-size: 20px 20px;
+  background-position: center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  opacity: 1;
+}
 .itinerary-modal .form-group input:focus { border-color: var(--accent); }
-.day-count-badge { text-align: center; padding: 8px 0 12px; font-size: 0.9rem; color: rgba(255,255,255,0.6); }
+.day-count-badge { text-align: center; padding: 8px 0 12px; font-size: 0.9rem; color: rgba(255, 255, 255, 0.88); }
 .day-count-num {
   display: inline-flex; align-items: center; justify-content: center;
   width: 28px; height: 28px; border-radius: 50%;
   background: var(--accent); color: #1a1a1a; font-weight: 700; font-size: 0.85rem; margin-right: 4px;
 }
 .date-error { text-align: center; color: #ff6b6b; font-size: 0.82rem; padding: 4px 0 8px; }
+
+.trip-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.option-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.16);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.option-card:hover {
+  background: rgba(255, 255, 255, 0.24);
+  border-color: rgba(255, 255, 255, 0.50);
+}
+
+.option-card.selected {
+  border-color: var(--accent);
+  background: rgba(255, 182, 18, 0.1);
+}
+
+.option-card input[type="radio"] {
+  accent-color: var(--accent);
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.option-body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.option-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.option-sub {
+  font-size: 0.76rem;
+  color: rgba(255, 255, 255, 0.78);
+  margin-top: 1px;
+}
+
+.new-date-block {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.25);
+}
 .itinerary-modal .modal-actions {
   display: flex; gap: 10px; margin-top: 16px;
-  padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.06);
+  padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, 0.20);
 }
 .itinerary-modal .modal-actions .btn {
   flex: 1; padding: 10px 16px; border: none; border-radius: 8px;
@@ -557,24 +708,24 @@ watch(() => props.visible, (val) => {
 .itinerary-modal .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .itinerary-modal .btn-primary { background: var(--accent); color: #1a1a1a; }
 .itinerary-modal .btn-primary:hover:not(:disabled) { background: #fff; }
-.itinerary-modal .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.25); color: #fff; }
+.itinerary-modal .btn-outline { background: transparent; border: 1px solid rgba(255, 255, 255, 0.55); color: #fff; }
 .itinerary-modal .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
 .day-cards { display: flex; flex-direction: column; gap: 8px; margin-bottom: 4px; }
 .day-card {
   display: flex; align-items: center; gap: 14px; padding: 12px 16px;
-  border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;
-  background: rgba(255,255,255,0.04); cursor: pointer; transition: all 0.2s;
+  border: 1px solid rgba(255, 255, 255, 0.28); border-radius: 10px;
+  background: rgba(255, 255, 255, 0.16); cursor: pointer; transition: all 0.2s;
 }
-.day-card:hover { background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.2); }
+.day-card:hover { background: rgba(255, 255, 255, 0.24); border-color: rgba(255, 255, 255, 0.50); }
 .day-card.selected { border-color: var(--accent); background: rgba(255,182,18,0.1); }
 .day-card-number { font-size: 0.85rem; font-weight: 700; color: var(--accent); min-width: 50px; }
 .day-card-date { flex: 1; font-size: 0.88rem; color: #fff; }
 .day-card-entries { font-size: 0.77rem; color: var(--accent); background: rgba(255,182,18,0.12); padding: 2px 10px; border-radius: 12px; }
-.day-card-empty { font-size: 0.77rem; color: rgba(255,255,255,0.3); font-style: italic; }
+.day-card-empty { font-size: 0.77rem; color: rgba(255, 255, 255, 0.60); font-style: italic; }
 .time-picker-simple { max-width: 280px; margin: 0 auto 8px; }
 .time-suggestion { text-align: center; margin-top: 8px; }
 .btn-suggestion {
-  background: none; border: 1px dashed rgba(255,255,255,0.25);
+  background: none; border: 1px dashed rgba(255, 255, 255, 0.55);
   color: var(--accent); padding: 6px 16px; border-radius: 6px;
   font-size: 0.82rem; cursor: pointer; font-family: inherit; transition: all 0.2s;
 }
@@ -585,11 +736,11 @@ watch(() => props.visible, (val) => {
   display: flex; align-items: flex-start; gap: 10px;
   padding: 10px 12px; border-radius: 10px; transition: all 0.2s; cursor: default;
 }
-.timeline-slot.available { cursor: pointer; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.03); }
+.timeline-slot.available { cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.24); background: rgba(255, 255, 255, 0.14); }
 .timeline-slot.available:hover { background: rgba(76,175,80,0.1); border-color: rgba(76,175,80,0.3); }
 .timeline-slot.available.selected { background: rgba(76,175,80,0.18); border-color: #81c784; }
 .timeline-slot.recommended { border-color: var(--accent) !important; background: rgba(255,182,18,0.08) !important; }
-.timeline-slot.occupied { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.06); opacity: 0.7; }
+.timeline-slot.occupied { background: rgba(255, 255, 255, 0.18); border: 1px solid rgba(255, 255, 255, 0.20); opacity: 0.7; }
 .timeline-slot.fits-disabled { opacity: 0.35; cursor: not-allowed !important; }
 .slot-indicator { padding-top: 3px; }
 .slot-dot { display: block; width: 10px; height: 10px; border-radius: 50%; }
@@ -597,7 +748,7 @@ watch(() => props.visible, (val) => {
 .available-dot { background: #81c784; }
 .slot-body { flex: 1; }
 .slot-time-range { font-size: 0.85rem; font-weight: 600; color: #fff; }
-.slot-label { font-size: 0.78rem; color: rgba(255,255,255,0.5); margin-top: 1px; }
+.slot-label { font-size: 0.78rem; color: rgba(255, 255, 255, 0.80); margin-top: 1px; }
 .slot-recommended {
   display: inline-block; font-size: 0.7rem; color: var(--accent);
   background: rgba(255,182,18,0.15); padding: 1px 8px; border-radius: 10px;
@@ -606,24 +757,24 @@ watch(() => props.visible, (val) => {
 .slot-too-small { font-size: 0.7rem; color: #ff6b6b; margin-top: 2px; }
 .fully-booked { text-align: center; padding: 20px 0; }
 .booked-icon { font-size: 2.5rem; margin-bottom: 8px; }
-.fully-booked p { color: rgba(255,255,255,0.6); margin-bottom: 12px; }
+.fully-booked p { color: rgba(255, 255, 255, 0.88); margin-bottom: 12px; }
 .booked-actions { display: flex; justify-content: center; gap: 8px; }
 .btn-outline-sm {
-  background: transparent; border: 1px solid rgba(255,255,255,0.2);
+  background: transparent; border: 1px solid rgba(255, 255, 255, 0.50);
   color: #fff; padding: 6px 14px; border-radius: 6px;
   font-size: 0.82rem; cursor: pointer; font-family: inherit; transition: all 0.2s;
 }
 .btn-outline-sm:hover { border-color: var(--accent); color: var(--accent); }
 .confirm-summary {
-  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.18); border: 1px solid rgba(255, 255, 255, 0.24);
   border-radius: 12px; padding: 16px 18px; margin: 8px 0 4px;
 }
 .confirm-row {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+  padding: 8px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.18);
 }
 .confirm-row:last-child { border-bottom: none; }
-.confirm-label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255,255,255,0.45); }
+.confirm-label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.75); }
 .confirm-value { font-size: 0.92rem; font-weight: 600; color: #fff; text-align: right; max-width: 60%; }
 .success-step { text-align: center; padding: 16px 0; }
 .success-icon {
@@ -639,10 +790,10 @@ watch(() => props.visible, (val) => {
   100% { transform: scale(1); opacity: 1; }
 }
 .success-step h3 { margin-bottom: 6px; }
-.success-step p { color: rgba(255,255,255,0.6); margin-bottom: 16px; }
+.success-step p { color: rgba(255, 255, 255, 0.88); margin-bottom: 16px; }
 .itinerary-modal::-webkit-scrollbar { width: 4px; }
 .itinerary-modal::-webkit-scrollbar-track { background: transparent; }
-.itinerary-modal::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+.itinerary-modal::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.30); border-radius: 4px; }
 @media (max-width: 560px) {
   .itinerary-modal { padding: 24px 18px; }
   .date-inputs { grid-template-columns: 1fr; }

@@ -112,7 +112,7 @@ onUnmounted(() => {
   position: relative;
   background: none;
   border: none;
-  color: #ffffff;
+  color: #333333;
   cursor: pointer;
   padding: 8px;
   border-radius: 6px;
@@ -153,7 +153,7 @@ onUnmounted(() => {
   background: rgba(20, 20, 35, 0.98);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.30);
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
   z-index: 2000;
@@ -167,7 +167,7 @@ onUnmounted(() => {
   align-items: center;
   justify-content: space-between;
   padding: 14px 16px 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.24);
 }
 
 .notif-panel-header h4 {
@@ -207,11 +207,11 @@ onUnmounted(() => {
   padding: 12px 16px;
   cursor: pointer;
   transition: background 0.2s;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
 }
 
 .notif-item:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.20);
 }
 
 .notif-item.unread {
@@ -235,7 +235,7 @@ onUnmounted(() => {
 .notif-message {
   margin: 0;
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.98);
   line-height: 1.4;
   word-wrap: break-word;
   white-space: pre-line;
@@ -243,7 +243,7 @@ onUnmounted(() => {
 
 .notif-time {
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.70);
   margin-top: 3px;
   display: block;
 }
@@ -268,7 +268,7 @@ onUnmounted(() => {
 }
 
 .notif-empty p {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.70);
   font-size: 0.85rem;
   margin: 0;
 }
@@ -293,7 +293,7 @@ onUnmounted(() => {
 }
 
 .notif-list::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.30);
   border-radius: 4px;
 }
 </style>

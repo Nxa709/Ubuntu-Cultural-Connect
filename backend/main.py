@@ -11,6 +11,7 @@ from routers.auth import router as auth_router
 from routers.experience import router as experience_router
 from routers.admin import router as admin_router
 from routers.notification import router as notification_router
+from routers.upload import router as upload_router
 
 # Create tables
 Base.metadata.create_all(bind=engine)
@@ -33,6 +34,7 @@ app.include_router(auth_router)
 app.include_router(experience_router)
 app.include_router(admin_router)
 app.include_router(notification_router)
+app.include_router(upload_router)
 
 
 @app.get("/api/health")
@@ -47,6 +49,7 @@ if STATIC_DIR.exists():
     # Static assets (JS/CSS/images) from /assets and /img
     app.mount("/assets", StaticFiles(directory=STATIC_DIR / "assets"), name="assets")
     app.mount("/img", StaticFiles(directory=STATIC_DIR / "img"), name="img")
+    app.mount("/uploads", StaticFiles(directory=STATIC_DIR / "uploads"), name="uploads")
 
     @app.get("/{full_path:path}", include_in_schema=False)
     def serve_spa(full_path: str):

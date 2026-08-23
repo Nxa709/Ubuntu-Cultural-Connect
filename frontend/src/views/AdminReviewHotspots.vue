@@ -19,10 +19,7 @@
       </button>
     </div>
 
-    <div v-if="loading" class="loading-state">
-      <div class="spinner"></div>
-      <p>Loading hotspots...</p>
-    </div>
+    <LoadingSpinner v-if="loading" message="Loading hotspots..." />
 
     <div v-else-if="admin.hotspots.length === 0" class="empty-state">
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -60,7 +57,7 @@
         <div class="detail-grid" v-if="expanded === hotspot.id">
           <div class="detail-item">
             <span class="detail-label">Price</span>
-            <span class="detail-value">R {{ hotspot.price }}</span>
+            <span class="detail-value">{{ formatPrice(hotspot.price) }}</span>
           </div>
           <div class="detail-item" v-if="hotspot.duration_hours">
             <span class="detail-label">Duration</span>
@@ -187,6 +184,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useAdminStore } from '../stores/admin'
+import { formatPrice } from '../utils/format'
 
 const admin = useAdminStore()
 const loading = ref(true)
@@ -282,7 +280,7 @@ onMounted(async () => {
   content: "";
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.15);
   z-index: 0;
 }
 
@@ -317,7 +315,7 @@ onMounted(async () => {
 
 .hero-header p {
   font-size: 1.05rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.94);
   max-width: 520px;
   margin: 0 auto;
   line-height: 1.6;
@@ -332,9 +330,9 @@ onMounted(async () => {
 
 .filter-btn {
   padding: 0.5rem 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.28);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   color: #ccc;
@@ -351,7 +349,7 @@ onMounted(async () => {
 .filter-btn.active {
   background: var(--heading-color);
   color: #f9f9f9;
-  border-color: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.60);
 }
 
 .badge {
@@ -380,7 +378,7 @@ onMounted(async () => {
 .spinner {
   width: 36px;
   height: 36px;
-  border: 3px solid rgba(255, 255, 255, 0.18);
+  border: 3px solid rgba(255, 255, 255, 0.45);
   border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -398,10 +396,10 @@ onMounted(async () => {
 }
 
 .hotspot-card {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.28);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 12px;
   padding: 1.25rem;
 }
@@ -427,8 +425,8 @@ onMounted(async () => {
 .category-tag {
   display: inline-block;
   padding: 0.2rem 0.6rem;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 6px;
   font-size: 0.78rem;
   color: #ccc;
@@ -479,8 +477,8 @@ onMounted(async () => {
   gap: 12px;
   padding: 1rem;
   margin-bottom: 1rem;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.20);
+  border: 1px solid rgba(255, 255, 255, 0.28);
   border-radius: 10px;
 }
 
@@ -494,7 +492,7 @@ onMounted(async () => {
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.4px;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.80);
 }
 
 .detail-value {
@@ -505,7 +503,7 @@ onMounted(async () => {
 
 .owner-section {
   grid-column: 1 / -1;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 1px solid rgba(255, 255, 255, 0.30);
   padding-top: 12px;
   margin-top: 4px;
 }
@@ -591,12 +589,12 @@ onMounted(async () => {
 }
 
 .btn-details {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.30);
   color: #fff;
 }
 
 .btn-details:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.38);
 }
 
 .btn-approve {
@@ -619,7 +617,7 @@ onMounted(async () => {
 
 .btn-outline {
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.60);
   color: #fff;
 }
 
@@ -662,7 +660,7 @@ onMounted(async () => {
   max-width: 95vw;
   background: rgba(25, 25, 45, 0.98);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.38);
   border-radius: 16px;
   padding: 28px;
   color: #fff;
@@ -675,7 +673,7 @@ onMounted(async () => {
 }
 
 .modal-subtitle {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.94);
   font-size: 0.88rem;
   line-height: 1.5;
   margin-bottom: 18px;
@@ -688,7 +686,7 @@ onMounted(async () => {
 .form-group label {
   display: block;
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.88);
   margin-bottom: 5px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -701,9 +699,9 @@ onMounted(async () => {
 .form-group textarea {
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.38);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.22);
   color: #fff;
   font-size: 0.88rem;
   font-family: inherit;
@@ -720,7 +718,7 @@ onMounted(async () => {
   display: block;
   text-align: right;
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.70);
   margin-top: 4px;
 }
 

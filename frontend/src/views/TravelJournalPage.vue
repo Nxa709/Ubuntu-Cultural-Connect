@@ -5,160 +5,159 @@
       <p>Capture your cultural experiences and memories.</p>
     </div>
 
-    <div class="journal-controls">
-      <div class="search-box">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"/>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
-        <input v-model="searchQuery" placeholder="Search by location, title, or story..." />
+    <div class="journal-content">
+      <div class="journal-controls">
+        <div class="search-box">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input v-model="searchQuery" placeholder="Search by location, title, or story..." />
+        </div>
+        <button @click="showForm = !showForm" class="btn-new">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          {{ showForm ? 'Cancel' : 'New Entry' }}
+        </button>
       </div>
-      <button @click="showForm = !showForm" class="btn-new">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-        </svg>
-        {{ showForm ? 'Cancel' : 'New Entry' }}
-      </button>
-    </div>
 
-    <div v-if="showForm" class="journal-form glass-card">
-      <h2>{{ editingId ? 'Edit Entry' : 'New Journal Entry' }}</h2>
-      <div class="form-group">
-        <label>Title</label>
-        <input v-model="form.title" placeholder="Give your entry a title..." />
-      </div>
-      <div class="form-row">
+      <div v-if="showForm" class="journal-form glass-card">
+        <h2>{{ editingId ? 'Edit Entry' : 'New Journal Entry' }}</h2>
         <div class="form-group">
-          <label>Location</label>
-          <input v-model="form.location" placeholder="Where were you?" />
+          <label>Title</label>
+          <input v-model="form.title" placeholder="Give your entry a title..." />
         </div>
-        <div class="form-group">
-          <label>Visit Date</label>
-          <input v-model="form.visit_date" type="date" />
-        </div>
-      </div>
-      <div class="form-group">
-        <label>Link to Experience (optional)</label>
-        <div class="exp-combobox" ref="comboboxRef">
-          <div class="combobox-input-wrap" @click="openDropdown">
-            <input
-              v-model="expSearch"
-              @focus="openDropdown"
-              @input="openDropdown"
-              @keydown.esc="closeDropdown"
-              placeholder="Search for an experience..."
-            />
-            <span class="combobox-chevron">▾</span>
-            <button v-if="form.experience_id" @click.stop="clearExperience" class="combobox-clear" aria-label="Clear">✕</button>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Location</label>
+            <input v-model="form.location" placeholder="Where were you?" />
           </div>
-
-          <div v-if="expDropdownOpen" class="combobox-dropdown">
-            <div v-if="filteredExperiences.length === 0" class="combobox-empty">
-              No experiences match "{{ expSearch }}"
+          <div class="form-group">
+            <label>Visit Date</label>
+            <input v-model="form.visit_date" type="date" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Link to Experience (optional)</label>
+          <div class="exp-combobox" ref="comboboxRef">
+            <div class="combobox-input-wrap" @click="openDropdown">
+              <input
+                v-model="expSearch"
+                @focus="openDropdown"
+                @input="openDropdown"
+                @keydown.esc="closeDropdown"
+                placeholder="Search for an experience..."
+              />
+              <span class="combobox-chevron">▾</span>
+              <button v-if="form.experience_id" @click.stop="clearExperience" class="combobox-clear" aria-label="Clear">✕</button>
             </div>
-            <div
-              v-for="exp in filteredExperiences"
-              :key="exp.id"
-              class="combobox-option"
-              :class="{ selected: form.experience_id === exp.id }"
-              @click="selectExperience(exp)"
-            >
-              <div class="option-title">{{ exp.title }}</div>
-              <div class="option-meta">
-                <span v-if="exp.location">{{ exp.location }}</span>
-                <span class="option-cat" v-if="exp.category">{{ exp.category }}</span>
+
+            <div v-if="expDropdownOpen" class="combobox-dropdown">
+              <div v-if="filteredExperiences.length === 0" class="combobox-empty">
+                No experiences match "{{ expSearch }}"
+              </div>
+              <div
+                v-for="exp in filteredExperiences"
+                :key="exp.id"
+                class="combobox-option"
+                :class="{ selected: form.experience_id === exp.id }"
+                @click="selectExperience(exp)"
+              >
+                <div class="option-title">{{ exp.title }}</div>
+                <div class="option-meta">
+                  <span v-if="exp.location">{{ exp.location }}</span>
+                  <span class="option-cat" v-if="exp.category">{{ exp.category }}</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="form-group">
-        <label>Mood</label>
-        <div class="mood-picker">
-          <button
-            v-for="m in moods"
-            :key="m.value"
-            :class="['mood-btn', { active: form.mood === m.value }]"
-            @click="form.mood = form.mood === m.value ? null : m.value"
-            type="button"
-          >
-            {{ m.icon }} {{ m.label }}
+        <div class="form-group">
+          <label>Mood</label>
+          <div class="mood-picker">
+            <button
+              v-for="m in moods"
+              :key="m.value"
+              :class="['mood-btn', { active: form.mood === m.value }]"
+              @click="form.mood = form.mood === m.value ? null : m.value"
+              type="button"
+            >
+              {{ m.icon }} {{ m.label }}
+            </button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Your Story</label>
+          <textarea v-model="form.content" rows="6" placeholder="Write about your experience..."></textarea>
+        </div>
+        <div class="form-actions">
+          <button @click="showForm = false" class="btn-cancel">Cancel</button>
+          <button @click="handleSubmit" class="btn-submit" :disabled="!form.title || !form.content">
+            {{ editingId ? 'Update Entry' : 'Save Entry' }}
           </button>
         </div>
       </div>
-      <div class="form-group">
-        <label>Your Story</label>
-        <textarea v-model="form.content" rows="6" placeholder="Write about your experience..."></textarea>
+
+      <LoadingSpinner v-if="loading" message="Loading journal..." />
+
+      <div v-else-if="store.myJournals.length === 0" class="empty-state">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+        </svg>
+        <p>No journal entries yet. Start writing!</p>
       </div>
-      <div class="form-actions">
-        <button @click="showForm = false" class="btn-cancel">Cancel</button>
-        <button @click="handleSubmit" class="btn-submit" :disabled="!form.title || !form.content">
-          {{ editingId ? 'Update Entry' : 'Save Entry' }}
-        </button>
+
+      <div v-else-if="filteredJournals.length === 0" class="empty-state">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <p>No entries match "{{ searchQuery }}".</p>
       </div>
-    </div>
 
-    <div v-if="loading" class="loading-state">
-      <div class="spinner"></div>
-      <p>Loading journal...</p>
-    </div>
-
-    <div v-else-if="store.myJournals.length === 0" class="empty-state">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-        <polyline points="14 2 14 8 20 8"/>
-        <line x1="16" y1="13" x2="8" y2="13"/>
-        <line x1="16" y1="17" x2="8" y2="17"/>
-      </svg>
-      <p>No journal entries yet. Start writing!</p>
-    </div>
-
-    <div v-else-if="filteredJournals.length === 0" class="empty-state">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <circle cx="11" cy="11" r="8"/>
-        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-      </svg>
-      <p>No entries match "{{ searchQuery }}".</p>
-    </div>
-
-    <div v-else class="journal-list">
-      <div v-for="entry in filteredJournals" :key="entry.id" class="journal-card">
-        <div class="journal-header">
-          <div class="journal-title-row">
-            <h3>{{ entry.title }}</h3>
-            <span v-if="entry.mood" class="mood-tag">{{ getMoodIcon(entry.mood) }}</span>
+      <div v-else class="journal-list">
+        <div v-for="entry in filteredJournals" :key="entry.id" class="journal-card">
+          <div class="journal-header">
+            <div class="journal-title-row">
+              <h3>{{ entry.title }}</h3>
+              <span v-if="entry.mood" class="mood-tag">{{ getMoodIcon(entry.mood) }}</span>
+            </div>
+            <div class="journal-meta">
+              <span v-if="entry.location">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                  <circle cx="12" cy="10" r="3"/>
+                </svg>
+                {{ entry.location }}
+              </span>
+              <span v-if="entry.visit_date">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/>
+                  <line x1="8" y1="2" x2="8" y2="6"/>
+                </svg>
+                {{ formatDate(entry.visit_date) }}
+              </span>
+              <span v-if="entry.experience_title" class="exp-link">
+                Linked: {{ entry.experience_title }}
+              </span>
+            </div>
           </div>
-          <div class="journal-meta">
-            <span v-if="entry.location">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                <circle cx="12" cy="10" r="3"/>
-              </svg>
-              {{ entry.location }}
-            </span>
-            <span v-if="entry.visit_date">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                <line x1="16" y1="2" x2="16" y2="6"/>
-                <line x1="8" y1="2" x2="8" y2="6"/>
-              </svg>
-              {{ formatDate(entry.visit_date) }}
-            </span>
-            <span v-if="entry.experience_title" class="exp-link">
-              Linked: {{ entry.experience_title }}
-            </span>
+
+          <div class="journal-body">
+            <p>{{ entry.content }}</p>
           </div>
-        </div>
 
-        <div class="journal-body">
-          <p>{{ entry.content }}</p>
-        </div>
-
-        <div class="journal-footer">
-          <span class="journal-date">Written {{ formatDateTime(entry.created_at) }}</span>
-          <div class="journal-actions">
-            <button @click="startEdit(entry)" class="btn-sm btn-edit">Edit</button>
-            <button @click="handleDelete(entry.id)" class="btn-sm btn-delete">Delete</button>
+          <div class="journal-footer">
+            <span class="journal-date">Written {{ formatDateTime(entry.created_at) }}</span>
+            <div class="journal-actions">
+              <button @click="startEdit(entry)" class="btn-sm btn-edit">Edit</button>
+              <button @click="handleDelete(entry.id)" class="btn-sm btn-delete">Delete</button>
+            </div>
           </div>
         </div>
       </div>
@@ -321,33 +320,30 @@ onMounted(async () => {
 
 <style scoped>
 .journal-page {
-  background: url('/img/cultures/woman.jpeg') no-repeat center center;
-  background-size: cover;
-  background-attachment: fixed;
+  background: #ffffff;
   position: relative;
   min-height: 100vh;
-  padding: 5rem 1rem 2rem;
-}
-
-.journal-page::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.55);
-  z-index: 0;
-}
-
-.journal-page > * {
-  position: relative;
-  z-index: 1;
-  max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .hero-header {
+  background: url('/img/cultures/woman.jpeg') no-repeat center center;
+  background-size: cover;
+  position: relative;
   text-align: center;
-  padding: 40px 20px 32px;
+  padding: 120px 20px 60px;
+}
+
+.hero-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 0;
+}
+
+.hero-header > * {
+  position: relative;
+  z-index: 1;
 }
 
 .hero-header h1 {
@@ -368,10 +364,16 @@ onMounted(async () => {
 
 .hero-header p {
   font-size: 1.05rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.94);
   max-width: 520px;
   margin: 0 auto;
   line-height: 1.6;
+}
+
+.journal-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 60px 20px;
 }
 
 .journal-controls {
@@ -390,10 +392,16 @@ onMounted(async () => {
   flex: 1;
   min-width: 220px;
   padding: 0.6rem 0.9rem;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 50px;
+  background: #ffffff;
+  color: #666;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+.search-box svg {
+  color: var(--accent);
+  flex-shrink: 0;
 }
 
 .search-box input {
@@ -401,13 +409,13 @@ onMounted(async () => {
   background: none;
   border: none;
   outline: none;
-  color: #fff;
+  color: #333;
   font-size: 0.95rem;
   font-family: inherit;
 }
 
 .search-box input::placeholder {
-  color: rgba(255, 255, 255, 0.45);
+  color: #999;
 }
 
 .btn-new {
@@ -418,7 +426,7 @@ onMounted(async () => {
   background: var(--accent);
   color: #1a1a1a;
   border: none;
-  border-radius: 8px;
+  border-radius: 50px;
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
@@ -426,24 +434,23 @@ onMounted(async () => {
 }
 
 .btn-new:hover {
-  background: #fff;
+  background: var(--accent-hover);
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
 }
 
 .journal-form h2 {
   font-family: 'Poppins', sans-serif;
   font-size: 1.3rem;
   font-weight: 700;
-  color: #fff;
+  color: #1a1a1a;
   margin: 0 0 1.25rem;
 }
 
@@ -455,7 +462,7 @@ onMounted(async () => {
   display: block;
   font-size: 0.85rem;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.7);
+  color: #555;
   margin-bottom: 0.35rem;
 }
 
@@ -464,10 +471,10 @@ onMounted(async () => {
 .form-group textarea {
   width: 100%;
   padding: 0.6rem 0.9rem;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
+  background: #fafafa;
+  color: #333;
   font-size: 0.95rem;
   font-family: inherit;
   outline: none;
@@ -482,8 +489,8 @@ onMounted(async () => {
 }
 
 .form-group select option {
-  background: #2a2a2a;
-  color: #fff;
+  background: #fff;
+  color: #333;
 }
 
 .form-group textarea {
@@ -504,10 +511,10 @@ onMounted(async () => {
 .combobox-input-wrap input {
   width: 100%;
   padding: 0.6rem 2.2rem 0.6rem 0.9rem;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
+  background: #fafafa;
+  color: #333;
   font-size: 0.95rem;
   font-family: inherit;
   outline: none;
@@ -522,7 +529,7 @@ onMounted(async () => {
 .combobox-chevron {
   position: absolute;
   right: 0.9rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: #888;
   pointer-events: none;
   font-size: 0.85rem;
 }
@@ -532,7 +539,7 @@ onMounted(async () => {
   right: 2rem;
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.5);
+  color: #888;
   cursor: pointer;
   font-size: 0.85rem;
   padding: 2px;
@@ -549,17 +556,17 @@ onMounted(async () => {
   right: 0;
   max-height: 260px;
   overflow-y: auto;
-  background: #22222e;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 10px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   z-index: 50;
 }
 
 .combobox-option {
   padding: 0.65rem 0.9rem;
   cursor: pointer;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid #eee;
   transition: background 0.15s;
 }
 
@@ -568,15 +575,15 @@ onMounted(async () => {
 }
 
 .combobox-option:hover {
-  background: rgba(255, 182, 18, 0.12);
+  background: rgba(255, 182, 18, 0.1);
 }
 
 .combobox-option.selected {
-  background: rgba(255, 182, 18, 0.2);
+  background: rgba(255, 182, 18, 0.15);
 }
 
 .option-title {
-  color: #fff;
+  color: #333;
   font-size: 0.9rem;
   font-weight: 500;
 }
@@ -587,7 +594,7 @@ onMounted(async () => {
   align-items: center;
   margin-top: 2px;
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: #888;
 }
 
 .option-cat {
@@ -600,7 +607,7 @@ onMounted(async () => {
 .combobox-empty {
   padding: 1rem;
   text-align: center;
-  color: rgba(255, 255, 255, 0.5);
+  color: #888;
   font-size: 0.85rem;
 }
 
@@ -613,7 +620,7 @@ onMounted(async () => {
 }
 
 .combobox-dropdown::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.2);
   border-radius: 4px;
 }
 
@@ -631,10 +638,10 @@ onMounted(async () => {
 
 .mood-btn {
   padding: 0.4rem 0.8rem;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.7);
+  background: #fafafa;
+  color: #555;
   font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.2s;
@@ -645,7 +652,7 @@ onMounted(async () => {
 }
 
 .mood-btn.active {
-  background: rgba(255, 182, 18, 0.2);
+  background: rgba(255, 182, 18, 0.15);
   border-color: var(--accent);
   color: var(--accent);
 }
@@ -659,12 +666,17 @@ onMounted(async () => {
 
 .btn-cancel {
   padding: 0.5rem 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.7);
+  background: #fafafa;
+  color: #555;
   font-size: 0.9rem;
   cursor: pointer;
+}
+
+.btn-cancel:hover {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .btn-submit {
@@ -678,6 +690,10 @@ onMounted(async () => {
   cursor: pointer;
 }
 
+.btn-submit:hover {
+  background: var(--accent-hover);
+}
+
 .btn-submit:disabled {
   opacity: 0.4;
   cursor: not-allowed;
@@ -689,13 +705,17 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   padding: 4rem 2rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: #888;
+}
+
+.empty-state svg {
+  color: var(--accent);
 }
 
 .spinner {
   width: 36px;
   height: 36px;
-  border: 3px solid rgba(255, 255, 255, 0.18);
+  border: 3px solid rgba(0, 0, 0, 0.1);
   border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -711,12 +731,17 @@ onMounted(async () => {
 }
 
 .journal-card {
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
   padding: 1.25rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.journal-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
 }
 
 .journal-header {
@@ -732,7 +757,7 @@ onMounted(async () => {
 
 .journal-title-row h3 {
   margin: 0;
-  color: #fff;
+  color: #1a1a1a;
   font-family: 'Poppins', sans-serif;
   font-size: 1.1rem;
 }
@@ -751,7 +776,7 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 4px;
-  color: rgba(255, 255, 255, 0.6);
+  color: #888;
   font-size: 0.85rem;
 }
 
@@ -761,7 +786,7 @@ onMounted(async () => {
 }
 
 .journal-body p {
-  color: rgba(255, 255, 255, 0.85);
+  color: #333;
   line-height: 1.7;
   margin: 0 0 1rem;
   white-space: pre-wrap;
@@ -772,11 +797,11 @@ onMounted(async () => {
   justify-content: space-between;
   align-items: center;
   padding-top: 0.75rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid #eaeaea;
 }
 
 .journal-date {
-  color: rgba(255, 255, 255, 0.4);
+  color: #888;
   font-size: 0.8rem;
 }
 
@@ -795,12 +820,41 @@ onMounted(async () => {
 }
 
 .btn-edit {
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff;
+  background: rgba(255, 182, 18, 0.15);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.btn-edit:hover {
+  background: var(--accent);
+  color: #1a1a1a;
 }
 
 .btn-delete {
-  background: rgba(255, 77, 77, 0.2);
-  color: #ff6b6b;
+  background: rgba(255, 77, 77, 0.12);
+  color: #ff4d4f;
+  font-weight: 600;
+}
+
+.btn-delete:hover {
+  background: #ff4d4f;
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  .hero-header h1 {
+    font-size: 2rem;
+  }
+  .hero-header {
+    padding: 100px 20px 40px;
+  }
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  .journal-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
 }
 </style>

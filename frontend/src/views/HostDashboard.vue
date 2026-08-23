@@ -11,10 +11,18 @@
       </router-link>
     </div>
 
-    <div v-if="loading" class="loading-state">
-      <div class="spinner"></div>
-      <p>Loading your hotspots...</p>
+    <div class="owner-overview" v-if="!loading">
+      <div class="ov-card">
+        <span class="ov-value">{{ registeredCount }}</span>
+        <span class="ov-label">Registered Hotspots</span>
+      </div>
+      <div class="ov-card">
+        <span class="ov-value">{{ activeCount }}</span>
+        <span class="ov-label">Active Hotspots</span>
+      </div>
     </div>
+
+    <LoadingSpinner v-if="loading" message="Loading your hotspots..." />
 
     <template v-else>
       <div class="filter-bar">
@@ -74,7 +82,7 @@
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
                 </svg>
-                <span>R{{ exp.price }}</span>
+                <span>{{ formatPrice(exp.price) }}</span>
               </div>
               <div class="hc-stat">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -136,6 +144,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useExperienceStore } from '../stores/experience'
+import { formatPrice } from '../utils/format'
 
 const store = useExperienceStore()
 const loading = ref(true)
@@ -143,6 +152,9 @@ const toggling = ref(false)
 const activeFilter = ref('all')
 const searchQuery = ref('')
 const openReviews = ref({})
+
+const registeredCount = computed(() => store.myExperiences.length)
+const activeCount = computed(() => store.myExperiences.filter(e => e.is_active && e.is_approved).length)
 
 function toggleReviews(id) {
   openReviews.value[id] = !openReviews.value[id]
@@ -237,6 +249,7 @@ onMounted(async () => {
 .host-page {
   background: url('/img/cultures/woman.jpeg') no-repeat center center;
   background-size: cover;
+  background-attachment: fixed;
   position: relative;
   min-height: 100vh;
   padding: 5rem 1rem 2rem;
@@ -244,9 +257,9 @@ onMounted(async () => {
 
 .host-page::before {
   content: "";
-  position: absolute;
+  position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.15);
   z-index: 0;
 }
 
@@ -281,7 +294,7 @@ onMounted(async () => {
 
 .hero-header p {
   font-size: 1.05rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.94);
   max-width: 520px;
   margin: 0 auto 28px;
   line-height: 1.6;
@@ -289,6 +302,57 @@ onMounted(async () => {
 
 .hero-btn {
   margin: 0 auto;
+}
+
+.owner-overview {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.ov-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  text-align: center;
+  padding: 22px 16px;
+  background: rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 14px;
+  min-width: 0;
+}
+
+.ov-value {
+  font-family: 'Poppins', sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1.1;
+}
+
+.ov-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+@media (max-width: 700px) {
+  .owner-overview {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 420px) {
+  .owner-overview {
+    grid-template-columns: 1fr;
+  }
 }
 
 .btn {
@@ -318,9 +382,9 @@ onMounted(async () => {
 
 .filter-btn {
   padding: 0.4rem 0.9rem;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.28);
   backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
   color: #666;
   cursor: pointer;
@@ -329,7 +393,7 @@ onMounted(async () => {
 }
 
 .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
-.filter-btn.active { background: rgba(255, 255, 255, 0.3); color: #fff; border-color: rgba(255, 255, 255, 0.3); }
+.filter-btn.active { background: rgba(255, 255, 255, 0.40); color: #fff; border-color: rgba(255, 255, 255, 0.60); }
 
 .count {
   margin-left: 4px;
@@ -348,18 +412,18 @@ onMounted(async () => {
   left: 14px;
   top: 50%;
   transform: translateY(-50%);
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.70);
   pointer-events: none;
 }
 
 .search-input {
   width: 100%;
   padding: 10px 14px 10px 42px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.38);
   border-radius: 10px;
   font-size: 0.88rem;
   font-family: inherit;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.26);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   color: #fff;
@@ -369,7 +433,7 @@ onMounted(async () => {
 }
 
 .search-input::placeholder {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.70);
 }
 
 .search-input:focus {
@@ -387,7 +451,7 @@ onMounted(async () => {
 
 .spinner {
   width: 36px; height: 36px;
-  border: 3px solid rgba(255, 255, 255, 0.18);
+  border: 3px solid rgba(255, 255, 255, 0.45);
   border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -409,10 +473,10 @@ onMounted(async () => {
 }
 
 .hotspot-card {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.28);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 16px;
   overflow: hidden;
   transition: transform 0.2s, box-shadow 0.2s;
@@ -456,7 +520,7 @@ onMounted(async () => {
 
 .hc-location {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(255, 255, 255, 0.95);
   text-shadow: 0 1px 4px rgba(0,0,0,0.5);
 }
 
@@ -506,7 +570,7 @@ onMounted(async () => {
   align-items: center;
   gap: 6px;
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.8);
+  color: #1f2937;
 }
 
 .hc-stat svg {
@@ -573,7 +637,7 @@ onMounted(async () => {
 .hc-btn-delete:hover { background: #37474F; }
 
 .hc-reviews {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(0, 0, 0, 0.10);
   padding: 12px 16px;
 }
 
@@ -583,12 +647,12 @@ onMounted(async () => {
   align-items: center;
   font-size: 0.8rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.6);
+  color: #1f2937;
   cursor: pointer;
   user-select: none;
 }
 
-.hc-reviews-header:hover { color: #fff; }
+.hc-reviews-header:hover { color: var(--accent); }
 
 .hc-reviews-arrow {
   font-size: 0.6rem;
@@ -605,7 +669,7 @@ onMounted(async () => {
 }
 
 .hc-review-item {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.04);
   border-radius: 8px;
   padding: 8px 10px;
 }
@@ -620,7 +684,7 @@ onMounted(async () => {
 .hc-review-author {
   font-size: 0.78rem;
   font-weight: 600;
-  color: #fff;
+  color: #1f2937;
 }
 
 .hc-review-stars {
@@ -630,7 +694,7 @@ onMounted(async () => {
 
 .hc-review-stars .star {
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.2);
+  color: #d1d5db;
 }
 
 .hc-review-stars .star.filled {
@@ -639,7 +703,7 @@ onMounted(async () => {
 
 .hc-review-text {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: #4b5563;
   line-height: 1.4;
   margin: 0;
 }
