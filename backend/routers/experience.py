@@ -176,7 +176,7 @@ def get_home_data(
             Rating.experience_id, func.avg(Rating.score), func.count(Rating.id)
         ).filter(Rating.experience_id.in_(ids), Rating.is_approved == True).group_by(Rating.experience_id).all()
         rating_agg = {r[0]: (r[1], r[2]) for r in rating_rows}
-        itin_rows = db.query(ItineraryAdd.experience_id, func.count(ItineraryAdd.id)).filter(ItineraryAdd.experience_id.in_(ids)).group_by(TripDay.experience_id).all()
+        itin_rows = db.query(ItineraryAdd.experience_id, func.count(ItineraryAdd.id)).filter(ItineraryAdd.experience_id.in_(ids)).group_by(ItineraryAdd.experience_id).all()
         itinerary_counts = dict(itin_rows)
     else:
         rating_agg, itinerary_counts = {}, {}
@@ -266,7 +266,7 @@ def get_recommended(
             Rating.experience_id, func.avg(Rating.score), func.count(Rating.id)
         ).filter(Rating.experience_id.in_(ids), Rating.is_approved == True).group_by(Rating.experience_id).all()
         rating_agg = {r[0]: (r[1], r[2]) for r in rating_rows}
-        itin_rows = db.query(ItineraryAdd.experience_id, func.count(ItineraryAdd.id)).filter(ItineraryAdd.experience_id.in_(ids)).group_by(TripDay.experience_id).all()
+        itin_rows = db.query(ItineraryAdd.experience_id, func.count(ItineraryAdd.id)).filter(ItineraryAdd.experience_id.in_(ids)).group_by(ItineraryAdd.experience_id).all()
         itinerary_counts = dict(itin_rows)
     else:
         rating_agg, itinerary_counts = {}, {}
@@ -339,32 +339,68 @@ def list_experiences(
     province: str = None,
     db: Session = Depends(get_db),
 ):
-    q = db.query(Experience).filter(Experience.is_active == True, Experience.is_approved == True)
+    rating_subq = (
+        db.query(
+            Rating.experience_id.label("eid"),
+            func.avg(Rating.score).label("avg_rating"),
+            func.count(Rating.id).label("rating_count"),
+        )
+        .filter(Rating.is_approved == True)
+        .group_by(Rating.experience_id)
+        .subquery()
+    )
+    itin_subq = (
+        db.query(
+            ItineraryAdd.experience_id.label("eid"),
+            func.count(ItineraryAdd.id).label("itin_count"),
+        )
+        .group_by(ItineraryAdd.experience_id)
+        .subquery()
+    )
+
+    q = db.query(
+        Experience,
+        rating_subq.c.avg_rating,
+        rating_subq.c.rating_count,
+        itin_subq.c.itin_count,
+    ).outerjoin(rating_subq, rating_subq.c.eid == Experience.id) \
+     .outerjoin(itin_subq, itin_subq.c.eid == Experience.id)
     if category:
         q = q.filter(Experience.category == category)
     if province:
         q = q.filter(Experience.province == province)
     if search:
         q = q.filter(Experience.title.ilike(f"%{search}%"))
-    exps = q.all()
-    if not exps:
-        return []
+    q = q.filter(Experience.is_active == True, Experience.is_approved == True)
+    rows = q.all()
 
-    ids = [e.id for e in exps]
-
-    rating_rows = db.query(
-        Rating.experience_id, func.avg(Rating.score), func.count(Rating.id)
-    ).filter(
-        Rating.experience_id.in_(ids), Rating.is_approved == True
-    ).group_by(Rating.experience_id).all()
-    rating_agg = {r[0]: (r[1], r[2]) for r in rating_rows}
-
-    itin_rows = db.query(
-        ItineraryAdd.experience_id, func.count(ItineraryAdd.id)
-    ).filter(ItineraryAdd.experience_id.in_(ids)).group_by(TripDay.experience_id).all()
-    itinerary_counts = dict(itin_rows)
-
-    return [_exp_to_response(e, rating_agg=rating_agg, itinerary_counts=itinerary_counts) for e in exps]
+    result = []
+    for exp, avg_rating, rating_count, itin_count in rows:
+        result.append(
+            ExperienceResponse(
+                id=exp.id,
+                title=exp.title,
+                description=exp.description,
+                category=exp.category.value if hasattr(exp.category, "value") else exp.category,
+                location=exp.location,
+                province=exp.province,
+                price=exp.price,
+                duration_hours=exp.duration_hours,
+                max_participants=exp.max_participants,
+                image_url=exp.image_url,
+                owner_id=exp.owner_id,
+                is_active=exp.is_active,
+                is_approved=exp.is_approved,
+                rejection_reason=exp.rejection_reason,
+                rejected_at=exp.rejected_at,
+                created_at=exp.created_at,
+                avg_rating=round(float(avg_rating), 1) if avg_rating else None,
+                rating_count=rating_count or 0,
+                owner_name=exp.owner.full_name if exp.owner else None,
+                itinerary_adds=itin_count or 0,
+            )
+        )
+    return result
 
 
 # ── Owner: My Experiences (MUST be before /{exp_id}) ─────
@@ -386,7 +422,7 @@ def list_my_experiences(
 
     itin_rows = db.query(
         ItineraryAdd.experience_id, func.count(ItineraryAdd.id)
-    ).filter(ItineraryAdd.experience_id.in_(ids)).group_by(TripDay.experience_id).all()
+    ).filter(ItineraryAdd.experience_id.in_(ids)).group_by(ItineraryAdd.experience_id).all()
     itinerary_counts = dict(itin_rows)
     return [_exp_to_response(e, rating_agg=rating_agg, itinerary_counts=itinerary_counts) for e in exps]
 
@@ -417,7 +453,7 @@ def get_owner_stats(
     if my_exp_ids:
         itin_rows = db.query(
             ItineraryAdd.experience_id, func.count(ItineraryAdd.id)
-        ).filter(ItineraryAdd.experience_id.in_(my_exp_ids)).group_by(TripDay.experience_id).all()
+        ).filter(ItineraryAdd.experience_id.in_(my_exp_ids)).group_by(ItineraryAdd.experience_id).all()
         itinerary_counts = {r[0]: r[1] for r in itin_rows}
 
     most_visited = None
@@ -845,7 +881,7 @@ def generate_itinerary(
         itinerary_counts = dict(
             db.query(ItineraryAdd.experience_id, func.count(ItineraryAdd.id))
             .filter(ItineraryAdd.experience_id.in_(ids))
-            .group_by(TripDay.experience_id).all()
+            .group_by(ItineraryAdd.experience_id).all()
         )
 
     scored = []
