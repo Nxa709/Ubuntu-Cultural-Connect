@@ -222,8 +222,8 @@ onMounted(async () => {
   height: 20px;
   padding: 0 6px;
   border-radius: 10px;
-  background: var(--accent);
-  color: #fff;
+  background: var(--accent-fill);
+  color: #1a1a1a;
   font-size: 0.75rem;
   margin-left: 6px;
 }
@@ -287,7 +287,7 @@ onMounted(async () => {
 }
 
 .separator {
-  color: rgba(255, 255, 255, 0.80);
+  color: var(--text-secondary);
 }
 
 .exp-title {
@@ -296,7 +296,7 @@ onMounted(async () => {
 }
 
 .comment-date {
-  color: rgba(255, 255, 255, 0.80);
+  color: var(--text-muted);
   font-size: 0.85rem;
   white-space: nowrap;
 }
@@ -306,7 +306,7 @@ onMounted(async () => {
 }
 
 .star {
-  color: rgba(255, 255, 255, 0.55);
+  color: #d1d5db;
   font-size: 1.1rem;
 }
 
@@ -315,7 +315,7 @@ onMounted(async () => {
 }
 
 .comment-body p {
-  color: #fff;
+  color: var(--text-color);
   line-height: 1.6;
   margin: 0 0 1rem;
 }

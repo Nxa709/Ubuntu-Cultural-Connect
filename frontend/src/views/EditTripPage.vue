@@ -527,12 +527,12 @@ function formatDate(d) {
 }
 
 .btn-primary {
-  background: var(--accent);
+  background: var(--accent-fill);
   color: #1a1a1a;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #fff;
+  background: var(--accent-fill-hover);
 }
 
 .btn:disabled {
@@ -541,9 +541,9 @@ function formatDate(d) {
 }
 
 .btn-outline {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.60);
-  color: #fff;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  color: var(--text-color);
 }
 
 .btn-outline:hover {
@@ -556,9 +556,9 @@ function formatDate(d) {
   align-items: center;
   gap: 6px;
   padding: 8px 16px;
-  background: rgba(255, 182, 18, 0.2);
+  background: rgba(232, 162, 0, 0.2);
   color: var(--accent);
-  border: 1px solid rgba(255, 182, 18, 0.3);
+  border: 1px solid rgba(232, 162, 0, 0.3);
   border-radius: 8px;
   font-size: 0.85rem;
   font-weight: 600;
@@ -567,7 +567,7 @@ function formatDate(d) {
 }
 
 .btn-add:hover {
-  background: rgba(255, 182, 18, 0.3);
+  background: rgba(232, 162, 0, 0.3);
 }
 
 .card-header-row {
@@ -603,7 +603,7 @@ function formatDate(d) {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 182, 18, 0.2);
+  background: rgba(232, 162, 0, 0.2);
   color: var(--accent);
   font-size: 0.82rem;
   font-weight: 700;
@@ -641,15 +641,15 @@ function formatDate(d) {
   justify-content: center;
   border: none;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.26);
-  color: rgba(255, 255, 255, 0.88);
+  background: var(--surface-secondary);
+  color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .btn-icon:hover {
-  background: rgba(255, 255, 255, 0.38);
-  color: #fff;
+  background: var(--accent-light);
+  color: var(--accent-text);
 }
 
 .btn-danger-icon:hover {
@@ -718,7 +718,7 @@ function formatDate(d) {
 }
 
 .modal-card h3 {
-  color: #fff;
+  color: var(--heading-color);
   font-size: 1.2rem;
   margin-bottom: 20px;
 }

@@ -138,9 +138,9 @@ async function handleSubmit() {
 }
 
 .alert-error {
-  background: rgba(255, 77, 77, 0.2);
-  color: #ff6b6b;
-  border: 1px solid rgba(255, 77, 77, 0.3);
+  background: var(--error-light);
+  color: var(--error);
+  border: 1px solid rgba(220, 38, 38, 0.3);
 }
 
 .password-wrapper {
@@ -158,7 +158,7 @@ async function handleSubmit() {
   right: 8px;
   background: none;
   border: none;
-  color: #555;
+  color: var(--text-secondary);
   cursor: pointer;
   padding: 6px;
   display: flex;

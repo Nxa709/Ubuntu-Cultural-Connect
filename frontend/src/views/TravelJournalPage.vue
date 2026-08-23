@@ -320,7 +320,7 @@ onMounted(async () => {
 
 <style scoped>
 .journal-page {
-  background: #ffffff;
+  background: var(--glass-bg);
   position: relative;
   min-height: 100vh;
 }
@@ -394,8 +394,8 @@ onMounted(async () => {
   padding: 0.6rem 0.9rem;
   border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 50px;
-  background: #ffffff;
-  color: #666;
+  background: var(--glass-bg);
+  color: var(--text-secondary);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
 }
 
@@ -415,7 +415,7 @@ onMounted(async () => {
 }
 
 .search-box input::placeholder {
-  color: #999;
+  color: var(--text-muted);
 }
 
 .btn-new {
@@ -423,7 +423,7 @@ onMounted(async () => {
   align-items: center;
   gap: 8px;
   padding: 0.6rem 1.25rem;
-  background: var(--accent);
+  background: var(--accent-fill);
   color: #1a1a1a;
   border: none;
   border-radius: 50px;
@@ -434,11 +434,11 @@ onMounted(async () => {
 }
 
 .btn-new:hover {
-  background: var(--accent-hover);
+  background: var(--accent-fill-hover);
 }
 
 .glass-card {
-  background: #ffffff;
+  background: var(--glass-bg);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 16px;
   padding: 1.5rem;
@@ -462,7 +462,7 @@ onMounted(async () => {
   display: block;
   font-size: 0.85rem;
   font-weight: 500;
-  color: #555;
+  color: var(--text-secondary);
   margin-bottom: 0.35rem;
 }
 
@@ -471,10 +471,10 @@ onMounted(async () => {
 .form-group textarea {
   width: 100%;
   padding: 0.6rem 0.9rem;
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  border: 1px solid var(--border-strong);
   border-radius: 8px;
-  background: #fafafa;
-  color: #333;
+  background: var(--glass-bg);
+  color: var(--text-color);
   font-size: 0.95rem;
   font-family: inherit;
   outline: none;
@@ -489,8 +489,8 @@ onMounted(async () => {
 }
 
 .form-group select option {
-  background: #fff;
-  color: #333;
+  background: var(--glass-bg);
+  color: var(--text-color);
 }
 
 .form-group textarea {
@@ -511,10 +511,10 @@ onMounted(async () => {
 .combobox-input-wrap input {
   width: 100%;
   padding: 0.6rem 2.2rem 0.6rem 0.9rem;
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  border: 1px solid var(--border-strong);
   border-radius: 8px;
-  background: #fafafa;
-  color: #333;
+  background: var(--glass-bg);
+  color: var(--text-color);
   font-size: 0.95rem;
   font-family: inherit;
   outline: none;
@@ -529,7 +529,7 @@ onMounted(async () => {
 .combobox-chevron {
   position: absolute;
   right: 0.9rem;
-  color: #888;
+  color: var(--text-secondary);
   pointer-events: none;
   font-size: 0.85rem;
 }
@@ -539,7 +539,7 @@ onMounted(async () => {
   right: 2rem;
   background: none;
   border: none;
-  color: #888;
+  color: var(--text-secondary);
   cursor: pointer;
   font-size: 0.85rem;
   padding: 2px;
@@ -556,7 +556,7 @@ onMounted(async () => {
   right: 0;
   max-height: 260px;
   overflow-y: auto;
-  background: #ffffff;
+  background: var(--glass-bg);
   border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 10px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
@@ -575,11 +575,11 @@ onMounted(async () => {
 }
 
 .combobox-option:hover {
-  background: rgba(255, 182, 18, 0.1);
+  background: rgba(232, 162, 0, 0.1);
 }
 
 .combobox-option.selected {
-  background: rgba(255, 182, 18, 0.15);
+  background: rgba(232, 162, 0, 0.15);
 }
 
 .option-title {
@@ -594,11 +594,11 @@ onMounted(async () => {
   align-items: center;
   margin-top: 2px;
   font-size: 0.78rem;
-  color: #888;
+  color: var(--text-secondary);
 }
 
 .option-cat {
-  background: rgba(255, 182, 18, 0.15);
+  background: rgba(232, 162, 0, 0.15);
   color: var(--accent);
   padding: 1px 8px;
   border-radius: 10px;
@@ -607,7 +607,7 @@ onMounted(async () => {
 .combobox-empty {
   padding: 1rem;
   text-align: center;
-  color: #888;
+  color: var(--text-secondary);
   font-size: 0.85rem;
 }
 
@@ -641,7 +641,7 @@ onMounted(async () => {
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 20px;
   background: #fafafa;
-  color: #555;
+  color: var(--text-secondary);
   font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.2s;
@@ -652,7 +652,7 @@ onMounted(async () => {
 }
 
 .mood-btn.active {
-  background: rgba(255, 182, 18, 0.15);
+  background: rgba(232, 162, 0, 0.15);
   border-color: var(--accent);
   color: var(--accent);
 }
@@ -669,7 +669,7 @@ onMounted(async () => {
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 8px;
   background: #fafafa;
-  color: #555;
+  color: var(--text-secondary);
   font-size: 0.9rem;
   cursor: pointer;
 }
@@ -683,7 +683,7 @@ onMounted(async () => {
   padding: 0.5rem 1.25rem;
   border: none;
   border-radius: 8px;
-  background: var(--accent);
+  background: var(--accent-fill);
   color: #1a1a1a;
   font-size: 0.9rem;
   font-weight: 600;
@@ -691,7 +691,7 @@ onMounted(async () => {
 }
 
 .btn-submit:hover {
-  background: var(--accent-hover);
+  background: var(--accent-fill-hover);
 }
 
 .btn-submit:disabled {
@@ -705,7 +705,7 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   padding: 4rem 2rem;
-  color: #888;
+  color: var(--text-secondary);
 }
 
 .empty-state svg {
@@ -731,7 +731,7 @@ onMounted(async () => {
 }
 
 .journal-card {
-  background: #ffffff;
+  background: var(--glass-bg);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 16px;
   padding: 1.25rem;
@@ -776,7 +776,7 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 4px;
-  color: #888;
+  color: var(--text-secondary);
   font-size: 0.85rem;
 }
 
@@ -801,7 +801,7 @@ onMounted(async () => {
 }
 
 .journal-date {
-  color: #888;
+  color: var(--text-secondary);
   font-size: 0.8rem;
 }
 
@@ -820,13 +820,13 @@ onMounted(async () => {
 }
 
 .btn-edit {
-  background: rgba(255, 182, 18, 0.15);
+  background: rgba(232, 162, 0, 0.15);
   color: var(--accent);
   font-weight: 600;
 }
 
 .btn-edit:hover {
-  background: var(--accent);
+  background: var(--accent-fill);
   color: #1a1a1a;
 }
 

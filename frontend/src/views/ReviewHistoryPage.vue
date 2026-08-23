@@ -124,7 +124,7 @@ onMounted(async () => {
 
 <style scoped>
 .review-page {
-  background: #ffffff;
+  background: var(--glass-bg);
   position: relative;
   min-height: 100vh;
 }
@@ -186,7 +186,7 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   padding: 4rem 2rem;
-  color: #888;
+  color: var(--text-secondary);
 }
 
 .empty-state svg {
@@ -208,7 +208,7 @@ onMounted(async () => {
 .btn-browse {
   margin-top: 1rem;
   padding: 0.6rem 1.25rem;
-  background: var(--accent);
+  background: var(--accent-fill);
   color: #1a1a1a;
   text-decoration: none;
   border-radius: 8px;
@@ -224,7 +224,7 @@ onMounted(async () => {
 }
 
 .stat {
-  background: #ffffff;
+  background: var(--glass-bg);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 12px;
   padding: 1.25rem;
@@ -244,7 +244,7 @@ onMounted(async () => {
 .stat-lbl {
   display: block;
   font-size: 0.8rem;
-  color: #666;
+  color: var(--text-secondary);
   margin-top: 4px;
   text-transform: uppercase;
   letter-spacing: 0.3px;
@@ -257,7 +257,7 @@ onMounted(async () => {
 }
 
 .review-card {
-  background: #ffffff;
+  background: var(--glass-bg);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 16px;
   padding: 1.25rem;
@@ -317,7 +317,7 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 4px;
-  color: #666;
+  color: var(--text-secondary);
   font-size: 0.85rem;
 }
 
@@ -338,7 +338,7 @@ onMounted(async () => {
 }
 
 .score-text {
-  color: #666;
+  color: var(--text-secondary);
   font-size: 0.85rem;
   margin-left: 6px;
 }
@@ -358,13 +358,13 @@ onMounted(async () => {
 }
 
 .review-date {
-  color: #888;
+  color: var(--text-secondary);
   font-size: 0.8rem;
 }
 
 .btn-view {
   padding: 0.35rem 0.75rem;
-  background: rgba(255, 182, 18, 0.15);
+  background: rgba(232, 162, 0, 0.15);
   color: var(--accent);
   text-decoration: none;
   border-radius: 6px;
@@ -374,7 +374,7 @@ onMounted(async () => {
 }
 
 .btn-view:hover {
-  background: var(--accent);
+  background: var(--accent-fill);
   color: #1a1a1a;
 }
 

@@ -812,7 +812,7 @@ function formatShortDate(d) {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: #ffffff;
+  background: var(--glass-bg);
   border: 1px solid rgba(0, 0, 0, 0.12);
   color: #333333;
   padding: 8px 14px;
@@ -844,7 +844,7 @@ function formatShortDate(d) {
 
 .hero-header p {
   font-size: 0.95rem;
-  color: #666666;
+  color: var(--text-secondary);
   max-width: 560px;
   margin: 0 auto;
 }
@@ -865,7 +865,7 @@ function formatShortDate(d) {
 }
 
 .card {
-  background: #ffffff;
+  background: var(--glass-bg);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 16px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
@@ -912,7 +912,7 @@ function formatShortDate(d) {
   align-items: center;
   gap: 6px;
   padding: 8px 16px;
-  border: 1px solid rgba(255, 182, 18, 0.45);
+  border: 1px solid rgba(232, 162, 0, 0.45);
   border-radius: 8px;
   background: var(--accent-light);
   color: #b8860b;
@@ -924,7 +924,7 @@ function formatShortDate(d) {
 }
 
 .btn-new-itinerary:hover {
-  background: var(--accent);
+  background: var(--accent-fill);
   color: #1a1a1a;
 }
 
@@ -950,7 +950,7 @@ function formatShortDate(d) {
 .form-group label {
   display: block;
   font-size: 0.78rem;
-  color: #555555;
+  color: var(--text-secondary);
   margin-bottom: 5px;
   font-weight: 600;
   text-transform: uppercase;
@@ -964,7 +964,7 @@ function formatShortDate(d) {
   padding: 10px 12px;
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 10px;
-  background: #ffffff;
+  background: var(--glass-bg);
   color: #333333;
   font-size: 0.9rem;
   font-family: inherit;
@@ -976,11 +976,11 @@ function formatShortDate(d) {
 .form-group input:focus,
 .form-group select:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(255, 182, 18, 0.15);
+  box-shadow: 0 0 0 3px rgba(232, 162, 0, 0.15);
 }
 
 .form-group select option {
-  background: #ffffff;
+  background: var(--glass-bg);
   color: #333333;
 }
 
@@ -1002,9 +1002,9 @@ function formatShortDate(d) {
 }
 
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.btn-primary { background: var(--accent); color: #1a1a1a; width: 100%; margin-top: 4px; }
-.btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
-.btn-outline { background: #ffffff; border: 1px solid rgba(0, 0, 0, 0.18); color: #333333; }
+.btn-primary { background: var(--accent-fill); color: #1a1a1a; width: 100%; margin-top: 4px; }
+.btn-primary:hover:not(:disabled) { background: var(--accent-fill-hover); }
+.btn-outline { background: var(--glass-bg); border: 1px solid rgba(0, 0, 0, 0.18); color: #333333; }
 .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
 .btn-sm { padding: 5px 12px; border: none; border-radius: 6px; font-size: 0.72rem; cursor: pointer; font-family: inherit; font-weight: 500; }
 .btn-sm-wide { padding: 8px 16px; border-radius: 8px; font-size: 0.8rem; }
@@ -1013,8 +1013,8 @@ function formatShortDate(d) {
 
 /* Preferences */
 .pref-box {
-  background: rgba(255, 182, 18, 0.08);
-  border: 1px solid rgba(255, 182, 18, 0.25);
+  background: rgba(232, 162, 0, 0.08);
+  border: 1px solid rgba(232, 162, 0, 0.25);
   border-radius: 10px;
   padding: 12px 14px;
   margin-bottom: 16px;
@@ -1025,7 +1025,7 @@ function formatShortDate(d) {
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #888888;
+  color: var(--text-secondary);
   margin-bottom: 8px;
   font-weight: 600;
 }
@@ -1041,7 +1041,7 @@ function formatShortDate(d) {
   font-size: 0.72rem;
   padding: 3px 10px;
   border-radius: 20px;
-  background: var(--accent);
+  background: var(--accent-fill);
   color: #1a1a1a;
   font-weight: 600;
 }
@@ -1064,7 +1064,7 @@ function formatShortDate(d) {
   border: 1px solid rgba(0, 0, 0, 0.10);
   border-radius: 10px;
   overflow: hidden;
-  background: #ffffff;
+  background: var(--glass-bg);
 }
 
 .trip-header {
@@ -1078,7 +1078,7 @@ function formatShortDate(d) {
 }
 
 .trip-header:hover { background: rgba(0, 0, 0, 0.04); }
-.trip-header.active { background: rgba(255, 182, 18, 0.10); border-left: 3px solid var(--accent); }
+.trip-header.active { background: rgba(232, 162, 0, 0.10); border-left: 3px solid var(--accent); }
 
 .trip-title {
   display: block;
@@ -1090,11 +1090,11 @@ function formatShortDate(d) {
 .trip-dest {
   display: block;
   font-size: 0.75rem;
-  color: #888888;
+  color: var(--text-secondary);
   margin-top: 2px;
 }
 
-.empty-trips { color: #888888; font-size: 0.85rem; padding: 8px 0; }
+.empty-trips { color: var(--text-secondary); font-size: 0.85rem; padding: 8px 0; }
 .alert { padding: 10px 14px; border-radius: 10px; margin: 24px auto 12px; max-width: 1200px; font-size: 0.85rem; width: calc(100% - 40px); }
 .alert-error { background: rgba(255, 77, 77, 0.08); color: #d64545; border: 1px solid rgba(255, 77, 77, 0.25); }
 .alert-success { background: rgba(76, 175, 80, 0.10); color: #2e7d32; border: 1px solid rgba(76, 175, 80, 0.3); }
@@ -1108,7 +1108,7 @@ function formatShortDate(d) {
 }
 
 .sum-item {
-  background: #ffffff;
+  background: var(--glass-bg);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 10px;
   padding: 10px 12px;
@@ -1121,7 +1121,7 @@ function formatShortDate(d) {
   font-size: 0.68rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #888888;
+  color: var(--text-secondary);
   font-weight: 600;
 }
 
@@ -1158,8 +1158,8 @@ function formatShortDate(d) {
   padding: 8px 14px;
   border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 10px;
-  background: #ffffff;
-  color: #555555;
+  background: var(--glass-bg);
+  color: var(--text-secondary);
   font-size: 0.78rem;
   font-family: inherit;
   cursor: pointer;
@@ -1171,7 +1171,7 @@ function formatShortDate(d) {
 }
 
 .day-tab:hover { background: rgba(0, 0, 0, 0.04); color: #1a1a1a; }
-.day-tab.active { background: var(--accent); color: #1a1a1a; border-color: var(--accent); font-weight: 600; }
+.day-tab.active { background: var(--accent-fill); color: #1a1a1a; border-color: var(--accent); font-weight: 600; }
 .day-tab-date { font-size: 0.65rem; opacity: 0.7; font-weight: 400; }
 .day-tab.active .day-tab-date { opacity: 0.8; }
 
@@ -1203,7 +1203,7 @@ function formatShortDate(d) {
   padding: 20px 20px 16px;
 }
 
-.day-color-0 { --day-c: #d97706; background: rgba(255, 182, 18, 0.06); border-color: rgba(255, 182, 18, 0.30); }
+.day-color-0 { --day-c: #d97706; background: rgba(232, 162, 0, 0.06); border-color: rgba(232, 162, 0, 0.30); }
 .day-color-1 { --day-c: #2563eb; background: rgba(37, 99, 235, 0.05); border-color: rgba(37, 99, 235, 0.30); }
 .day-color-2 { --day-c: #16a34a; background: rgba(22, 163, 74, 0.05); border-color: rgba(22, 163, 74, 0.30); }
 .day-color-3 { --day-c: #9333ea; background: rgba(147, 51, 234, 0.05); border-color: rgba(147, 51, 234, 0.30); }
@@ -1264,8 +1264,8 @@ function formatShortDate(d) {
 }
 
 .tl-start { font-size: 0.9rem; font-weight: 600; color: #1a1a1a; }
-.tl-end { font-size: 0.72rem; color: #999999; }
-.tl-break .tl-start { color: #888888; font-weight: 500; }
+.tl-end { font-size: 0.72rem; color: var(--text-muted); }
+.tl-break .tl-start { color: var(--text-secondary); font-weight: 500; }
 
 .tl-body { min-width: 0; }
 
@@ -1279,9 +1279,9 @@ function formatShortDate(d) {
 .tl-name { font-size: 0.9rem; font-weight: 600; color: #1a1a1a; }
 
 .tl-tag { font-size: 0.66rem; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
-.tag-exp { background: rgba(255, 182, 18, 0.15); color: #b8860b; }
-.tag-meal { background: #e5484d; color: #ffffff; }
-.tag-break { background: rgba(0, 0, 0, 0.06); color: #666666; }
+.tag-exp { background: var(--accent-light); color: var(--accent-dark); }
+.tag-meal { background: var(--error); color: #ffffff; }
+.tag-break { background: rgba(0, 0, 0, 0.06); color: var(--text-secondary); }
 
 .tl-meta-line {
   display: flex;
@@ -1290,7 +1290,7 @@ function formatShortDate(d) {
   margin-top: 4px;
 }
 
-.tl-meta { font-size: 0.75rem; color: #666666; }
+.tl-meta { font-size: 0.75rem; color: var(--text-secondary); }
 
 .tl-reason {
   font-size: 0.76rem;
@@ -1307,7 +1307,7 @@ function formatShortDate(d) {
 }
 
 .tl-btn {
-  background: #ffffff;
+  background: var(--glass-bg);
   border: 1px solid rgba(0, 0, 0, 0.15);
   color: #333333;
   padding: 3px 10px;
@@ -1320,8 +1320,8 @@ function formatShortDate(d) {
 }
 
 .tl-btn:hover { background: rgba(0, 0, 0, 0.05); }
-.tl-btn-accent { background: rgba(255, 182, 18, 0.12); border-color: rgba(255, 182, 18, 0.4); color: #b8860b; }
-.tl-btn-accent:hover { background: rgba(255, 182, 18, 0.2); }
+.tl-btn-accent { background: rgba(232, 162, 0, 0.12); border-color: rgba(232, 162, 0, 0.4); color: #b8860b; }
+.tl-btn-accent:hover { background: rgba(232, 162, 0, 0.2); }
 .tl-btn-danger { background: #e5484d; border-color: #e5484d; color: #ffffff; }
 .tl-btn-danger:hover { background: #ff4d4f; }
 
@@ -1346,8 +1346,8 @@ function formatShortDate(d) {
 .day-cost { font-size: 0.85rem; color: #333333; }
 
 .btn-add-entry {
-  background: rgba(255, 182, 18, 0.12);
-  border: 1px solid rgba(255, 182, 18, 0.35);
+  background: rgba(232, 162, 0, 0.12);
+  border: 1px solid rgba(232, 162, 0, 0.35);
   color: #b8860b;
   padding: 6px 14px;
   border-radius: 6px;
@@ -1358,11 +1358,11 @@ function formatShortDate(d) {
   transition: all 0.2s;
 }
 
-.btn-add-entry:hover { background: rgba(255, 182, 18, 0.2); }
+.btn-add-entry:hover { background: rgba(232, 162, 0, 0.2); }
 
 .booking-note {
   font-size: 0.75rem;
-  color: #888888;
+  color: var(--text-secondary);
   margin-top: 16px;
   text-align: center;
 }
@@ -1384,7 +1384,7 @@ function formatShortDate(d) {
 .modal-card {
   width: 440px;
   max-width: 100%;
-  background: #ffffff;
+  background: var(--glass-bg);
   border: 1px solid rgba(0, 0, 0, 0.10);
   border-radius: 16px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
@@ -1413,7 +1413,7 @@ function formatShortDate(d) {
 
 .replace-sub {
   font-size: 0.85rem;
-  color: #666666;
+  color: var(--text-secondary);
   margin-bottom: 16px;
 }
 
@@ -1433,17 +1433,17 @@ function formatShortDate(d) {
   padding: 12px 14px;
   border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 10px;
-  background: #ffffff;
+  background: var(--glass-bg);
   color: #333333;
   font-family: inherit;
   cursor: pointer;
   transition: all 0.2s;
 }
 
-.replace-item:hover { border-color: var(--accent); background: rgba(255, 182, 18, 0.06); }
+.replace-item:hover { border-color: var(--accent); background: rgba(232, 162, 0, 0.06); }
 
 .replace-name { font-size: 0.88rem; font-weight: 600; color: #1a1a1a; }
-.replace-meta { font-size: 0.75rem; color: #888888; }
+.replace-meta { font-size: 0.75rem; color: var(--text-secondary); }
 
 /* Add-entry picker */
 .add-tabs {
@@ -1457,8 +1457,8 @@ function formatShortDate(d) {
   padding: 9px 12px;
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 10px;
-  background: #ffffff;
-  color: #555555;
+  background: var(--glass-bg);
+  color: var(--text-secondary);
   font-size: 0.85rem;
   font-weight: 600;
   font-family: inherit;
@@ -1468,7 +1468,7 @@ function formatShortDate(d) {
 
 .add-tab.active {
   border-color: var(--accent);
-  background: rgba(255, 182, 18, 0.12);
+  background: rgba(232, 162, 0, 0.12);
   color: #b8860b;
 }
 
@@ -1494,7 +1494,7 @@ function formatShortDate(d) {
   padding: 11px 14px;
   border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 10px;
-  background: #ffffff;
+  background: var(--glass-bg);
   color: #333333;
   font-family: inherit;
   cursor: pointer;
@@ -1503,11 +1503,11 @@ function formatShortDate(d) {
 
 .exp-pick-item:hover {
   border-color: var(--accent);
-  background: rgba(255, 182, 18, 0.06);
+  background: rgba(232, 162, 0, 0.06);
 }
 
 .exp-pick-name { font-size: 0.88rem; font-weight: 600; color: #1a1a1a; }
-.exp-pick-meta { font-size: 0.75rem; color: #888888; }
+.exp-pick-meta { font-size: 0.75rem; color: var(--text-secondary); }
 
 .modal-footer {
   margin-top: 14px;

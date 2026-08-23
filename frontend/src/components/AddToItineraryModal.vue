@@ -592,7 +592,7 @@ watch(() => props.visible, async (val) => {
   background: rgba(255, 255, 255, 0.22); color: rgba(255, 255, 255, 0.70);
   transition: all 0.3s;
 }
-.step-badge.active { background: var(--accent); color: #1a1a1a; }
+.step-badge.active { background: var(--accent-fill); color: #1a1a1a; }
 .step-badge.done { background: rgba(76,175,80,0.3); color: #81c784; }
 .step-line { width: 40px; height: 2px; background: rgba(255, 255, 255, 0.26); margin: 0 4px; }
 .step-line.done { background: #81c784; }
@@ -631,7 +631,7 @@ watch(() => props.visible, async (val) => {
 .day-count-num {
   display: inline-flex; align-items: center; justify-content: center;
   width: 28px; height: 28px; border-radius: 50%;
-  background: var(--accent); color: #1a1a1a; font-weight: 700; font-size: 0.85rem; margin-right: 4px;
+  background: var(--accent-fill); color: #1a1a1a; font-weight: 700; font-size: 0.85rem; margin-right: 4px;
 }
 .date-error { text-align: center; color: #ff6b6b; font-size: 0.82rem; padding: 4px 0 8px; }
 
@@ -663,7 +663,7 @@ watch(() => props.visible, async (val) => {
 
 .option-card.selected {
   border-color: var(--accent);
-  background: rgba(255, 182, 18, 0.1);
+  background: rgba(232, 162, 0, 0.1);
 }
 
 .option-card input[type="radio"] {
@@ -706,8 +706,8 @@ watch(() => props.visible, async (val) => {
   cursor: pointer; transition: all 0.2s; text-align: center;
 }
 .itinerary-modal .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-.itinerary-modal .btn-primary { background: var(--accent); color: #1a1a1a; }
-.itinerary-modal .btn-primary:hover:not(:disabled) { background: #fff; }
+.itinerary-modal .btn-primary { background: var(--accent-fill); color: #1a1a1a; }
+.itinerary-modal .btn-primary:hover:not(:disabled) { background: var(--accent-fill-hover); }
 .itinerary-modal .btn-outline { background: transparent; border: 1px solid rgba(255, 255, 255, 0.55); color: #fff; }
 .itinerary-modal .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
 .day-cards { display: flex; flex-direction: column; gap: 8px; margin-bottom: 4px; }

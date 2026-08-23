@@ -24,48 +24,53 @@ const showSidebar = computed(() => auth.isBusinessOwner || auth.isAdmin)
 @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap');
 
 :root {
-  /* Surfaces */
-  --bg-color: #f5f7fa;
-  --surface: rgba(255, 182, 18, 0.06);
-  --surface-secondary: #f8fafc;
-  --border: rgba(255, 182, 18, 0.30);
-  --border-strong: rgba(255, 182, 18, 0.45);
+  /* Surfaces — warm cream/off-white */
+  --bg-color: #F6F0E3;
+  --surface: #FFFDF7;
+  --surface-secondary: #F2EAD8;
+  --border: rgba(186, 150, 74, 0.28);
+  --border-strong: rgba(186, 150, 74, 0.45);
 
-  /* Text */
-  --text-color: #1f2937;
-  --text-secondary: #4b5563;
-  --text-muted: #9ca3af;
-  --heading-color: #0f172a;
+  /* Text — warm dark for contrast on light surfaces */
+  --text-color: #2C2416;
+  --text-secondary: #6B6150;
+  --text-muted: #8A7F6B;
+  --heading-color: #2A2112;
 
-  /* Brand */
-  --accent: #FFB612;
-  --accent-hover: #e5a310;
-  --accent-light: rgba(255, 182, 18, 0.15);
-  --accent-dark: #b8860b;
-  --nav-bg: #0f172a;
+  /* Brand — refined amber-gold */
+  /* --accent: deep readable gold for text/accents on light */
+  /* --accent-fill: bright gold for button/badge fills (paired with dark text) */
+  --accent: #B57912;
+  --accent-hover: #96630B;
+  --accent-fill: #E8A200;
+  --accent-fill-hover: #D09100;
+  --accent-light: rgba(232, 162, 0, 0.15);
+  --accent-dark: #7A4E00;
+  --accent-text: var(--accent);
+  --nav-bg: #241D10;
 
-  /* Glass tokens kept for compatibility (now light) */
-  --glass-bg: #ffffff;
-  --glass-border: #e5e7eb;
+  /* Glass tokens (now warm cream) */
+  --glass-bg: #FFFDF7;
+  --glass-border: #E7E0D0;
 
   /* Semantic */
   --success: #16a34a;
   --success-light: #dcfce7;
-  --warning: #d97706;
-  --warning-light: #fef3c7;
+  --warning: #B45309;
+  --warning-light: #FEF3C7;
   --error: #dc2626;
   --error-light: #fee2e2;
   --info: #3b82f6;
   --info-light: #dbeafe;
 
   --contrast: #ffffff;
-  --overlay: rgba(15, 23, 42, 0.55);
+  --overlay: rgba(40, 32, 20, 0.55);
 
   /* Radii & shadows */
   --radius: 12px;
   --radius-sm: 8px;
-  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
-  --shadow: 0 1px 3px rgba(16, 24, 40, 0.10), 0 1px 2px rgba(16, 24, 40, 0.06);
+  --shadow-sm: 0 1px 2px rgba(60, 45, 20, 0.08);
+  --shadow: 0 1px 3px rgba(60, 45, 20, 0.12), 0 1px 2px rgba(60, 45, 20, 0.08);
 }
 
 * {
@@ -91,7 +96,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 a {
-  color: var(--accent);
+  color: var(--accent-text);
   text-decoration: none;
   transition: 0.3s;
 }
@@ -135,7 +140,7 @@ main.sidebar-shifted {
   padding: 12px 28px;
   border: none;
   border-radius: var(--radius-sm);
-  background-color: var(--accent);
+  background-color: var(--accent-fill);
   color: #1a1a1a;
   font-family: 'Poppins', sans-serif;
   font-size: 0.95rem;
@@ -147,7 +152,7 @@ main.sidebar-shifted {
 }
 
 .btn-gold:hover {
-  background-color: var(--accent-hover);
+  background-color: var(--accent-fill-hover);
   color: #1a1a1a;
   box-shadow: var(--shadow);
 }
@@ -177,9 +182,9 @@ main.sidebar-shifted {
 }
 
 .btn-outline-light:hover {
-  background-color: var(--accent);
-  border-color: var(--accent);
-  color: #ffffff;
+  background-color: var(--accent-fill);
+  border-color: var(--accent-fill);
+  color: #1a1a1a;
 }
 
 /* Card mixin (light) */
@@ -269,7 +274,7 @@ main.sidebar-shifted {
 .dashboard-header,
 .ana-header,
 .exp-header {
-  background: linear-gradient(rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.6)), url('/img/cultures/woman.jpeg') no-repeat center center / cover !important;
+  background: linear-gradient(rgba(40, 32, 20, 0.6), rgba(40, 32, 20, 0.6)), url('/img/cultures/woman.jpeg') no-repeat center center / cover !important;
   background-size: cover !important;
   text-align: center !important;
   padding: 140px 20px 80px !important;
@@ -300,7 +305,7 @@ main.sidebar-shifted {
 .exp-header .accent-word {
   font-family: 'Poppins', sans-serif !important;
   font-weight: 700 !important;
-  color: var(--accent) !important;
+  color: var(--accent-fill) !important;
 }
 
 .hero-header p,
@@ -617,13 +622,13 @@ main.sidebar-shifted {
 }
 
 .btn-primary-sm {
-  background: var(--accent) !important;
-  border-color: var(--accent) !important;
+  background: var(--accent-fill) !important;
+  border-color: var(--accent-fill) !important;
   color: #1a1a1a !important;
 }
 
 .btn-primary-sm:hover {
-  background: var(--accent-hover) !important;
+  background: var(--accent-fill-hover) !important;
   color: #1a1a1a !important;
 }
 
@@ -666,7 +671,7 @@ main.sidebar-shifted {
 .review-textarea,
 .form-input,
 .input-modern {
-  background: #ffffff !important;
+  background: var(--glass-bg) !important;
   border: 1px solid var(--border-strong) !important;
   color: var(--text-color) !important;
 }
@@ -687,15 +692,15 @@ main.sidebar-shifted {
 .input-modern:focus,
 .search-box:focus-within {
   border-color: var(--accent) !important;
-  box-shadow: 0 0 0 3px rgba(255, 182, 18, 0.18) !important;
+  box-shadow: 0 0 0 3px rgba(232, 162, 0, 0.18) !important;
 }
 
 .filter-select option,
 .form-group select option,
 .role-select option,
 .combobox-input-wrap option {
-  background: #ffffff;
-  color: #1f2937;
+  background: var(--glass-bg);
+  color: var(--text-color);
 }
 
 .form-group label {
@@ -739,7 +744,7 @@ main.sidebar-shifted {
 }
 
 .ov-card.ov-most {
-  border-color: rgba(255, 182, 18, 0.5) !important;
+  border-color: rgba(232, 162, 0, 0.5) !important;
   background: var(--accent-light) !important;
 }
 
@@ -794,7 +799,7 @@ main.sidebar-shifted {
 
 .plan-trip-page .tl-meal-suggest {
   background: var(--accent-light) !important;
-  border-color: rgba(255, 182, 18, 0.4) !important;
+  border-color: rgba(232, 162, 0, 0.4) !important;
   color: var(--text-color) !important;
 }
 
@@ -808,7 +813,7 @@ main.sidebar-shifted {
 }
 
 .plan-trip-page .tag-meal {
-  background: var(--accent) !important;
+  background: var(--accent-fill) !important;
   color: #1a1a1a !important;
 }
 
@@ -896,19 +901,19 @@ main.sidebar-shifted {
   border: none;
   border-radius: 12px;
   outline: none;
-  background: rgba(255, 255, 255, 0.92);
-  color: #333;
+  background: var(--glass-bg);
+  color: var(--text-color);
   font-size: 0.95rem;
   font-family: 'Roboto', sans-serif;
   transition: box-shadow 0.3s;
 }
 
 .input-modern:focus {
-  box-shadow: 0 0 0 3px rgba(255, 182, 18, 0.3);
+  box-shadow: 0 0 0 3px rgba(232, 162, 0, 0.3);
 }
 
 .input-modern::placeholder {
-  color: #999;
+  color: var(--text-muted);
 }
 
 select.input-modern {

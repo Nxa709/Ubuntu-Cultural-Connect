@@ -122,10 +122,10 @@ onMounted(async () => {
 .stats-preview h2 { text-align: center; font-size: 1.3rem; color: #fff; font-family: 'Poppins', sans-serif; margin-bottom: 20px; }
 .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .s-card { background: rgba(255, 255, 255, 0.38); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid rgba(255, 255, 255, 0.42); border-radius: 12px; padding: 20px; text-align: center; }
-.s-card.highlight-card { background: rgba(255, 182, 18, 0.22); border-color: rgba(255, 182, 18, 0.5); }
+.s-card.highlight-card { background: rgba(232, 162, 0, 0.22); border-color: rgba(232, 162, 0, 0.5); }
 .s-value { display: block; font-size: 1.8rem; font-weight: 700; color: #fff; font-family: 'Poppins', sans-serif; }
-.s-value.active-v { color: #00E676; }
-.s-value.pending-v { color: #FFD740; }
+.s-value.active-v { color: var(--success); }
+.s-value.pending-v { color: var(--warning); }
 .s-label { display: block; color: rgba(255, 255, 255, 0.9); font-size: 0.85rem; margin-top: 4px; }
 
 @media (max-width: 768px) {

@@ -35,7 +35,7 @@ defineProps({
 .loading-msg {
   margin: 0;
   font-size: 0.95rem;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 @keyframes logo-spin {

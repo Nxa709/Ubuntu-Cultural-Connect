@@ -405,11 +405,11 @@ onMounted(async () => {
 }
 
 .back-link:hover {
-  background: var(--accent);
+  background: var(--accent-fill);
   border-color: var(--accent);
   color: #1a1a1a;
   transform: translateX(-3px);
-  box-shadow: 0 4px 16px rgba(255, 182, 18, 0.35);
+  box-shadow: 0 4px 16px rgba(232, 162, 0, 0.35);
 }
 
 .back-link:active {
@@ -419,8 +419,8 @@ onMounted(async () => {
 .cat-badge {
   display: inline-block;
   padding: 0.3rem 0.9rem;
-  background: rgba(255, 182, 18, 0.2);
-  border: 1px solid rgba(255, 182, 18, 0.4);
+  background: rgba(232, 162, 0, 0.2);
+  border: 1px solid rgba(232, 162, 0, 0.4);
   border-radius: 20px;
   color: var(--accent);
   font-size: 0.85rem;
@@ -459,8 +459,8 @@ onMounted(async () => {
   max-width: 1100px;
   margin: 0 auto;
   padding: 10px 20px;
-  background: rgba(255, 182, 18, 0.12);
-  border: 1px solid rgba(255, 182, 18, 0.25);
+  background: rgba(232, 162, 0, 0.12);
+  border: 1px solid rgba(232, 162, 0, 0.25);
   border-radius: 10px;
   animation: fadeIn 0.35s ease;
 }
@@ -514,7 +514,7 @@ onMounted(async () => {
 }
 
 .description-full p {
-  color: #fff;
+  color: var(--text-color);
   line-height: 1.8;
   font-size: 1rem;
 }
@@ -588,7 +588,7 @@ onMounted(async () => {
   width: 52px;
   height: 52px;
   border-radius: 12px;
-  background: rgba(255, 182, 18, 0.2);
+  background: rgba(232, 162, 0, 0.2);
   color: var(--accent);
   display: flex;
   align-items: center;
@@ -611,7 +611,7 @@ onMounted(async () => {
 }
 
 .no-reviews p {
-  color: #fff;
+  color: var(--text-secondary);
   font-style: italic;
 }
 
@@ -677,7 +677,7 @@ onMounted(async () => {
 
 .bar-fill {
   height: 100%;
-  background: var(--accent);
+  background: var(--accent-fill);
   border-radius: 4px;
   transition: width 0.3s;
 }
@@ -720,7 +720,7 @@ onMounted(async () => {
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  background: rgba(255, 182, 18, 0.2);
+  background: rgba(232, 162, 0, 0.2);
   color: var(--accent);
   display: flex;
   align-items: center;
@@ -883,34 +883,34 @@ onMounted(async () => {
 }
 
 .btn-rate-full {
-  background: var(--accent);
+  background: var(--accent-fill);
   color: #1a1a1a;
 }
 
 .btn-rate-full:hover {
-  background: #fff;
+  background: var(--accent-fill-hover);
 }
 
 .btn-trip-full {
-  background: var(--accent);
+  background: var(--accent-fill);
   color: #1a1a1a;
-  border: 1px solid var(--accent);
+  border: 1px solid var(--accent-fill);
 }
 
 .btn-trip-full:hover {
-  background: #fff;
+  background: var(--accent-fill-hover);
   color: #1a1a1a;
-  border-color: #fff;
+  border-color: var(--accent-fill-hover);
 }
 
 .btn-trip-full.edit-btn {
-  background: var(--accent);
+  background: var(--accent-fill);
   color: #1a1a1a;
-  border-color: var(--accent);
+  border-color: var(--accent-fill);
 }
 .btn-trip-full.edit-btn:hover {
-  background: #fff;
-  border-color: #fff;
+  background: var(--accent-fill-hover);
+  border-color: var(--accent-fill-hover);
 }
 
 @media (max-width: 900px) {

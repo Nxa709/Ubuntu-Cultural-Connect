@@ -265,7 +265,7 @@ onMounted(async () => {
 }
 
 .review-card {
-  background: rgba(255, 255, 255, 0.55);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 1rem;
@@ -288,7 +288,7 @@ onMounted(async () => {
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  background: rgba(255, 182, 18, 0.2);
+  background: rgba(232, 162, 0, 0.2);
   color: var(--accent);
   display: flex;
   align-items: center;

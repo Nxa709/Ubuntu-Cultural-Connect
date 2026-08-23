@@ -463,9 +463,8 @@ onMounted(async () => {
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .hotspot-form {
-  background: rgba(18, 24, 38, 0.82);
-  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 16px;
   padding: 2rem;
 }
@@ -538,7 +537,7 @@ select.form-input option {
 
 .field-hint {
   display: block;
-  color: #999;
+  color: var(--text-muted);
   font-size: 0.8rem;
   margin-top: 0.3rem;
 }
@@ -546,7 +545,7 @@ select.form-input option {
 .char-count {
   text-align: right;
   font-size: 0.8rem;
-  color: #999;
+  color: var(--text-muted);
   margin-top: 0.2rem;
 }
 
@@ -589,7 +588,7 @@ select.form-input option {
 
 .file-hint {
   font-size: 0.8rem;
-  color: #999;
+  color: var(--text-muted);
 }
 
 .file-preview {
@@ -672,11 +671,11 @@ select.form-input option {
   border-radius: 10px;
   padding: 16px 18px;
   margin-bottom: 1.25rem;
-  color: #fff;
+  color: var(--text-color);
 }
 
 .appeal-banner svg {
-  color: #EF9A9A;
+  color: var(--error);
   flex-shrink: 0;
   margin-top: 2px;
 }
@@ -684,21 +683,21 @@ select.form-input option {
 .appeal-title {
   display: block;
   font-weight: 700;
-  color: #EF9A9A;
+  color: var(--error);
   font-family: 'Poppins', sans-serif;
   margin-bottom: 4px;
 }
 
 .appeal-reason {
   margin: 0 0 6px;
-  color: #fff;
+  color: var(--text-color);
   line-height: 1.5;
   font-size: 0.92rem;
 }
 
 .appeal-hint {
   margin: 0;
-  color: rgba(255, 255, 255, 0.88);
+  color: var(--text-secondary);
   font-size: 0.82rem;
 }
 
@@ -726,14 +725,14 @@ select.form-input option {
 
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.btn-primary { background: var(--accent); color: #fff; }
-.btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
+.btn-primary { background: var(--accent-fill); color: #1a1a1a; }
+.btn-primary:hover:not(:disabled) { background: var(--accent-fill-hover); }
 
 .btn-appeal { background: #E53935; }
 .btn-appeal:hover:not(:disabled) { background: #B71C1C; }
 
-.btn-cancel { background: #F5F5F5; color: #666; }
-.btn-cancel:hover { background: #E0E0E0; }
+.btn-cancel { background: var(--surface-secondary); color: var(--text-color); border: 1px solid var(--border-strong); }
+.btn-cancel:hover { background: var(--accent-light); border-color: var(--accent); }
 
 .btn-spinner {
   width: 16px; height: 16px;

@@ -197,7 +197,7 @@ function toggleWishlist(id) {
 <style scoped>
 .home-page {
   padding-top: 0;
-  background: #ffffff;
+  background: var(--glass-bg);
   position: relative;
   min-height: 100vh;
 }
@@ -281,7 +281,7 @@ function toggleWishlist(id) {
   align-items: stretch;
   max-width: 820px;
   margin: 0 auto 28px;
-  background: #ffffff;
+  background: var(--glass-bg);
   border-radius: 50px;
   padding: 8px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
@@ -321,7 +321,7 @@ function toggleWishlist(id) {
 }
 
 .search-field input::placeholder {
-  color: #999;
+  color: var(--text-muted);
 }
 
 .search-btn {
@@ -339,7 +339,7 @@ function toggleWishlist(id) {
 }
 
 .search-btn:hover {
-  background: var(--accent-hover);
+  background: var(--accent-fill-hover);
   color: #1a1a1a;
 }
 
@@ -420,7 +420,7 @@ function toggleWishlist(id) {
   gap: 10px;
   text-decoration: none;
   color: inherit;
-  background: #ffffff;
+  background: var(--glass-bg);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 16px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
@@ -439,8 +439,8 @@ function toggleWishlist(id) {
 
 .category-box.active {
   border-color: var(--accent);
-  background: rgba(255, 182, 18, 0.08);
-  box-shadow: 0 6px 20px rgba(255, 182, 18, 0.2);
+  background: rgba(232, 162, 0, 0.08);
+  box-shadow: 0 6px 20px rgba(232, 162, 0, 0.2);
 }
 
 .category-icon {
@@ -450,7 +450,7 @@ function toggleWishlist(id) {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: rgba(255, 182, 18, 0.15);
+  background: rgba(232, 162, 0, 0.15);
   color: var(--accent);
   font-size: 1.35rem;
 }
@@ -465,7 +465,7 @@ function toggleWishlist(id) {
 
 .category-desc {
   font-size: 0.72rem;
-  color: #888;
+  color: var(--text-secondary);
   line-height: 1.3;
 }
 
@@ -504,7 +504,7 @@ function toggleWishlist(id) {
   display: block;
   text-decoration: none;
   color: inherit;
-  background: #ffffff;
+  background: var(--glass-bg);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 16px;
   overflow: hidden;
@@ -553,7 +553,7 @@ function toggleWishlist(id) {
 }
 
 .hotspot-badge.badge-new {
-  background: #51cf66;
+  background: #2F9E44;
   color: #fff;
 }
 
@@ -609,7 +609,7 @@ function toggleWishlist(id) {
 
 .hotspot-desc {
   font-size: 0.78rem;
-  color: #888;
+  color: var(--text-secondary);
   margin-bottom: 12px;
 }
 
@@ -634,13 +634,13 @@ function toggleWishlist(id) {
   align-items: center;
   gap: 4px;
   font-size: 0.8rem;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .no-results {
   text-align: center;
   padding: 40px 20px;
-  color: #888;
+  color: var(--text-secondary);
   font-size: 0.95rem;
 }
 

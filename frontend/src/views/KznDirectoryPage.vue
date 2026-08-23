@@ -106,9 +106,9 @@ const selectedKznCategoryLabel = computed(() => {
 .dir-sub { text-align: center; color: rgba(255, 255, 255, 0.90); font-size: 0.95rem; margin: -16px auto 32px; max-width: 600px; line-height: 1.6; }
 .exp-cat-badge { position: absolute; top: 12px; left: 12px; background: rgba(0, 0, 0, 0.5); color: #fff; font-size: 0.72rem; font-weight: 500; padding: 3px 10px; border-radius: 6px; }
 .kzn-tabs { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 28px; }
-.kzn-tab { padding: 8px 18px; border: 1px solid rgba(255, 255, 255, 0.38); border-radius: 20px; background: rgba(255, 255, 255, 0.22); color: rgba(255, 255, 255, 0.94); font-size: 0.82rem; font-family: inherit; cursor: pointer; transition: all 0.25s ease; white-space: nowrap; }
-.kzn-tab:hover { background: rgba(255, 255, 255, 0.30); color: #fff; }
-.kzn-tab.active { background: var(--accent); color: #1a1a1a; border-color: var(--accent); font-weight: 600; }
+.kzn-tab { padding: 8px 18px; border: 1px solid var(--border-strong); border-radius: 20px; background: var(--surface); color: var(--text-color); font-size: 0.82rem; font-family: inherit; cursor: pointer; transition: all 0.25s ease; white-space: nowrap; }
+.kzn-tab:hover { background: var(--accent-light); color: var(--accent-text); border-color: var(--accent); }
+.kzn-tab.active { background: var(--accent-fill); color: #1a1a1a; border-color: var(--accent-fill); font-weight: 600; }
 .kzn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 .kzn-flip-card { display: block; text-decoration: none; color: inherit; perspective: 1000px; height: 280px; cursor: pointer; }
 .kzn-flip-inner { position: relative; width: 100%; height: 100%; transition: transform 0.5s; transform-style: preserve-3d; }

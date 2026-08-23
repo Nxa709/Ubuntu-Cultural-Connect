@@ -186,9 +186,9 @@ function getIcon(cat) {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.26);
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  color: rgba(255, 255, 255, 0.97);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  color: var(--text-color);
   padding: 6px 14px;
   border-radius: 8px;
   font-size: 0.82rem;
@@ -198,8 +198,9 @@ function getIcon(cat) {
 }
 
 .back-btn:hover {
-  background: rgba(255, 255, 255, 0.36);
-  color: #fff;
+  background: var(--accent-light);
+  border-color: var(--accent);
+  color: var(--accent-text);
 }
 
 .hero-header h1 {
@@ -257,7 +258,7 @@ function getIcon(cat) {
 }
 
 .card-sub {
-  color: rgba(255, 255, 255, 0.88);
+  color: var(--text-secondary);
   font-size: 0.85rem;
   margin-bottom: 20px;
 }
@@ -277,7 +278,7 @@ function getIcon(cat) {
   padding: 20px 12px;
   border: 2px solid var(--accent);
   border-radius: 12px;
-  background: var(--accent);
+  background: var(--accent-fill);
   cursor: pointer;
   transition: all 0.2s;
   font-family: inherit;
@@ -285,15 +286,16 @@ function getIcon(cat) {
 }
 
 .cat-btn:hover {
-  border-color: var(--accent-hover);
-  background: var(--accent-hover);
+  border-color: var(--accent-fill);
+  background: var(--accent-fill);
+  color: #1a1a1a;
   transform: translateY(-3px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 }
 
 .cat-btn.selected {
-  border-color: var(--accent-hover);
-  background: var(--accent-hover);
+  border-color: var(--accent-fill);
+  background: var(--accent-fill);
   color: #1a1a1a;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
 }
@@ -340,14 +342,14 @@ function getIcon(cat) {
 }
 
 .btn-primary {
-  background-color: var(--accent);
+  background-color: var(--accent-fill);
   color: #1a1a1a;
 }
 
-.btn-primary:hover:not(:disabled) { background-color: var(--accent-hover); }
+.btn-primary:hover:not(:disabled) { background-color: var(--accent-fill-hover); }
 
 .hint {
-  color: rgba(255, 255, 255, 0.88);
+  color: var(--text-secondary);
   font-size: 0.85rem;
 }
 
@@ -368,7 +370,7 @@ function getIcon(cat) {
 }
 
 .rec-card {
-  background: var(--accent);
+  background: var(--accent-fill);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   border: 1px solid var(--accent);
