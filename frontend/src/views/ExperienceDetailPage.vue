@@ -509,7 +509,7 @@ onMounted(async () => {
   font-family: 'Poppins', sans-serif;
   font-size: 1.3rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--heading-color);
   margin: 0 0 1rem;
 }
 
@@ -576,10 +576,8 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 1rem;
-  background: rgba(255, 255, 255, 0.28);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 1.25rem;
 }
@@ -589,7 +587,7 @@ onMounted(async () => {
   height: 52px;
   border-radius: 12px;
   background: rgba(232, 162, 0, 0.2);
-  color: var(--accent);
+  color: var(--accent-dark);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -601,13 +599,13 @@ onMounted(async () => {
 .host-name {
   display: block;
   font-weight: 600;
-  color: #fff;
+  color: var(--heading-color);
 }
 
 .host-label {
   display: block;
   font-size: 0.85rem;
-  color: #fff;
+  color: var(--text-secondary);
 }
 
 .no-reviews p {
@@ -619,7 +617,8 @@ onMounted(async () => {
   display: flex;
   gap: 2rem;
   align-items: center;
-  background: rgba(255, 255, 255, 0.22);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 1.25rem;
   margin-bottom: 1.5rem;
@@ -648,7 +647,7 @@ onMounted(async () => {
 
 .summary-count {
   font-size: 0.8rem;
-  color: #fff;
+  color: var(--text-secondary);
 }
 
 .star-breakdown { flex: 1; }
@@ -662,7 +661,7 @@ onMounted(async () => {
 
 .bar-label {
   font-size: 0.8rem;
-  color: #fff;
+  color: var(--text-secondary);
   min-width: 28px;
   text-align: right;
 }
@@ -670,7 +669,7 @@ onMounted(async () => {
 .bar-track {
   flex: 1;
   height: 8px;
-  background: rgba(255, 255, 255, 0.26);
+  background: var(--surface-secondary);
   border-radius: 4px;
   overflow: hidden;
 }
@@ -684,7 +683,7 @@ onMounted(async () => {
 
 .bar-count {
   font-size: 0.8rem;
-  color: #fff;
+  color: var(--text-secondary);
   min-width: 20px;
 }
 
@@ -695,10 +694,8 @@ onMounted(async () => {
 }
 
 .review-card {
-  background: rgba(255, 255, 255, 0.26);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.38);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 1rem;
 }
@@ -733,14 +730,14 @@ onMounted(async () => {
 .user-name {
   display: block;
   font-weight: 600;
-  color: #fff;
+  color: var(--heading-color);
   font-size: 0.9rem;
 }
 
 .review-date {
   display: block;
   font-size: 0.75rem;
-  color: #fff;
+  color: var(--text-muted);
 }
 
 .review-stars {
@@ -748,11 +745,11 @@ onMounted(async () => {
   gap: 2px;
 }
 
-.star { color: rgba(255, 255, 255, 0.55); font-size: 1rem; }
+.star { color: #d1d5db; font-size: 1rem; }
 .star.filled { color: var(--accent); }
 
 .review-comment p {
-  color: #fff;
+  color: var(--text-color);
   line-height: 1.6;
   margin: 0;
   font-size: 0.95rem;
