@@ -10,6 +10,8 @@ class UserRegister(BaseModel):
     full_name: str
     phone_number: Optional[str] = None
     role: str = "tourist"
+    visitor_type: Optional[str] = None
+    country: Optional[str] = None
 
 
 class UserLogin(BaseModel):
@@ -23,6 +25,8 @@ class UserResponse(BaseModel):
     full_name: str
     phone_number: Optional[str] = None
     role: str
+    visitor_type: Optional[str] = None
+    country: Optional[str] = None
     is_verified: bool
     created_at: datetime
 

@@ -20,6 +20,8 @@ class User(Base):
     full_name = Column(String, nullable=False)
     phone_number = Column(String, nullable=True)
     role = Column(Enum(UserRole), default=UserRole.tourist, nullable=False)
+    visitor_type = Column(String, nullable=True)   # 'local' | 'international'
+    country = Column(String, nullable=True)        # tourist's country of origin
     is_verified = Column(Boolean, default=False)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))

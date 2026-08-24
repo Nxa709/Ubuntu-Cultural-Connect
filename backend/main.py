@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from database import engine, Base
+from database import engine, Base, is_sqlite
 from routers.auth import router as auth_router
 from routers.experience import router as experience_router
 from routers.admin import router as admin_router
@@ -15,6 +15,22 @@ from routers.upload import router as upload_router
 
 # Create tables
 Base.metadata.create_all(bind=engine)
+
+
+def _migrate_sqlite():
+    """SQLite cannot ALTER via create_all; add new columns idempotently."""
+    if not is_sqlite:
+        return
+    from sqlalchemy import text
+    with engine.begin() as conn:
+        cols = {row[1] for row in conn.execute(text("PRAGMA table_info(users)"))}
+        if "visitor_type" not in cols:
+            conn.execute(text("ALTER TABLE users ADD COLUMN visitor_type VARCHAR"))
+        if "country" not in cols:
+            conn.execute(text("ALTER TABLE users ADD COLUMN country VARCHAR"))
+
+
+_migrate_sqlite()
 
 app = FastAPI(
     title="Ubuntu Cultural Connect API",

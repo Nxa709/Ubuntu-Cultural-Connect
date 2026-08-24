@@ -474,12 +474,12 @@ def get_experience(exp_id: int, db: Session = Depends(get_db)):
     return _exp_to_response(exp, db)
 
 
-def _is_local_visitor(user) -> bool:
-    """Heuristic: SA users have a phone starting with +27 (or a local 0/0xx format)."""
-    phone = (user.phone_number or "").strip()
-    if not phone:
-        return False
-    return phone.startswith("+27") or phone.startswith("27") or phone.startswith("0")
+def _visitor_type(user) -> str:
+    """Return 'local' or 'international' using the stored field, with a phone fallback."""
+    if user and user.visitor_type:
+        return user.visitor_type.lower()
+    phone = (user.phone_number or "").strip() if user else ""
+    return "local" if phone.startswith("+27") or phone.startswith("27") or phone.startswith("0") else "international"
 
 
 # ── Per-hotspot analytics ─────────────────────────────────
@@ -506,11 +506,30 @@ def get_experience_analytics(
     unique_visitors = len(set(a.user_id for a in adds))
 
     # Visitor type (local vs international)
-    local = sum(1 for a in adds if _is_local_visitor(a.user))
+    local = sum(1 for a in adds if _visitor_type(a.user) == "local")
     international = total_adds - local
     visitor_types = [
         {"type": "Local", "count": local},
         {"type": "International", "count": international},
+    ]
+
+    # Top countries (international visitors by their country)
+    country_counts = defaultdict(int)
+    for a in adds:
+        if a.user and a.user.country and _visitor_type(a.user) == "international":
+            country_counts[a.user.country] += 1
+    top_countries = [
+        {"country": c, "count": n}
+        for c, n in sorted(country_counts.items(), key=lambda kv: kv[1], reverse=True)
+    ]
+
+    # Views over time (per day) — for the line graph
+    daily_counts = defaultdict(int)
+    for a in adds:
+        daily_counts[a.created_at.date().isoformat()] += 1
+    views_over_time = [
+        {"date": d, "count": daily_counts[d]}
+        for d in sorted(daily_counts.keys())
     ]
 
     # Views per star rating (an add counts toward the rating that visitor gave this hotspot)
@@ -535,7 +554,7 @@ def get_experience_analytics(
         dow_counts[a.created_at.weekday()] += 1
     active_days = [{"day": DAY_NAMES[i], "count": dow_counts.get(i, 0)} for i in range(7)]
 
-    # Peak times (hourly detail + morning/afternoon/evening buckets)
+    # Peak times: hourly detail + morning/afternoon/evening + heatmap grid
     hourly_counts = defaultdict(int)
     for a in adds:
         hourly_counts[a.created_at.hour] += 1
@@ -548,6 +567,39 @@ def get_experience_analytics(
         {"period": "Afternoon", "count": afternoon},
         {"period": "Evening", "count": evening},
     ]
+    period_ranges = {
+        "Morning": list(range(6, 12)),
+        "Afternoon": list(range(12, 18)),
+        "Evening": list(range(18, 24)) + list(range(0, 6)),
+    }
+    peak_heatmap = [
+        {
+            "period": p,
+            "values": [hourly_counts.get(h, 0) if h in hours else 0 for h in range(24)],
+        }
+        for p, hours in period_ranges.items()
+    ]
+
+    # Top performing services (owner's experiences ranked by itinerary adds)
+    owner_exp_rows = db.query(Experience.id).filter(Experience.owner_id == current_user.id).all()
+    owner_exp_ids = [r[0] for r in owner_exp_rows]
+    top_services = []
+    if owner_exp_ids:
+        adds_by_exp = dict(
+            db.query(ItineraryAdd.experience_id, func.count(ItineraryAdd.id))
+            .filter(ItineraryAdd.experience_id.in_(owner_exp_ids))
+            .group_by(ItineraryAdd.experience_id)
+            .all()
+        )
+        exp_map = {
+            e.id: e
+            for e in db.query(Experience).filter(Experience.id.in_(owner_exp_ids)).all()
+        }
+        ranked = sorted(owner_exp_ids, key=lambda i: adds_by_exp.get(i, 0), reverse=True)
+        top_services = [
+            {"id": i, "title": exp_map[i].title, "views": adds_by_exp.get(i, 0)}
+            for i in ranked[:6] if adds_by_exp.get(i, 0) > 0
+        ]
 
     return {
         "experience_id": exp.id,
@@ -555,10 +607,14 @@ def get_experience_analytics(
         "total_itinerary_adds": total_adds,
         "unique_visitors": unique_visitors,
         "visitor_types": visitor_types,
+        "top_countries": top_countries,
+        "views_over_time": views_over_time,
         "views_by_rating": views_by_rating,
         "active_days": active_days,
         "hourly": hourly,
         "peak_times": peak_times,
+        "peak_heatmap": peak_heatmap,
+        "top_services": top_services,
     }
 
 

@@ -67,6 +67,8 @@ def register(user_in: UserRegister, db: Session = Depends(get_db)):
         full_name=user_in.full_name,
         phone_number=user_in.phone_number,
         role=user_in.role,
+        visitor_type=user_in.visitor_type if user_in.role == "tourist" else None,
+        country=user_in.country if user_in.role == "tourist" else None,
     )
     db.add(user)
     db.commit()
