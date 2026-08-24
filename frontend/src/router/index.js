@@ -31,6 +31,7 @@ import ProvincePage from '../views/ProvincePage.vue'
 import DestinationDetail from '../views/DestinationDetail.vue'
 import KznDirectoryPage from '../views/KznDirectoryPage.vue'
 import KznItemDetail from '../views/KznItemDetail.vue'
+import HotspotAnalytics from '../views/HotspotAnalytics.vue'
 
 const routes = [
   { path: '/', name: 'Home', component: HomePage },
@@ -59,6 +60,7 @@ const routes = [
   { path: '/host/edit/:id', name: 'EditHotspot', component: EditHotspot, meta: { requiresAuth: true, requiresHost: true } },
   { path: '/host/reviews', name: 'HostReviews', component: HostReviews, meta: { requiresAuth: true, requiresHost: true } },
   { path: '/host/performance', name: 'HostPerformance', component: HostPerformance, meta: { requiresAuth: true, requiresHost: true } },
+  { path: '/host/analytics/:id', name: 'HotspotAnalytics', component: HotspotAnalytics, meta: { requiresAuth: true, requiresHost: true } },
   { path: '/plan-trip/edit/:id', name: 'EditTrip', component: EditTripPage, meta: { requiresAuth: true } },
   { path: '/journal', name: 'TravelJournal', component: TravelJournalPage, meta: { requiresAuth: true } },
   { path: '/reviews', name: 'ReviewHistory', component: ReviewHistoryPage, meta: { requiresAuth: true } },

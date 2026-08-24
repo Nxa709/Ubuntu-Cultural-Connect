@@ -154,6 +154,11 @@ export const useExperienceStore = defineStore('experience', () => {
     return r.data
   }
 
+  async function getHotspotAnalytics(id) {
+    const r = await api.get(`/experiences/${id}/analytics`)
+    return r.data
+  }
+
   async function fetchMyJournals() {
     const r = await api.get('/experiences/journals/mine')
     myJournals.value = r.data
@@ -209,7 +214,7 @@ export const useExperienceStore = defineStore('experience', () => {
     uploadImage, updateExperience, deleteExperience, toggleActive, fetchMyExperiences, fetchOwnerStats,
     fetchPreferences, savePreferences, fetchRecommended,
     fetchMyTrips, createTrip, deleteTrip, updateTrip, addTripDay, updateTripDay, deleteTripDay, getItinerary, addExperienceToTrip,
-    getRatings, submitRating, getAnalytics,
+    getRatings, submitRating, getAnalytics, getHotspotAnalytics,
     fetchMyJournals, createJournal, updateJournal, deleteJournal, fetchMyReviews,
     fetchHostReviews, fetchHostPerformance,
   }

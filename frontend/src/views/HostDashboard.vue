@@ -100,6 +100,12 @@
           </div>
 
           <div class="hc-actions">
+            <router-link :to="`/host/analytics/${exp.id}`" class="hc-btn hc-btn-analytics">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+              </svg>
+              Analytics
+            </router-link>
             <router-link :to="`/host/edit/${exp.id}`" class="hc-btn" :class="exp.rejected_at ? 'hc-btn-appeal' : 'hc-btn-edit'">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -610,6 +616,17 @@ onMounted(async () => {
   color: #fff;
 }
 .hc-btn-edit:hover { background: #1976D2; }
+
+.hc-btn-analytics {
+  background: var(--surface-secondary);
+  color: var(--text-color);
+  border: 1px solid var(--border-strong);
+}
+.hc-btn-analytics:hover {
+  background: var(--accent-light);
+  color: var(--accent-text);
+  border-color: var(--accent);
+}
 
 .hc-btn-appeal {
   background: var(--accent-fill);

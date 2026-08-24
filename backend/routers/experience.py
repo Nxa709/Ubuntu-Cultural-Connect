@@ -474,6 +474,94 @@ def get_experience(exp_id: int, db: Session = Depends(get_db)):
     return _exp_to_response(exp, db)
 
 
+def _is_local_visitor(user) -> bool:
+    """Heuristic: SA users have a phone starting with +27 (or a local 0/0xx format)."""
+    phone = (user.phone_number or "").strip()
+    if not phone:
+        return False
+    return phone.startswith("+27") or phone.startswith("27") or phone.startswith("0")
+
+
+# ── Per-hotspot analytics ─────────────────────────────────
+@router.get("/{exp_id}/analytics")
+def get_experience_analytics(
+    exp_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    exp = db.query(Experience).filter(Experience.id == exp_id).first()
+    if not exp:
+        raise HTTPException(status_code=404, detail="Experience not found")
+    if not (current_user.role.value == "admin" or exp.owner_id == current_user.id):
+        raise HTTPException(status_code=403, detail="Not authorized to view this analytics")
+
+    adds = (
+        db.query(ItineraryAdd)
+        .options(selectinload(ItineraryAdd.user))
+        .filter(ItineraryAdd.experience_id == exp_id)
+        .all()
+    )
+
+    total_adds = len(adds)
+    unique_visitors = len(set(a.user_id for a in adds))
+
+    # Visitor type (local vs international)
+    local = sum(1 for a in adds if _is_local_visitor(a.user))
+    international = total_adds - local
+    visitor_types = [
+        {"type": "Local", "count": local},
+        {"type": "International", "count": international},
+    ]
+
+    # Views per star rating (an add counts toward the rating that visitor gave this hotspot)
+    rating_views = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+    if adds:
+        user_ids = list(set(a.user_id for a in adds))
+        rating_map = dict(
+            db.query(Rating.user_id, Rating.score)
+            .filter(Rating.experience_id == exp_id, Rating.user_id.in_(user_ids))
+            .all()
+        )
+        for a in adds:
+            sc = rating_map.get(a.user_id)
+            if sc:
+                rating_views[sc] = rating_views.get(sc, 0) + 1
+    views_by_rating = [{"rating": r, "views": rating_views.get(r, 0)} for r in range(1, 6)]
+
+    # Most active days (Mon..Sun)
+    DAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    dow_counts = defaultdict(int)
+    for a in adds:
+        dow_counts[a.created_at.weekday()] += 1
+    active_days = [{"day": DAY_NAMES[i], "count": dow_counts.get(i, 0)} for i in range(7)]
+
+    # Peak times (hourly detail + morning/afternoon/evening buckets)
+    hourly_counts = defaultdict(int)
+    for a in adds:
+        hourly_counts[a.created_at.hour] += 1
+    hourly = [{"hour": h, "count": hourly_counts.get(h, 0)} for h in range(24)]
+    morning = sum(hourly_counts[h] for h in range(6, 12))
+    afternoon = sum(hourly_counts[h] for h in range(12, 18))
+    evening = sum(hourly_counts[h] for h in range(18, 24)) + sum(hourly_counts[h] for h in range(0, 6))
+    peak_times = [
+        {"period": "Morning", "count": morning},
+        {"period": "Afternoon", "count": afternoon},
+        {"period": "Evening", "count": evening},
+    ]
+
+    return {
+        "experience_id": exp.id,
+        "title": exp.title,
+        "total_itinerary_adds": total_adds,
+        "unique_visitors": unique_visitors,
+        "visitor_types": visitor_types,
+        "views_by_rating": views_by_rating,
+        "active_days": active_days,
+        "hourly": hourly,
+        "peak_times": peak_times,
+    }
+
+
 @router.post("/", response_model=ExperienceResponse, status_code=201)
 def create_experience(
     data: ExperienceCreate,
