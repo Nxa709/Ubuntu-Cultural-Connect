@@ -121,6 +121,23 @@ class Rating(Base):
     experience = relationship("Experience", back_populates="ratings")
 
 
+class ExperienceEvent(Base):
+    """Tracks real visitor actions against an experience (profile views, search
+    appearances, and contact clicks). Used by business analytics to separate
+    'interest' (views/searches) from 'intent' (itinerary adds / contact)."""
+
+    __tablename__ = "experience_events"
+
+    id = Column(Integer, primary_key=True, index=True)
+    experience_id = Column(Integer, ForeignKey("experiences.id"), nullable=False, index=True)
+    event_type = Column(String, nullable=False, index=True)  # profile_view | search_appearance | contact_click
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), index=True)
+
+    experience = relationship("Experience", backref="events")
+    user = relationship("User")
+
+
 class TravelJournal(Base):
     __tablename__ = "travel_journals"
 

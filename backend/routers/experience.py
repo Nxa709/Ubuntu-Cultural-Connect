@@ -9,7 +9,7 @@ from sqlalchemy import func, extract
 from database import get_db
 from models.user import User
 from models.experience import (
-    Experience, UserPreference, Trip, TripDay, ItineraryAdd, Rating, CulturalCategory, TravelJournal,
+    Experience, ExperienceEvent, UserPreference, Trip, TripDay, ItineraryAdd, Rating, CulturalCategory, TravelJournal,
 )
 from models.notification import Notification
 from schemas.experience import (
@@ -22,7 +22,7 @@ from schemas.experience import (
     HostReviewItem, ExperiencePerformance,
     GenerateItineraryRequest, GenerateItineraryResponse, GeneratedDay, ItineraryEntry,
 )
-from routers.auth import get_current_user
+from routers.auth import get_current_user, get_optional_user
 from cache import get as cache_get, set as cache_set
 
 router = APIRouter(prefix="/api/experiences", tags=["experiences"])
@@ -94,6 +94,17 @@ def _trip_to_response(trip: Trip) -> TripResponse:
         created_at=trip.created_at,
         days=days,
     )
+
+
+# ── Lightweight event tracking helper ─────────────────────
+def _record_event(db: Session, experience_id: int, event_type: str, user=None):
+    """Insert an ExperienceEvent row (profile_view | search_appearance | contact_click)."""
+    db.add(ExperienceEvent(
+        experience_id=experience_id,
+        event_type=event_type,
+        user_id=user.id if user else None,
+    ))
+    db.flush()
 
 
 # ── Itinerary-add tracking helper ──────────────────────────
@@ -360,6 +371,31 @@ def list_experiences(
     q = q.filter(Experience.is_active == True, Experience.is_approved == True)
     exps = q.all()
 
+    # Track search appearances — how often each experience surfaces in results.
+    if search and search.strip():
+        for e in exps:
+            _record_event(db, e.id, "search_appearance")
+        db.commit()
+        # Searches must count every time, so never serve a cached list.
+        result_ids = [e.id for e in exps]
+        if result_ids:
+            rating_agg = {}
+            itinerary_counts = {}
+            rating_rows = db.query(
+                Rating.experience_id, func.avg(Rating.score), func.count(Rating.id)
+            ).filter(
+                Rating.experience_id.in_(result_ids), Rating.is_approved == True
+            ).group_by(Rating.experience_id).all()
+            rating_agg = {r[0]: (r[1], r[2]) for r in rating_rows}
+
+            itin_rows = db.query(
+                ItineraryAdd.experience_id, func.count(ItineraryAdd.id)
+            ).filter(ItineraryAdd.experience_id.in_(result_ids)).group_by(ItineraryAdd.experience_id).all()
+            itinerary_counts = dict(itin_rows)
+
+            return [_exp_to_response(e, rating_agg=rating_agg, itinerary_counts=itinerary_counts) for e in exps]
+        return []
+
     ids = [e.id for e in exps]
 
     rating_agg = {}
@@ -472,6 +508,38 @@ def get_experience(exp_id: int, db: Session = Depends(get_db)):
     if not exp:
         raise HTTPException(status_code=404, detail="Experience not found")
     return _exp_to_response(exp, db)
+
+
+# ── Event tracking (real visitor actions for business analytics) ──
+@router.post("/{exp_id}/view")
+def track_profile_view(
+    exp_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_optional_user),
+):
+    """Record that a visitor opened this experience's profile page."""
+    exp = db.query(Experience).filter(Experience.id == exp_id).first()
+    if not exp:
+        raise HTTPException(status_code=404, detail="Experience not found")
+    if not (current_user and exp.owner_id == current_user.id):
+        _record_event(db, exp.id, "profile_view", current_user)
+        db.commit()
+    return {"ok": True, "event": "profile_view"}
+
+
+@router.post("/{exp_id}/contact")
+def track_contact_click(
+    exp_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_optional_user),
+):
+    """Record that a visitor requested contact / booking details for this hotspot."""
+    exp = db.query(Experience).filter(Experience.id == exp_id).first()
+    if not exp:
+        raise HTTPException(status_code=404, detail="Experience not found")
+    _record_event(db, exp.id, "contact_click", current_user)
+    db.commit()
+    return {"ok": True, "event": "contact_click"}
 
 
 def _visitor_type(user) -> str:
@@ -624,6 +692,14 @@ def create_experience(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    # Each business owner may register at most 3 hotspots.
+    owner_count = db.query(Experience).filter(Experience.owner_id == current_user.id).count()
+    if owner_count >= 3:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="You can register a maximum of 3 hotspots. Delete or deactivate one before adding another.",
+        )
+
     exp = Experience(
         title=data.title,
         description=data.description,
@@ -1301,11 +1377,18 @@ def get_analytics_overview(
             "prev_total_views": 0,
             "unique_visitors": 0,
             "prev_unique_visitors": 0,
+            "total_profile_views": 0,
+            "prev_total_profile_views": 0,
+            "total_searches": 0,
+            "prev_total_searches": 0,
+            "total_contacts": 0,
+            "prev_total_contacts": 0,
             "star_distribution": {1: 0, 2: 0, 3: 0, 4: 0, 5: 0},
             "monthly_customers": [],
             "monthly_ratings": [],
             "interest_over_time": [],
-            "interest_granularity": "month",
+            "interest_granularity": "day",
+            "profile_views_over_time": [],
             "experience_performance": [],
             "recent_reviews": [],
         }
@@ -1375,13 +1458,43 @@ def get_analytics_overview(
     unique_visitors = len(set(a.user_id for a in itin_adds))
     prev_unique_visitors = len(set(a.user_id for a in prev_itin_adds))
 
-    daily_buckets = days is not None and days <= 30
-    monthly_interest = defaultdict(int)
+    # Interest over time — always daily so the frontend can re-bucket to day/week/month.
+    daily_interest = defaultdict(int)
     for a in itin_adds:
-        key = a.created_at.strftime("%Y-%m-%d") if daily_buckets else a.created_at.strftime("%Y-%m")
-        monthly_interest[key] += 1
-    interest_over_time = [{"period": k, "count": c} for k, c in sorted(monthly_interest.items())]
-    interest_granularity = "day" if daily_buckets else "month"
+        daily_interest[a.created_at.strftime("%Y-%m-%d")] += 1
+    interest_over_time = [{"period": k, "count": c} for k, c in sorted(daily_interest.items())]
+    interest_granularity = "day"
+
+    # ── Tracked events: profile views, search appearances, contact clicks ──
+    def _events_between(event_type, start, end=None):
+        q = db.query(ExperienceEvent).filter(
+            ExperienceEvent.experience_id.in_(my_exp_ids),
+            ExperienceEvent.event_type == event_type,
+        )
+        if start:
+            q = q.filter(ExperienceEvent.created_at >= start)
+        if end:
+            q = q.filter(ExperienceEvent.created_at < end)
+        return q.all()
+
+    prof_events = _events_between("profile_view", cutoff)
+    prev_prof_events = _events_between("profile_view", prev_cutoff, cutoff) if prev_cutoff else []
+    search_events = _events_between("search_appearance", cutoff)
+    prev_search_events = _events_between("search_appearance", prev_cutoff, cutoff) if prev_cutoff else []
+    contact_events = _events_between("contact_click", cutoff)
+    prev_contact_events = _events_between("contact_click", prev_cutoff, cutoff) if prev_cutoff else []
+
+    total_profile_views = len(prof_events)
+    prev_total_profile_views = len(prev_prof_events)
+    total_searches = len(search_events)
+    prev_total_searches = len(prev_search_events)
+    total_contacts = len(contact_events)
+    prev_total_contacts = len(prev_contact_events)
+
+    daily_profile_views = defaultdict(int)
+    for ev in prof_events:
+        daily_profile_views[ev.created_at.strftime("%Y-%m-%d")] += 1
+    profile_views_over_time = [{"period": k, "count": c} for k, c in sorted(daily_profile_views.items())]
 
     # ── Per-experience performance within the selected period ──
     views_by_exp = defaultdict(int)
@@ -1390,6 +1503,13 @@ def get_analytics_overview(
     prev_views_by_exp = defaultdict(int)
     for a in prev_itin_adds:
         prev_views_by_exp[a.experience_id] += 1
+
+    searches_by_exp = defaultdict(int)
+    for ev in search_events:
+        searches_by_exp[ev.experience_id] += 1
+    contacts_by_exp = defaultdict(int)
+    for ev in contact_events:
+        contacts_by_exp[ev.experience_id] += 1
 
     scores_by_exp = defaultdict(list)
     for r in ratings:
@@ -1416,6 +1536,8 @@ def get_analytics_overview(
             "image_url": e.image_url,
             "category": e.category.value if hasattr(e.category, "value") else e.category,
             "views": views_by_exp.get(e.id, 0),
+            "searches": searches_by_exp.get(e.id, 0),
+            "contacts": contacts_by_exp.get(e.id, 0),
             "reviews": len(scores),
             "avg_rating": cur_avg,
             "status": _perf_status(cur_avg),
@@ -1456,11 +1578,18 @@ def get_analytics_overview(
         "prev_total_views": prev_total_views,
         "unique_visitors": unique_visitors,
         "prev_unique_visitors": prev_unique_visitors,
+        "total_profile_views": total_profile_views,
+        "prev_total_profile_views": prev_total_profile_views,
+        "total_searches": total_searches,
+        "prev_total_searches": prev_total_searches,
+        "total_contacts": total_contacts,
+        "prev_total_contacts": prev_total_contacts,
         "star_distribution": star_dist,
         "monthly_customers": mc_list,
         "monthly_ratings": mr_list,
         "interest_over_time": interest_over_time,
         "interest_granularity": interest_granularity,
+        "profile_views_over_time": profile_views_over_time,
         "experience_performance": experience_performance,
         "recent_reviews": recent_reviews,
     }

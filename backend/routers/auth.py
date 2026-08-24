@@ -16,6 +16,7 @@ from services.auth_service import (
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
+optional_oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login", auto_error=False)
 
 
 def get_current_user(
@@ -42,6 +43,22 @@ def get_current_user(
             detail="User not found",
         )
     return user
+
+
+def get_optional_user(
+    token: str = Depends(optional_oauth2_scheme),
+    db: Session = Depends(get_db),
+):
+    """Returns the current user when a valid token is supplied, else None.
+
+    Used by lightweight tracking endpoints so anonymous visitors can still
+    contribute analytics without being forced to authenticate."""
+    if not token:
+        return None
+    payload = decode_access_token(token)
+    if payload is None or payload.get("sub") is None:
+        return None
+    return db.query(User).filter(User.id == int(payload["sub"])).first()
 
 
 # ── Register ──────────────────────────────────────────────

@@ -24,6 +24,7 @@ admin = User(
     role=UserRole.admin, is_verified=True,
 )
 
+# 25 business owners so the 50 hotspots stay at <= 3 per owner (2 each).
 hosts = [
     User(email="sipho@ubuntu.com", hashed_password=HOST_PASS,
          full_name="Sipho Dlamini", phone_number="082 555 2001",
@@ -37,33 +38,96 @@ hosts = [
     User(email="zanele@ubuntu.com", hashed_password=HOST_PASS,
          full_name="Zanele Ndlovu", phone_number="082 555 2004",
          role=UserRole.business_owner, is_verified=True),
+    User(email="host5@ubuntu.com", hashed_password=HOST_PASS,
+         full_name="Naledi Mkhize", phone_number="082 555 2005",
+         role=UserRole.business_owner, is_verified=True),
+    User(email="host6@ubuntu.com", hashed_password=HOST_PASS,
+         full_name="Thulani Zuma", phone_number="082 555 2006",
+         role=UserRole.business_owner, is_verified=True),
+    User(email="host7@ubuntu.com", hashed_password=HOST_PASS,
+         full_name="Busisiwe Nkosi", phone_number="082 555 2007",
+         role=UserRole.business_owner, is_verified=True),
+    User(email="host8@ubuntu.com", hashed_password=HOST_PASS,
+         full_name="Sibusiso Mahlangu", phone_number="082 555 2008",
+         role=UserRole.business_owner, is_verified=True),
+    User(email="host9@ubuntu.com", hashed_password=HOST_PASS,
+         full_name="Lindiwe Mthembu", phone_number="082 555 2009",
+         role=UserRole.business_owner, is_verified=True),
+    User(email="host10@ubuntu.com", hashed_password=HOST_PASS,
+         full_name="Mandla Khumalo", phone_number="082 555 2010",
+         role=UserRole.business_owner, is_verified=True),
+    User(email="host11@ubuntu.com", hashed_password=HOST_PASS,
+         full_name="Ayanda Dlamini", phone_number="082 555 2011",
+         role=UserRole.business_owner, is_verified=True),
+    User(email="host12@ubuntu.com", hashed_password=HOST_PASS,
+         full_name="Phumzile Mokoena", phone_number="082 555 2012",
+         role=UserRole.business_owner, is_verified=True),
+    User(email="host13@ubuntu.com", hashed_password=HOST_PASS,
+         full_name="Jabulani Sithole", phone_number="082 555 2013",
+         role=UserRole.business_owner, is_verified=True),
+    User(email="host14@ubuntu.com", hashed_password=HOST_PASS,
+         full_name="Nomvula Zulu", phone_number="082 555 2014",
+         role=UserRole.business_owner, is_verified=True),
+    User(email="host15@ubuntu.com", hashed_password=HOST_PASS,
+         full_name="Thabo Ngubane", phone_number="082 555 2015",
+         role=UserRole.business_owner, is_verified=True),
+    User(email="host16@ubuntu.com", hashed_password=HOST_PASS,
+         full_name="Zodwa Mchunu", phone_number="082 555 2016",
+         role=UserRole.business_owner, is_verified=True),
+    User(email="host17@ubuntu.com", hashed_password=HOST_PASS,
+         full_name="Bongani Ntuli", phone_number="082 555 2017",
+         role=UserRole.business_owner, is_verified=True),
+    User(email="host18@ubuntu.com", hashed_password=HOST_PASS,
+         full_name="Fikile Mavundla", phone_number="082 555 2018",
+         role=UserRole.business_owner, is_verified=True),
+    User(email="host19@ubuntu.com", hashed_password=HOST_PASS,
+         full_name="Sanele Mthembu", phone_number="082 555 2019",
+         role=UserRole.business_owner, is_verified=True),
+    User(email="host20@ubuntu.com", hashed_password=HOST_PASS,
+         full_name="Ntombi Gumede", phone_number="082 555 2020",
+         role=UserRole.business_owner, is_verified=True),
+    User(email="host21@ubuntu.com", hashed_password=HOST_PASS,
+         full_name="Mlungisi Cele", phone_number="082 555 2021",
+         role=UserRole.business_owner, is_verified=True),
+    User(email="host22@ubuntu.com", hashed_password=HOST_PASS,
+         full_name="Thandeka Mngoma", phone_number="082 555 2022",
+         role=UserRole.business_owner, is_verified=True),
+    User(email="host23@ubuntu.com", hashed_password=HOST_PASS,
+         full_name="Vusi Mthethwa", phone_number="082 555 2023",
+         role=UserRole.business_owner, is_verified=True),
+    User(email="host24@ubuntu.com", hashed_password=HOST_PASS,
+         full_name="Nompilo Zondi", phone_number="082 555 2024",
+         role=UserRole.business_owner, is_verified=True),
+    User(email="host25@ubuntu.com", hashed_password=HOST_PASS,
+         full_name="Lungile Makhubu", phone_number="082 555 2025",
+         role=UserRole.business_owner, is_verified=True),
 ]
 
 tourists = [
     User(email="lebo@ubuntu.com", hashed_password=TOURIST_PASS,
          full_name="Lebo Matlala", phone_number="082 555 3001",
-         role=UserRole.tourist, is_verified=True),
+         role=UserRole.tourist, visitor_type="local", country="South Africa", is_verified=True),
     User(email="thandi@ubuntu.com", hashed_password=TOURIST_PASS,
          full_name="Thandiwe Molefe", phone_number="082 555 3002",
-         role=UserRole.tourist, is_verified=True),
+         role=UserRole.tourist, visitor_type="local", country="South Africa", is_verified=True),
     User(email="james@ubuntu.com", hashed_password=TOURIST_PASS,
          full_name="James van Zyl", phone_number="082 555 3003",
-         role=UserRole.tourist, is_verified=True),
+         role=UserRole.tourist, visitor_type="international", country="United Kingdom", is_verified=True),
     User(email="priya@ubuntu.com", hashed_password=TOURIST_PASS,
          full_name="Priya Naidoo", phone_number="082 555 3004",
-         role=UserRole.tourist, is_verified=True),
+         role=UserRole.tourist, visitor_type="international", country="India", is_verified=True),
     User(email="sarah@ubuntu.com", hashed_password=TOURIST_PASS,
          full_name="Sarah Botha", phone_number="082 555 3005",
-         role=UserRole.tourist, is_verified=True),
+         role=UserRole.tourist, visitor_type="local", country="South Africa", is_verified=True),
     User(email="michael@ubuntu.com", hashed_password=TOURIST_PASS,
          full_name="Michael Pretorius", phone_number="082 555 3006",
-         role=UserRole.tourist, is_verified=True),
+         role=UserRole.tourist, visitor_type="international", country="United States", is_verified=True),
     User(email="amahle@ubuntu.com", hashed_password=TOURIST_PASS,
          full_name="Amahle Zulu", phone_number="082 555 3007",
-         role=UserRole.tourist, is_verified=True),
+         role=UserRole.tourist, visitor_type="local", country="South Africa", is_verified=True),
     User(email="daniel@ubuntu.com", hashed_password=TOURIST_PASS,
          full_name="Daniel Mabaso", phone_number="082 555 3008",
-         role=UserRole.tourist, is_verified=True),
+         role=UserRole.tourist, visitor_type="international", country="Germany", is_verified=True),
 ]
 
 db.add_all([admin] + hosts + tourists)
@@ -80,15 +144,9 @@ experiences_data = [
     ("Ocean Basket Musgrave",
      "Popular seafood restaurant in Musgrave, Durban offering a wide selection of fresh fish, sushi, and Mediterranean-inspired seafood dishes in a family-friendly setting.",
      CulturalCategory.traditional_cooking, "123 Musgrave Rd, Musgrave, Durban, 4001, KZN", "KwaZulu-Natal", 250, 1.5, 30, True),
-    ("Nando's Ballito",
-     "The iconic South African flame-grilled peri-peri chicken restaurant in Ballito, serving spicy chicken meals with Portuguese-inspired sides in a casual setting.",
-     CulturalCategory.traditional_cooking, "5 Leonora Dr, Ballito, 4420, KZN", "KwaZulu-Natal", 120, 1.5, 25, True),
     ("The Spice Restaurant & Bar",
      "An upscale dining venue in uMhlanga offering a fusion of African and international cuisine, craft cocktails, and panoramic views of the Indian Ocean.",
      CulturalCategory.traditional_cooking, "27 Marine Terrace, uMhlanga, 4320, KZN", "KwaZulu-Natal", 200, 1.5, 30, True),
-    ("Route 56 Restaurant",
-     "A charming restaurant in Hillcrest serving hearty South African fare including steaks, burgers, and traditional dishes in a warm country-style setting.",
-     CulturalCategory.traditional_cooking, "56 Old Main Rd, Hillcrest, 3610, KZN", "KwaZulu-Natal", 250, 1.5, 25, True),
     ("Tiger's Milk Ballito",
      "A vibrant sports bar and restaurant in Ballito's Lifestyle Centre known for gourmet burgers, wood-fired pizzas, craft beers, and a lively social atmosphere.",
      CulturalCategory.traditional_cooking, "Shop 5, Lifestyle Centre, Ballito, 4420, KZN", "KwaZulu-Natal", 200, 1.5, 30, True),
@@ -108,12 +166,6 @@ experiences_data = [
     ("Durban Natural Science Museum",
      "Located in the Durban City Hall, this free museum features natural history exhibits including dinosaur fossils, taxidermy, and educational displays on southern African wildlife.",
      CulturalCategory.heritage_tours, "City Hall, 1st Floor, Durban, 4001, KZN", "KwaZulu-Natal", 0, 1.5, 30, True),
-    ("Old Courthouse Museum",
-     "A beautifully preserved Victorian courthouse in central Durban with exhibits on the city's legal history, colonial architecture, and early Durban life.",
-     CulturalCategory.heritage_tours, "1 Aliwal St, Durban, 4001, KZN", "KwaZulu-Natal", 0, 1.0, 20, True),
-    ("Port Natal Maritime Museum",
-     "Explore historic ships including the SAS Durban minesweeper and learn about Durban's development as one of Africa's busiest ports through maritime artifacts.",
-     CulturalCategory.heritage_tours, "1 King Shaka Ave, Point, Durban, 4001, KZN", "KwaZulu-Natal", 10, 1.0, 20, True),
     ("Bergtheil Museum",
      "Set in a historic cotton plantation house in Westville, this museum tells the story of early German settlers and colonial life in the Durban area.",
      CulturalCategory.heritage_tours, "16 Flamingo Ave, Westville, 3630, KZN", "KwaZulu-Natal", 10, 1.5, 20, True),
@@ -139,22 +191,13 @@ experiences_data = [
     ("Paradise Valley Nature Reserve",
      "A 100-hectare reserve in New Germany featuring grasslands, forest trails, a river, and abundant birdlife — a peaceful escape into nature within the urban area.",
      CulturalCategory.nature_wildlife, "101 Paradise Rd, New Germany, 3610, KZN", "KwaZulu-Natal", 0, 2.0, 20, True),
-    ("New Germany Nature Reserve",
-     "A community nature reserve offering walking trails, picnic spots, and diverse bird and small mammal viewing in a restored grassland and forest environment.",
-     CulturalCategory.nature_wildlife, "11 St Johns Ave, New Germany, 3620, KZN", "KwaZulu-Natal", 0, 2.0, 20, True),
-    ("Roosfontein Nature Reserve",
-     "A 65-hectare reserve in Westville with scenic trails through grasslands and forest, excellent birdwatching, and panoramic views of the surrounding valley.",
-     CulturalCategory.nature_wildlife, "400 Stella Rd, Westville, 3629, KZN", "KwaZulu-Natal", 0, 2.0, 20, True),
 
     # ═══════════════════════════════════════════════════════
-    # 4. GAME RESERVES (6)
+    # 4. GAME RESERVES (4)
     # ═══════════════════════════════════════════════════════
     ("Hluhluwe-iMfolozi Park — Hluhluwe Section",
      "Africa's oldest proclaimed nature reserve, this section offers exceptional game viewing of the Big Five in rolling hills of savannah and riverine forest.",
      CulturalCategory.nature_wildlife, "Hluhluwe, 3960, KZN", "KwaZulu-Natal", 120, 8.0, 15, True),
-    ("Hluhluwe-iMfolozi Park — iMfolozi Section",
-     "The wilderness section of this iconic reserve, known for its wild landscapes, black rhino conservation success, and incredible walking safaris.",
-     CulturalCategory.nature_wildlife, "iMfolozi, 3960, KZN", "KwaZulu-Natal", 120, 8.0, 15, True),
     ("Hluhluwe-iMfolozi Park — Memorial Gate",
      "The main entrance to this world-renowned game reserve, offering self-drive safaris, guided game drives, and access to over 90,000 hectares of pristine African bush.",
      CulturalCategory.nature_wildlife, "Hluhluwe, 3960, KZN", "KwaZulu-Natal", 120, 8.0, 20, True),
@@ -163,9 +206,6 @@ experiences_data = [
      CulturalCategory.nature_wildlife, "uMkhuze, 3960, KZN", "KwaZulu-Natal", 120, 8.0, 15, True),
     ("iSimangaliso Wetland Park — Southern Section",
      "A UNESCO World Heritage Site featuring Lake St Lucia, hippos, crocodiles, and prolific birdlife in Africa's largest estuarine system.",
-     CulturalCategory.nature_wildlife, "St Lucia, 3936, KZN", "KwaZulu-Natal", 200, 8.0, 20, True),
-    ("iSimangaliso Wetland Park — Northern Section",
-     "The wild northern reaches of iSimangaliso with pristine beaches, coral reefs, leatherback turtle nesting, and Lake Sibaya — a paradise for nature lovers.",
      CulturalCategory.nature_wildlife, "St Lucia, 3936, KZN", "KwaZulu-Natal", 200, 8.0, 20, True),
 
     # ═══════════════════════════════════════════════════════
@@ -177,9 +217,6 @@ experiences_data = [
     ("Manguzi Guest Lodge",
      "A well-appointed guest lodge in Manguzi providing modern accommodation with en-suite rooms, a restaurant serving local cuisine, and easy access to nature reserves.",
      CulturalCategory.accommodation, "P230, Manguzi, 3973, KZN", "KwaZulu-Natal", 950, 8.0, 12, True),
-    ("House 34 Bed and Breakfast",
-     "A cosy B&B in Mpophomeni offering affordable accommodation, personal service, and a gateway to exploring the Midlands Meander and uMgungundlovu heritage sites.",
-     CulturalCategory.accommodation, "34 Mpophomeni, 3219, KZN", "KwaZulu-Natal", 500, 8.0, 8, True),
     ("The Ndumo Wilderness Camp",
      "An eco-lodge within the Ndumo Game Reserve offering luxury tented accommodation, guided game drives, and birding experiences in a pristine wilderness setting.",
      CulturalCategory.accommodation, "Ndumo Game Reserve, 3973, KZN", "KwaZulu-Natal", 1200, 8.0, 8, True),
@@ -199,21 +236,15 @@ experiences_data = [
     ("Gogo's Tales at Phansi Museum",
      "Experience the magic of Gogo (grandmother) storytelling at the Phansi Museum, where traditional Zulu tales come alive with song, dance, and audience participation.",
      CulturalCategory.storytelling, "500 Roberts Rd, Glenwood, Durban, 4001, KZN", "KwaZulu-Natal", 50, 1.5, 20, True),
-    ("Zulu Folklore Sessions at KwaMuhle",
-     "Educational storytelling sessions at KwaMuhle Museum exploring Zulu folklore, creation myths, and the oral tradition that has preserved Zulu culture for centuries.",
-     CulturalCategory.storytelling, "130 Bram Fischer Rd, Durban, 4001, KZN", "KwaZulu-Natal", 0, 1.5, 25, True),
     ("African Storytelling Nights at The Bat Centre",
      "An evening of African storytelling at Durban's Bat Centre featuring professional storytellers, live music, and tales from Zulu, Xhosa, and other South African traditions.",
      CulturalCategory.storytelling, "45 Maritime Pl, Durban, 4001, KZN", "KwaZulu-Natal", 80, 1.5, 30, True),
     ("Eshowe Cultural Storytelling Experience",
      "An immersive storytelling experience in Eshowe where local elders share the history of the Zulu kingdom, Shaka's legacy, and the traditions of King Cetshwayo's people.",
      CulturalCategory.storytelling, "17 Main St, Eshowe, 3815, KZN", "KwaZulu-Natal", 200, 2.5, 15, True),
-    ("Emakhaya Storytelling Circle",
-     "A free community storytelling circle in Durban where people gather to share stories, poetry, and oral traditions in a welcoming and culturally rich environment.",
-     CulturalCategory.storytelling, "Mbabane Rd, Durban, 4001, KZN", "KwaZulu-Natal", 0, 2.0, 20, True),
 
     # ═══════════════════════════════════════════════════════
-    # 7. CULTURAL ATTIRE MARKET (6)
+    # 7. CULTURAL ATTIRE MARKET (4)
     # ═══════════════════════════════════════════════════════
     ("Victoria Street Market",
      "Durban's iconic indoor market offering a vibrant array of African crafts, traditional clothing, beadwork, spices, and souvenirs in a historic building.",
@@ -221,21 +252,15 @@ experiences_data = [
     ("Muthi Traditional Market",
      "Durban's famous muthi (traditional medicine) market where sangomas and inyangas sell herbs, roots, and traditional remedies alongside cultural attire and artifacts.",
      CulturalCategory.textile_weaving, "14 Glass St, Durban, 4001, KZN", "KwaZulu-Natal", 0, 2.0, 25, True),
-    ("Early Morning Market (Ezimbuzi)",
-     "A bustling traditional market in Durban known for its fresh produce, but also offering traditional Zulu attire, beadwork, and cultural crafts in a lively atmosphere.",
-     CulturalCategory.textile_weaving, "124 Berea Rd, Durban, 4001, KZN", "KwaZulu-Natal", 0, 2.0, 30, True),
     ("Inanda Craft & Design Centre",
      "A community craft centre in Inanda showcasing Zulu pottery, weaving, beadwork, and traditional attire made by local artisans, supporting sustainable livelihoods.",
      CulturalCategory.textile_weaving, "200 Inanda Rd, Inanda, 4300, KZN", "KwaZulu-Natal", 0, 2.0, 20, True),
     ("KwaMashu Craft Market",
      "A vibrant township market in KwaMashu offering authentic Zulu crafts, traditional clothing, beaded jewelry, and home decor made by local community artisans.",
      CulturalCategory.textile_weaving, "12 KwaMashu Hwy, KwaMashu, 4013, KZN", "KwaZulu-Natal", 0, 2.0, 25, True),
-    ("Umlazi Mega Township Market",
-     "One of Durban's largest township markets in Umlazi, featuring traditional attire, African fabrics, crafts, and a true taste of local township commerce and culture.",
-     CulturalCategory.textile_weaving, "5 Umlazi Main Rd, Umlazi, 4031, KZN", "KwaZulu-Natal", 0, 2.0, 30, True),
 
     # ═══════════════════════════════════════════════════════
-    # 8. TRADITIONAL HEALING (6)
+    # 8. TRADITIONAL HEALING (5)
     # ═══════════════════════════════════════════════════════
     ("Sangoma Consultation & Cultural Talk",
      "An authentic sangoma consultation in Inanda where a traditional healer explains the calling process, divination using bones, and the role of ancestral spirits in healing.",
@@ -252,12 +277,9 @@ experiences_data = [
     ("Nongoma Traditional Healing Village",
      "Visit a traditional healing village in Nongoma where multiple sangomas practice ancestral healing, offering visitors insight into Zulu spiritual traditions and herbal medicine.",
      CulturalCategory.traditional_healing, "15 Sangoma St, Nongoma, 3950, KZN", "KwaZulu-Natal", 350, 3.0, 8, True),
-    ("Eshowe Ancestral Knowledge Walk",
-     "A guided walk through Eshowe's sacred sites with a traditional healer who shares ancestral knowledge, forest medicine, and the spiritual connection between land and healing.",
-     CulturalCategory.traditional_healing, "5 Heritage Path, Eshowe, 3815, KZN", "KwaZulu-Natal", 250, 2.5, 8, True),
 
     # ═══════════════════════════════════════════════════════
-    # 9. HISTORICAL LANDMARKS (6)
+    # 9. HISTORICAL LANDMARKS (4)
     # ═══════════════════════════════════════════════════════
     ("The Old Fort",
      "Durban's oldest surviving building, built in 1837 by Voortrekkers, later used by British forces, now a heritage museum showcasing early colonial and military history.",
@@ -268,18 +290,12 @@ experiences_data = [
     ("Emmanuel Cathedral",
      "Durban's historic Catholic cathedral built in 1904, featuring stunning Gothic revival architecture, stained glass windows, and a rich multicultural parish history.",
      CulturalCategory.heritage_tours, "44 Cathedral Rd, Durban, 4001, KZN", "KwaZulu-Natal", 0, 1.0, 25, True),
-    ("Hare Krishna Temple of Understanding",
-     "A stunning Hindu temple in Chatsworth with intricate Dravidian architecture, beautiful gardens, and a cultural centre promoting interfaith understanding and Indian heritage.",
-     CulturalCategory.heritage_tours, "50 Bhaktivedanta Swami Rd, Chatsworth, 4030, KZN", "KwaZulu-Natal", 0, 1.5, 30, True),
     ("Juma Masjid Mosque",
      "The largest mosque in the Southern Hemisphere, located in Durban's Grey Street complex, featuring beautiful Islamic architecture and a rich history of the Indian Muslim community.",
      CulturalCategory.heritage_tours, "127 Grey St, Durban, 4001, KZN", "KwaZulu-Natal", 0, 1.0, 25, True),
-    ("Voortrekker/Msunduzi Museum",
-     "A Pietermaritzburg museum chronicling the history of the Voortrekkers, the Anglo-Boer War, and the Msunduzi River Valley's cultural heritage through artifacts and exhibits.",
-     CulturalCategory.heritage_tours, "331 Church St, Pietermaritzburg, 3201, KZN", "KwaZulu-Natal", 15, 1.5, 20, True),
 
     # ═══════════════════════════════════════════════════════
-    # 10. CULTURAL THEATRE (6)
+    # 10. CULTURAL THEATRE (5)
     # ═══════════════════════════════════════════════════════
     ("The Playhouse Theatre",
      "Durban's premier performing arts venue hosting theatre productions, ballet, opera, and music concerts in a beautifully restored Edwardian building.",
@@ -296,22 +312,13 @@ experiences_data = [
     ("The Heritage Theatre",
      "An intimate Durban theatre venue presenting plays, live music, comedy shows, and cultural performances celebrating South African storytelling and performing arts.",
      CulturalCategory.music_dance, "12 Heritage Ave, Durban, 4001, KZN", "KwaZulu-Natal", 150, 2.5, 35, True),
-    ("Pietermaritzburg Theatre",
-     "The Midlands' premier theatre venue hosting professional and community productions, from Shakespeare to contemporary South African drama and musical performances.",
-     CulturalCategory.music_dance, "5 King Edward Ave, Pietermaritzburg, 3201, KZN", "KwaZulu-Natal", 100, 2.5, 40, True),
 
     # ═══════════════════════════════════════════════════════
-    # 11. CULTURAL TOURS (6)
+    # 11. CULTURAL TOURS (4)
     # ═══════════════════════════════════════════════════════
     ("Inanda Heritage Route Tour",
      "A full-day tour of Inanda's rich heritage sites including the Gandhi Settlement, Ohlange Institute, and the Shembe Church's holy village — a journey through South Africa's liberation history.",
      CulturalCategory.heritage_tours, "Inanda, 4300, KZN", "KwaZulu-Natal", 350, 8.0, 12, True),
-    ("Route 56 Cultural & Historical Tour",
-     "A half-day tour exploring Hillcrest's historical sites, cultural landmarks, and scenic beauty with expert guides sharing stories of the area's Zulu and colonial heritage.",
-     CulturalCategory.heritage_tours, "56 Old Main Rd, Hillcrest, 3610, KZN", "KwaZulu-Natal", 250, 4.0, 12, True),
-    ("Durban Township & City Tour",
-     "A comprehensive full-day tour combining Durban's city centre highlights with authentic township visits to KwaMashu and Umlazi, including local meals and community interactions.",
-     CulturalCategory.heritage_tours, "Durban, 4001, KZN", "KwaZulu-Natal", 350, 8.0, 15, True),
     ("PheZulu Cultural Village & Safari",
      "Experience Zulu culture at PheZulu Village with traditional dancing, homestead tours, and a game drive through the Valley of a Thousand Hills for wildlife viewing.",
      CulturalCategory.heritage_tours, "5 PheZulu Rd, Botha's Hill, 3660, KZN", "KwaZulu-Natal", 450, 8.0, 15, True),
@@ -366,14 +373,16 @@ def pick_image(title, cat):
     return url
 
 all_experiences = []
+# Round-robin over the 25 hosts: 50 hotspots / 25 hosts = 2 each, so every
+# business owner stays well below the maximum of 3 hotspots.
 for i, (title, desc, cat, loc, prov, price, dur, max_p, active) in enumerate(experiences_data):
-    owner = random.choice(hosts)
+    owner = hosts[i % len(hosts)]
     exp = Experience(
         title=title, description=desc, category=cat,
         location=loc, province=prov, price=price,
         duration_hours=dur, max_participants=max_p,
         image_url=pick_image(title, cat),
-        owner_id=owner.id, is_active=active, is_approved=random.choice([True, True, True, False]),
+        owner_id=owner.id, is_active=True, is_approved=True,
     )
     all_experiences.append(exp)
 
@@ -457,23 +466,30 @@ e_count = db.query(Experience).count()
 r_count = db.query(Rating).count()
 p_count = db.query(UserPreference).count()
 tr_count = db.query(Trip).count()
+host_count = db.query(User).filter(User.role == UserRole.business_owner).count()
+
+from collections import Counter
+owner_counts = Counter(e.owner_id for e in db.query(Experience).all())
+host_emails = [h.email for h in hosts]
 db.close()
+
+max_per_owner = max(owner_counts.values()) if owner_counts else 0
 
 print(f"\n{'='*50}")
 print(f"  DATABASE SEEDED SUCCESSFULLY")
 print(f"{'='*50}")
 print(f"  Users:           {u_count}")
+print(f"  Business owners: {host_count}")
 print(f"  Experiences:     {e_count}")
 print(f"  Ratings:         {r_count}")
 print(f"  Preferences:     {p_count}")
 print(f"  Trips:           {tr_count}")
+print(f"  Hotspots per owner: max {max_per_owner} (limit 3) -> {'OK' if max_per_owner <= 3 else 'VIOLATION'}")
 print(f"\n  LOGIN CREDENTIALS")
 print(f"{'='*50}")
 print(f"  Admin:     admin@ubuntu.com     / Admin123!")
-print(f"  Host:      sipho@ubuntu.com     / Host123!")
-print(f"  Host:      nomsa@ubuntu.com     / Host123!")
-print(f"  Host:      pieter@ubuntu.com    / Host123!")
-print(f"  Host:      zanele@ubuntu.com    / Host123!")
+for email in host_emails:
+    print(f"  Host:      {email:<24} / Host123!")
 print(f"  Tourist:   lebo@ubuntu.com      / Tourist123!")
 print(f"  Tourist:   thandi@ubuntu.com    / Tourist123!")
 print(f"  Tourist:   james@ubuntu.com     / Tourist123!")
