@@ -239,12 +239,12 @@ const filteredJournals = computed(() => {
 })
 
 const moods = [
-  { value: 'amazed', icon: 'ðŸ¤©', label: 'Amazed' },
-  { value: 'happy', icon: 'ðŸ˜Š', label: 'Happy' },
-  { value: 'inspired', icon: 'âœ¨', label: 'Inspired' },
-  { value: 'peaceful', icon: 'ðŸ˜Œ', label: 'Peaceful' },
-  { value: 'excited', icon: 'ðŸ”¥', label: 'Excited' },
-  { value: 'nostalgic', icon: 'ðŸ¥¹', label: 'Nostalgic' },
+  { value: 'amazed', icon: '🤩', label: 'Amazed' },
+  { value: 'happy', icon: '😊', label: 'Happy' },
+  { value: 'inspired', icon: '✨', label: 'Inspired' },
+  { value: 'peaceful', icon: '😌', label: 'Peaceful' },
+  { value: 'excited', icon: '🔥', label: 'Excited' },
+  { value: 'nostalgic', icon: '🥹', label: 'Nostalgic' },
 ]
 
 const form = ref({

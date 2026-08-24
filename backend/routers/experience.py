@@ -23,6 +23,7 @@ from schemas.experience import (
     GenerateItineraryRequest, GenerateItineraryResponse, GeneratedDay, ItineraryEntry,
 )
 from routers.auth import get_current_user
+from cache import get as cache_get, set as cache_set
 
 router = APIRouter(prefix="/api/experiences", tags=["experiences"])
 
@@ -196,13 +197,18 @@ def list_categories():
 # ── Provinces ─────────────────────────────────────────────
 @router.get("/provinces")
 def list_provinces(db: Session = Depends(get_db)):
+    cached = cache_get("provinces")
+    if cached is not None:
+        return cached
     rows = db.query(Experience.province).filter(
         Experience.province.isnot(None),
         Experience.is_active == True,
         Experience.is_approved == True,
     ).distinct().all()
     provinces = sorted({r[0] for r in rows if r[0].strip()})
-    return [{"value": p, "label": p} for p in provinces]
+    result = [{"value": p, "label": p} for p in provinces]
+    cache_set("provinces", result, ttl_seconds=300)
+    return result
 
 
 # ── Preferences (must be before /{exp_id}) ────────────────
@@ -339,32 +345,12 @@ def list_experiences(
     province: str = None,
     db: Session = Depends(get_db),
 ):
-    rating_subq = (
-        db.query(
-            Rating.experience_id.label("eid"),
-            func.avg(Rating.score).label("avg_rating"),
-            func.count(Rating.id).label("rating_count"),
-        )
-        .filter(Rating.is_approved == True)
-        .group_by(Rating.experience_id)
-        .subquery()
-    )
-    itin_subq = (
-        db.query(
-            ItineraryAdd.experience_id.label("eid"),
-            func.count(ItineraryAdd.id).label("itin_count"),
-        )
-        .group_by(ItineraryAdd.experience_id)
-        .subquery()
-    )
+    key = f"exps:{category}:{search}:{province}"
+    cached = cache_get(key)
+    if cached is not None:
+        return cached
 
-    q = db.query(
-        Experience,
-        rating_subq.c.avg_rating,
-        rating_subq.c.rating_count,
-        itin_subq.c.itin_count,
-    ).outerjoin(rating_subq, rating_subq.c.eid == Experience.id) \
-     .outerjoin(itin_subq, itin_subq.c.eid == Experience.id)
+    q = db.query(Experience).options(selectinload(Experience.owner))
     if category:
         q = q.filter(Experience.category == category)
     if province:
@@ -372,23 +358,28 @@ def list_experiences(
     if search:
         q = q.filter(Experience.title.ilike(f"%{search}%"))
     q = q.filter(Experience.is_active == True, Experience.is_approved == True)
-    rows = q.all()
+    exps = q.all()
 
     ids = [e.id for e in exps]
 
-    rating_rows = db.query(
-        Rating.experience_id, func.avg(Rating.score), func.count(Rating.id)
-    ).filter(
-        Rating.experience_id.in_(ids), Rating.is_approved == True
-    ).group_by(Rating.experience_id).all()
-    rating_agg = {r[0]: (r[1], r[2]) for r in rating_rows}
+    rating_agg = {}
+    itinerary_counts = {}
+    if ids:
+        rating_rows = db.query(
+            Rating.experience_id, func.avg(Rating.score), func.count(Rating.id)
+        ).filter(
+            Rating.experience_id.in_(ids), Rating.is_approved == True
+        ).group_by(Rating.experience_id).all()
+        rating_agg = {r[0]: (r[1], r[2]) for r in rating_rows}
 
-    itin_rows = db.query(
-        ItineraryAdd.experience_id, func.count(ItineraryAdd.id)
-    ).filter(ItineraryAdd.experience_id.in_(ids)).group_by(ItineraryAdd.experience_id).all()
-    itinerary_counts = dict(itin_rows)
+        itin_rows = db.query(
+            ItineraryAdd.experience_id, func.count(ItineraryAdd.id)
+        ).filter(ItineraryAdd.experience_id.in_(ids)).group_by(ItineraryAdd.experience_id).all()
+        itinerary_counts = dict(itin_rows)
 
-    return [_exp_to_response(e, rating_agg=rating_agg, itinerary_counts=itinerary_counts) for e in exps]
+    result = [_exp_to_response(e, rating_agg=rating_agg, itinerary_counts=itinerary_counts) for e in exps]
+    cache_set(key, result, ttl_seconds=30)
+    return result
 
 
 # ── Owner: My Experiences (MUST be before /{exp_id}) ─────
@@ -1338,7 +1329,7 @@ def list_my_journals(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    journals = db.query(TravelJournal).filter(
+    journals = db.query(TravelJournal).options(selectinload(TravelJournal.experience)).filter(
         TravelJournal.user_id == current_user.id
     ).order_by(TravelJournal.created_at.desc()).all()
 
