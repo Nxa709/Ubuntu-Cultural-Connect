@@ -110,7 +110,7 @@ onUnmounted(() => {
   left: 0;
   width: 100%;
   z-index: 997;
-  background-color: #ffffff;
+  background-color: var(--glass-bg);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   transition: background-color 0.4s ease;
 }
@@ -204,7 +204,7 @@ onUnmounted(() => {
   top: 100%;
   left: 0;
   min-width: 180px;
-  background: #ffffff;
+  background: var(--glass-bg);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 10px;
   padding: 6px;
@@ -227,12 +227,12 @@ onUnmounted(() => {
 }
 
 .dropdown-menu li a:hover {
-  background: rgba(255, 182, 18, 0.15);
+  background: rgba(232, 162, 0, 0.15);
   color: var(--accent);
 }
 
 .register-link {
-  background-color: var(--accent) !important;
+  background-color: var(--accent-fill) !important;
   color: #1a1a1a !important;
   font-weight: 600 !important;
   border-radius: 8px !important;
@@ -240,7 +240,7 @@ onUnmounted(() => {
 }
 
 .register-link:hover {
-  background-color: var(--accent-hover) !important;
+  background-color: var(--accent-fill-hover) !important;
   color: #1a1a1a !important;
 }
 
@@ -248,13 +248,13 @@ onUnmounted(() => {
   background: var(--accent-light) !important;
   color: var(--accent) !important;
   font-weight: 600 !important;
-  border: 1px solid rgba(255, 182, 18, 0.4) !important;
+  border: 1px solid rgba(232, 162, 0, 0.4) !important;
   border-radius: 8px !important;
   padding: 8px 18px !important;
 }
 
 .plan-trip-link:hover {
-  background: var(--accent) !important;
+  background: var(--accent-fill) !important;
   color: #1a1a1a !important;
 }
 
@@ -279,7 +279,7 @@ onUnmounted(() => {
 }
 
 .role-tag {
-  background: rgba(255, 182, 18, 0.15);
+  background: rgba(232, 162, 0, 0.15);
   color: var(--accent);
   padding: 2px 8px;
   border-radius: 12px;
@@ -288,7 +288,7 @@ onUnmounted(() => {
 }
 
 .logout-btn {
-  color: #555555 !important;
+  color: var(--text-secondary) !important;
 }
 
 .logout-btn:hover {
@@ -317,7 +317,7 @@ onUnmounted(() => {
     right: -100%;
     width: 280px;
     height: 100vh;
-    background: #ffffff;
+    background: var(--glass-bg);
     box-shadow: -4px 0 20px rgba(0, 0, 0, 0.1);
     transition: right 0.3s ease;
     padding: 80px 30px 30px;

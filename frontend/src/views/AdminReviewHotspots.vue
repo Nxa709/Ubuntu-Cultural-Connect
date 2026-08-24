@@ -360,8 +360,8 @@ onMounted(async () => {
   height: 20px;
   padding: 0 6px;
   border-radius: 10px;
-  background: var(--accent);
-  color: #fff;
+  background: var(--accent-fill);
+  color: #1a1a1a;
   font-size: 0.75rem;
   margin-left: 6px;
 }
@@ -418,18 +418,18 @@ onMounted(async () => {
 
 .hotspot-title-row h3 {
   margin: 0;
-  color: #fff;
+  color: var(--heading-color);
   font-family: 'Poppins', sans-serif;
 }
 
 .category-tag {
   display: inline-block;
   padding: 0.2rem 0.6rem;
-  background: rgba(255, 255, 255, 0.22);
-  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: var(--surface-secondary);
+  border: 1px solid var(--border);
   border-radius: 6px;
   font-size: 0.78rem;
-  color: #ccc;
+  color: var(--text-secondary);
   white-space: nowrap;
 }
 
@@ -437,7 +437,7 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 4px;
-  color: #bbb;
+  color: var(--text-secondary);
   font-size: 0.9rem;
 }
 
@@ -456,7 +456,7 @@ onMounted(async () => {
 }
 
 .hotspot-body p {
-  color: #fff;
+  color: var(--text-color);
   line-height: 1.6;
   margin: 0 0 1rem;
   display: -webkit-box;
@@ -477,8 +477,8 @@ onMounted(async () => {
   gap: 12px;
   padding: 1rem;
   margin-bottom: 1rem;
-  background: rgba(255, 255, 255, 0.20);
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: var(--surface-secondary);
+  border: 1px solid var(--border);
   border-radius: 10px;
 }
 
@@ -492,18 +492,18 @@ onMounted(async () => {
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.4px;
-  color: rgba(255, 255, 255, 0.80);
+  color: var(--text-secondary);
 }
 
 .detail-value {
   font-size: 0.9rem;
-  color: #fff;
+  color: var(--text-color);
   word-break: break-word;
 }
 
 .owner-section {
   grid-column: 1 / -1;
-  border-top: 1px solid rgba(255, 255, 255, 0.30);
+  border-top: 1px solid var(--border);
   padding-top: 12px;
   margin-top: 4px;
 }
@@ -532,13 +532,13 @@ onMounted(async () => {
 .rejection-title {
   font-size: 0.78rem;
   font-weight: 600;
-  color: #EF9A9A;
+  color: var(--error);
   margin-bottom: 4px;
 }
 
 .rejection-reason {
   margin: 0;
-  color: #fff;
+  color: var(--text-color);
   font-size: 0.88rem;
   line-height: 1.5;
   white-space: pre-line;
@@ -559,7 +559,7 @@ onMounted(async () => {
 }
 
 .info-item {
-  color: #bbb;
+  color: var(--text-secondary);
   font-size: 0.85rem;
 }
 
@@ -589,12 +589,15 @@ onMounted(async () => {
 }
 
 .btn-details {
-  background: rgba(255, 255, 255, 0.30);
-  color: #fff;
+  background: var(--surface-secondary);
+  color: var(--text-color);
+  border: 1px solid var(--border-strong);
 }
 
 .btn-details:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.38);
+  background: var(--accent-light);
+  color: var(--accent-text);
+  border-color: var(--accent);
 }
 
 .btn-approve {
@@ -616,14 +619,15 @@ onMounted(async () => {
 }
 
 .btn-outline {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.60);
-  color: #fff;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  color: var(--text-color);
 }
 
 .btn-outline:hover {
   border-color: var(--accent);
-  color: var(--accent);
+  color: var(--accent-text);
+  background: var(--accent-light);
 }
 
 .status-badge {
@@ -636,12 +640,12 @@ onMounted(async () => {
 
 .status-badge.approved {
   background: rgba(46, 125, 50, 0.2);
-  color: #81C784;
+  color: var(--success);
 }
 
 .status-badge.rejected {
   background: rgba(198, 40, 40, 0.2);
-  color: #EF9A9A;
+  color: var(--error);
 }
 
 /* Modal */

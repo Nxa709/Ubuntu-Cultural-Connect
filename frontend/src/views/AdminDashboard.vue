@@ -245,7 +245,7 @@ onMounted(async () => {
   width: 48px;
   height: 48px;
   border-radius: 12px;
-  background: rgba(255, 182, 18, 0.15);
+  background: rgba(232, 162, 0, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -345,7 +345,7 @@ onMounted(async () => {
   font-family: 'Poppins', sans-serif;
   font-size: 1.1rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--heading-color);
   margin-bottom: 1rem;
 }
 
@@ -358,8 +358,8 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 1rem;
-  background: rgba(255, 182, 18, 0.08);
-  border: 1px solid rgba(255, 182, 18, 0.25);
+  background: rgba(232, 162, 0, 0.08);
+  border: 1px solid rgba(232, 162, 0, 0.25);
   border-radius: 12px;
   padding: 1rem 1.25rem;
   text-decoration: none;
@@ -368,7 +368,7 @@ onMounted(async () => {
 }
 
 .pending-card:hover {
-  background: rgba(255, 182, 18, 0.15);
+  background: rgba(232, 162, 0, 0.15);
   border-color: var(--accent);
 }
 

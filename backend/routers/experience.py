@@ -3,7 +3,7 @@ from datetime import date, datetime, timedelta, timezone
 from collections import defaultdict
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 from sqlalchemy import func, extract
 
 from database import get_db
@@ -160,13 +160,13 @@ def get_home_data(
     if pref and pref.categories:
         cats = [c.strip() for c in pref.categories.split(",") if c.strip()]
         prefs = cats
-        exps = db.query(Experience).filter(
+        exps = db.query(Experience).options(selectinload(Experience.owner)).filter(
             Experience.is_active == True, Experience.is_approved == True,
             Experience.category.in_(cats),
         ).limit(6).all()
 
     if not exps:
-        exps = db.query(Experience).filter(
+        exps = db.query(Experience).options(selectinload(Experience.owner)).filter(
             Experience.is_active == True, Experience.is_approved == True,
         ).limit(6).all()
 
@@ -249,16 +249,16 @@ def get_recommended(
 ):
     pref = db.query(UserPreference).filter(UserPreference.user_id == current_user.id).first()
     if not pref or not pref.categories:
-        exps = db.query(Experience).filter(Experience.is_active == True, Experience.is_approved == True).limit(6).all()
+        exps = db.query(Experience).options(selectinload(Experience.owner)).filter(Experience.is_active == True, Experience.is_approved == True).limit(6).all()
     else:
         cats = [c.strip() for c in pref.categories.split(",") if c.strip()]
-        exps = db.query(Experience).filter(
+        exps = db.query(Experience).options(selectinload(Experience.owner)).filter(
             Experience.is_active == True,
             Experience.is_approved == True,
             Experience.category.in_(cats),
         ).all()
         if not exps:
-            exps = db.query(Experience).filter(Experience.is_active == True, Experience.is_approved == True).limit(6).all()
+            exps = db.query(Experience).options(selectinload(Experience.owner)).filter(Experience.is_active == True, Experience.is_approved == True).limit(6).all()
 
     ids = [e.id for e in exps]
     if ids:
@@ -339,16 +339,40 @@ def list_experiences(
     province: str = None,
     db: Session = Depends(get_db),
 ):
-    q = db.query(Experience).filter(Experience.is_active == True, Experience.is_approved == True)
+    rating_subq = (
+        db.query(
+            Rating.experience_id.label("eid"),
+            func.avg(Rating.score).label("avg_rating"),
+            func.count(Rating.id).label("rating_count"),
+        )
+        .filter(Rating.is_approved == True)
+        .group_by(Rating.experience_id)
+        .subquery()
+    )
+    itin_subq = (
+        db.query(
+            ItineraryAdd.experience_id.label("eid"),
+            func.count(ItineraryAdd.id).label("itin_count"),
+        )
+        .group_by(ItineraryAdd.experience_id)
+        .subquery()
+    )
+
+    q = db.query(
+        Experience,
+        rating_subq.c.avg_rating,
+        rating_subq.c.rating_count,
+        itin_subq.c.itin_count,
+    ).outerjoin(rating_subq, rating_subq.c.eid == Experience.id) \
+     .outerjoin(itin_subq, itin_subq.c.eid == Experience.id)
     if category:
         q = q.filter(Experience.category == category)
     if province:
         q = q.filter(Experience.province == province)
     if search:
         q = q.filter(Experience.title.ilike(f"%{search}%"))
-    exps = q.all()
-    if not exps:
-        return []
+    q = q.filter(Experience.is_active == True, Experience.is_approved == True)
+    rows = q.all()
 
     ids = [e.id for e in exps]
 
@@ -373,7 +397,7 @@ def list_my_experiences(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    exps = db.query(Experience).filter(Experience.owner_id == current_user.id).order_by(Experience.created_at.desc()).all()
+    exps = db.query(Experience).options(selectinload(Experience.owner)).filter(Experience.owner_id == current_user.id).order_by(Experience.created_at.desc()).all()
     if not exps:
         return []
     ids = [e.id for e in exps]
@@ -404,9 +428,11 @@ def get_owner_stats(
     inactive = sum(1 for e in my_exps if not e.is_active)
     pending = sum(1 for e in my_exps if not e.is_approved)
 
-    ratings = db.query(Rating).filter(Rating.experience_id.in_(my_exp_ids)).all() if my_exp_ids else []
-    total_ratings = len(ratings)
-    avg_rating = round(sum(r.score for r in ratings) / len(ratings), 1) if ratings else None
+    ratings = db.query(
+        func.count(Rating.id), func.avg(Rating.score)
+    ).filter(Rating.experience_id.in_(my_exp_ids)).one() if my_exp_ids else (0, None)
+    total_ratings = ratings[0] or 0
+    avg_rating = round(ratings[1], 1) if ratings[1] is not None else None
 
     categories = set()
     for e in my_exps:
@@ -814,7 +840,7 @@ def generate_itinerary(
     pref = db.query(UserPreference).filter(UserPreference.user_id == current_user.id).first()
     prefs = [c.strip() for c in (pref.categories.split(",") if pref and pref.categories else []) if c.strip()]
 
-    q = db.query(Experience).filter(Experience.is_active == True, Experience.is_approved == True)
+    q = db.query(Experience).options(selectinload(Experience.owner)).filter(Experience.is_active == True, Experience.is_approved == True)
     if data.exclude_ids:
         q = q.filter(~Experience.id.in_(data.exclude_ids))
     exps = q.all()
@@ -831,7 +857,7 @@ def generate_itinerary(
         exps = matched
     if not exps:
         # No experiences in that area yet: fall back to all live listings (still real data).
-        exps = db.query(Experience).filter(Experience.is_active == True, Experience.is_approved == True).all()
+        exps = db.query(Experience).options(selectinload(Experience.owner)).filter(Experience.is_active == True, Experience.is_approved == True).all()
 
     ids = [e.id for e in exps]
     rating_agg = {}
@@ -1017,7 +1043,12 @@ def track_itinerary_adds(
 # ── Ratings ───────────────────────────────────────────────
 @router.get("/{exp_id}/ratings", response_model=list[RatingResponse])
 def get_ratings(exp_id: int, db: Session = Depends(get_db)):
-    ratings = db.query(Rating).filter(Rating.experience_id == exp_id, Rating.is_approved == True).all()
+    ratings = (
+        db.query(Rating)
+        .options(selectinload(Rating.user))
+        .filter(Rating.experience_id == exp_id, Rating.is_approved == True)
+        .all()
+    )
     result = []
     for r in ratings:
         resp = RatingResponse(
@@ -1257,7 +1288,7 @@ def get_analytics_overview(
         })
     experience_performance.sort(key=lambda x: (x["views"], x["avg_rating"] or 0), reverse=True)
 
-    recent_q = db.query(Rating).filter(Rating.experience_id.in_(my_exp_ids))
+    recent_q = db.query(Rating).options(selectinload(Rating.user)).filter(Rating.experience_id.in_(my_exp_ids))
     if cutoff:
         recent_q = recent_q.filter(Rating.created_at >= cutoff)
     recent = recent_q.order_by(Rating.created_at.desc()).limit(10).all()

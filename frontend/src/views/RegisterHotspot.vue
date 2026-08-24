@@ -391,7 +391,7 @@ onMounted(async () => {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: #666;
+  color: var(--text-secondary);
   text-decoration: none;
   font-size: 0.9rem;
   margin-bottom: 1rem;
@@ -405,13 +405,11 @@ onMounted(async () => {
   margin-bottom: 0.25rem;
 }
 
-.subtitle { color: #666; }
+.subtitle { color: var(--text-secondary); }
 
 .hotspot-form {
-  background: rgba(18, 24, 38, 0.82);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 16px;
   padding: 2rem;
 }
@@ -487,7 +485,7 @@ select.form-input option {
 
 .field-hint {
   display: block;
-  color: #999;
+  color: var(--text-muted);
   font-size: 0.8rem;
   margin-top: 0.3rem;
 }
@@ -531,7 +529,7 @@ select.form-input option {
 
 .file-hint {
   font-size: 0.8rem;
-  color: #999;
+  color: var(--text-muted);
 }
 
 .file-preview {
@@ -571,7 +569,7 @@ select.form-input option {
 .char-count {
   text-align: right;
   font-size: 0.8rem;
-  color: #999;
+  color: var(--text-muted);
   margin-top: 0.2rem;
 }
 
@@ -617,10 +615,10 @@ select.form-input option {
 
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.btn-primary { background: var(--accent); color: #fff; }
-.btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
+.btn-primary { background: var(--accent-fill); color: #1a1a1a; }
+.btn-primary:hover:not(:disabled) { background: var(--accent-fill-hover); }
 
-.btn-cancel { background: #F5F5F5; color: #666; }
+.btn-cancel { background: #F5F5F5; color: var(--text-secondary); }
 .btn-cancel:hover { background: #E0E0E0; }
 
 .btn-spinner {

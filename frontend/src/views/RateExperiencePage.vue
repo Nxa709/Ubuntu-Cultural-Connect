@@ -251,6 +251,17 @@ function getCategoryImage(cat) {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+@media (max-width: 900px) {
+  .rate-layout {
+    grid-template-columns: 1fr;
+  }
+  .exp-info-card {
+    grid-row: auto;
+  }
 }
 
 .card {
@@ -286,14 +297,14 @@ function getCategoryImage(cat) {
 }
 
 .exp-body { padding: 20px; }
-.exp-body h2 { color: #fff; font-size: 1.2rem; margin-bottom: 8px; }
-.exp-desc { color: rgba(255, 255, 255, 0.94); font-size: 0.88rem; line-height: 1.5; margin-bottom: 14px; }
+.exp-body h2 { color: var(--heading-color); font-size: 1.2rem; margin-bottom: 8px; }
+.exp-desc { color: var(--text-secondary); font-size: 0.88rem; line-height: 1.5; margin-bottom: 14px; }
 
 .exp-meta {
   display: flex;
   gap: 16px;
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.88);
+  color: var(--text-secondary);
   margin-bottom: 16px;
 }
 
@@ -313,7 +324,7 @@ function getCategoryImage(cat) {
 
 .avg-label { font-size: 0.82rem; color: rgba(255, 255, 255, 0.88); }
 
-.rate-form-card h2 { color: #fff; font-size: 1.1rem; margin-bottom: 20px; }
+.rate-form-card h2 { color: var(--heading-color); font-size: 1.1rem; margin-bottom: 20px; }
 
 .form-group { margin-bottom: 18px; }
 .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: #fff; font-size: 0.88rem; }
@@ -369,9 +380,9 @@ textarea:focus { outline: none; border-color: rgba(255, 255, 255, 0.60); }
 }
 
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.btn-primary { background: var(--accent); color: #1a1a1a; }
-.btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
-.btn-outline { background: transparent; color: #fff; border: 1px solid rgba(255, 255, 255, 0.45); }
+.btn-primary { background: var(--accent-fill); color: #1a1a1a; }
+.btn-primary:hover:not(:disabled) { background: var(--accent-fill-hover); }
+.btn-outline { background: var(--surface); color: var(--text-color); border: 1px solid var(--border-strong); }
 
 .alert { padding: 10px 14px; border-radius: 8px; margin-bottom: 16px; font-size: 0.88rem; }
 .alert-error { background: #FDE8E8; color: #C0392B; }
@@ -384,7 +395,7 @@ textarea:focus { outline: none; border-color: rgba(255, 255, 255, 0.60); }
 
 .success-icon { margin-bottom: 16px; }
 .success-message h3 { color: #2E7D32; margin-bottom: 8px; }
-.success-message p { color: rgba(255, 255, 255, 0.94); margin-bottom: 20px; }
+.success-message p { color: var(--text-secondary); margin-bottom: 20px; }
 
 .reviews-card h3 { color: #fff; font-size: 1.05rem; margin-bottom: 16px; }
 .no-reviews { color: rgba(255, 255, 255, 0.88); font-size: 0.88rem; }

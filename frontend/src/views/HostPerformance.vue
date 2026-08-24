@@ -177,10 +177,8 @@ onMounted(async () => {
 }
 
 .summary-card {
-  background: rgba(255, 255, 255, 0.28);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 1.25rem;
   text-align: center;
@@ -198,7 +196,7 @@ onMounted(async () => {
 .summary-lbl {
   display: block;
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.88);
+  color: var(--text-secondary);
   margin-top: 4px;
 }
 
@@ -214,7 +212,7 @@ onMounted(async () => {
 .btn-primary {
   margin-top: 1rem;
   padding: 0.6rem 1.25rem;
-  background: var(--accent);
+  background: var(--accent-fill);
   color: #1a1a1a;
   text-decoration: none;
   border-radius: 8px;
@@ -240,10 +238,8 @@ onMounted(async () => {
 }
 
 .perf-card {
-  background: rgba(255, 255, 255, 0.28);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 1.25rem;
 }
@@ -262,7 +258,7 @@ onMounted(async () => {
 
 .perf-title-row h3 {
   margin: 0;
-  color: #fff;
+  color: var(--heading-color);
   font-family: 'Poppins', sans-serif;
   font-size: 1.1rem;
 }
@@ -275,9 +271,9 @@ onMounted(async () => {
   white-space: nowrap;
 }
 
-.trend-badge.improving { background: rgba(129, 199, 132, 0.2); color: #81C784; }
-.trend-badge.declining { background: rgba(239, 83, 80, 0.2); color: #EF9A9A; }
-.trend-badge.stable { background: rgba(255, 255, 255, 0.26); color: rgba(255, 255, 255, 0.88); }
+.trend-badge.improving { background: rgba(22, 163, 74, 0.15); color: var(--success); }
+.trend-badge.declining { background: rgba(220, 38, 38, 0.15); color: var(--error); }
+.trend-badge.stable { background: var(--surface-secondary); color: var(--text-secondary); }
 
 .perf-meta {
   display: flex;
@@ -298,7 +294,7 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 4px;
-  color: rgba(255, 255, 255, 0.88);
+  color: var(--text-secondary);
   font-size: 0.85rem;
 }
 
@@ -333,12 +329,12 @@ onMounted(async () => {
   margin: 4px 0;
 }
 
-.star { color: rgba(255, 255, 255, 0.55); font-size: 1rem; }
+.star { color: #d1d5db; font-size: 1rem; }
 .star.filled { color: var(--accent); }
 
 .review-count {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.80);
+  color: var(--text-muted);
 }
 
 .star-bars {
@@ -354,7 +350,7 @@ onMounted(async () => {
 
 .bar-label {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.88);
+  color: var(--text-secondary);
   min-width: 28px;
   text-align: right;
 }
@@ -362,31 +358,31 @@ onMounted(async () => {
 .bar-track {
   flex: 1;
   height: 8px;
-  background: rgba(255, 255, 255, 0.26);
+  background: var(--surface-secondary);
   border-radius: 4px;
   overflow: hidden;
 }
 
 .bar-fill {
   height: 100%;
-  background: var(--accent);
+  background: var(--accent-fill);
   border-radius: 4px;
   transition: width 0.3s;
 }
 
 .bar-count {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.88);
+  color: var(--text-secondary);
   min-width: 20px;
 }
 
 .perf-footer {
   padding-top: 0.75rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.28);
+  border-top: 1px solid var(--border);
 }
 
 .footer-stat {
-  color: rgba(255, 255, 255, 0.80);
+  color: var(--text-muted);
   font-size: 0.85rem;
 }
 </style>

@@ -616,7 +616,7 @@ async function handleUpdate() {
   width: 64px;
   height: 64px;
   border-radius: 16px;
-  background: rgba(255, 182, 18, 0.2);
+  background: rgba(232, 162, 0, 0.2);
   color: var(--accent);
   display: flex;
   align-items: center;
@@ -634,7 +634,7 @@ async function handleUpdate() {
 
 .user-role-badge {
   display: inline-block;
-  background: rgba(255, 182, 18, 0.2);
+  background: rgba(232, 162, 0, 0.2);
   color: var(--accent);
   padding: 2px 10px;
   border-radius: 12px;
@@ -661,14 +661,14 @@ async function handleUpdate() {
 
 .detail-label {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.80);
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .detail-value {
   font-size: 0.88rem;
-  color: #fff;
+  color: var(--text-color);
   text-align: right;
 }
 
@@ -681,7 +681,7 @@ async function handleUpdate() {
 }
 
 .pref-tag {
-  background: rgba(255, 182, 18, 0.2);
+  background: rgba(232, 162, 0, 0.2);
   color: var(--accent);
   padding: 4px 12px;
   border-radius: 20px;
@@ -763,12 +763,12 @@ async function handleUpdate() {
   font-size: 0.82rem;
   font-weight: 600;
   margin: 0 0 2px;
-  color: #fff;
+  color: var(--heading-color);
 }
 
 .favorite-loc {
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.80);
+  color: var(--text-secondary);
   margin: 0 0 6px;
 }
 
@@ -917,7 +917,7 @@ async function handleUpdate() {
   align-items: center;
   gap: 4px;
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.80);
+  color: var(--text-secondary);
 }
 
 .history-date svg {
@@ -1027,24 +1027,25 @@ async function handleUpdate() {
 }
 
 .btn-primary {
-  background-color: var(--accent);
+  background-color: var(--accent-fill);
   color: #1a1a1a;
   width: 100%;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background-color: var(--accent-hover);
+  background-color: var(--accent-fill-hover);
 }
 
 .btn-outline {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  color: #fff;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  color: var(--text-color);
 }
 
 .btn-outline:hover {
   border-color: var(--accent);
-  color: var(--accent);
+  color: var(--accent-text);
+  background: var(--accent-light);
 }
 
 .btn-sm {
@@ -1083,7 +1084,7 @@ async function handleUpdate() {
   margin-top: 12px;
   display: inline-block;
   padding: 8px 18px;
-  background: var(--accent);
+  background: var(--accent-fill);
   color: #1a1a1a;
   text-decoration: none;
   border-radius: 8px;
@@ -1174,7 +1175,7 @@ async function handleUpdate() {
 
 /* Empty / Loading */
 .empty-text {
-  color: rgba(255, 255, 255, 0.80);
+  color: var(--text-secondary);
   font-size: 0.85rem;
   line-height: 1.5;
 }

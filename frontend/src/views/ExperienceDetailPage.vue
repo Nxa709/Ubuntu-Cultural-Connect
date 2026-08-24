@@ -405,11 +405,11 @@ onMounted(async () => {
 }
 
 .back-link:hover {
-  background: var(--accent);
+  background: var(--accent-fill);
   border-color: var(--accent);
   color: #1a1a1a;
   transform: translateX(-3px);
-  box-shadow: 0 4px 16px rgba(255, 182, 18, 0.35);
+  box-shadow: 0 4px 16px rgba(232, 162, 0, 0.35);
 }
 
 .back-link:active {
@@ -419,8 +419,8 @@ onMounted(async () => {
 .cat-badge {
   display: inline-block;
   padding: 0.3rem 0.9rem;
-  background: rgba(255, 182, 18, 0.2);
-  border: 1px solid rgba(255, 182, 18, 0.4);
+  background: rgba(232, 162, 0, 0.2);
+  border: 1px solid rgba(232, 162, 0, 0.4);
   border-radius: 20px;
   color: var(--accent);
   font-size: 0.85rem;
@@ -459,8 +459,8 @@ onMounted(async () => {
   max-width: 1100px;
   margin: 0 auto;
   padding: 10px 20px;
-  background: rgba(255, 182, 18, 0.12);
-  border: 1px solid rgba(255, 182, 18, 0.25);
+  background: rgba(232, 162, 0, 0.12);
+  border: 1px solid rgba(232, 162, 0, 0.25);
   border-radius: 10px;
   animation: fadeIn 0.35s ease;
 }
@@ -509,12 +509,12 @@ onMounted(async () => {
   font-family: 'Poppins', sans-serif;
   font-size: 1.3rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--heading-color);
   margin: 0 0 1rem;
 }
 
 .description-full p {
-  color: #fff;
+  color: var(--text-color);
   line-height: 1.8;
   font-size: 1rem;
 }
@@ -576,10 +576,8 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 1rem;
-  background: rgba(255, 255, 255, 0.28);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 1.25rem;
 }
@@ -588,8 +586,8 @@ onMounted(async () => {
   width: 52px;
   height: 52px;
   border-radius: 12px;
-  background: rgba(255, 182, 18, 0.2);
-  color: var(--accent);
+  background: rgba(232, 162, 0, 0.2);
+  color: var(--accent-dark);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -601,17 +599,17 @@ onMounted(async () => {
 .host-name {
   display: block;
   font-weight: 600;
-  color: #fff;
+  color: var(--heading-color);
 }
 
 .host-label {
   display: block;
   font-size: 0.85rem;
-  color: #fff;
+  color: var(--text-secondary);
 }
 
 .no-reviews p {
-  color: #fff;
+  color: var(--text-secondary);
   font-style: italic;
 }
 
@@ -619,7 +617,8 @@ onMounted(async () => {
   display: flex;
   gap: 2rem;
   align-items: center;
-  background: rgba(255, 255, 255, 0.22);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 1.25rem;
   margin-bottom: 1.5rem;
@@ -648,7 +647,7 @@ onMounted(async () => {
 
 .summary-count {
   font-size: 0.8rem;
-  color: #fff;
+  color: var(--text-secondary);
 }
 
 .star-breakdown { flex: 1; }
@@ -662,7 +661,7 @@ onMounted(async () => {
 
 .bar-label {
   font-size: 0.8rem;
-  color: #fff;
+  color: var(--text-secondary);
   min-width: 28px;
   text-align: right;
 }
@@ -670,21 +669,21 @@ onMounted(async () => {
 .bar-track {
   flex: 1;
   height: 8px;
-  background: rgba(255, 255, 255, 0.26);
+  background: var(--surface-secondary);
   border-radius: 4px;
   overflow: hidden;
 }
 
 .bar-fill {
   height: 100%;
-  background: var(--accent);
+  background: var(--accent-fill);
   border-radius: 4px;
   transition: width 0.3s;
 }
 
 .bar-count {
   font-size: 0.8rem;
-  color: #fff;
+  color: var(--text-secondary);
   min-width: 20px;
 }
 
@@ -695,10 +694,8 @@ onMounted(async () => {
 }
 
 .review-card {
-  background: rgba(255, 255, 255, 0.26);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.38);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 1rem;
 }
@@ -720,7 +717,7 @@ onMounted(async () => {
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  background: rgba(255, 182, 18, 0.2);
+  background: rgba(232, 162, 0, 0.2);
   color: var(--accent);
   display: flex;
   align-items: center;
@@ -733,14 +730,14 @@ onMounted(async () => {
 .user-name {
   display: block;
   font-weight: 600;
-  color: #fff;
+  color: var(--heading-color);
   font-size: 0.9rem;
 }
 
 .review-date {
   display: block;
   font-size: 0.75rem;
-  color: #fff;
+  color: var(--text-muted);
 }
 
 .review-stars {
@@ -748,11 +745,11 @@ onMounted(async () => {
   gap: 2px;
 }
 
-.star { color: rgba(255, 255, 255, 0.55); font-size: 1rem; }
+.star { color: #d1d5db; font-size: 1rem; }
 .star.filled { color: var(--accent); }
 
 .review-comment p {
-  color: #fff;
+  color: var(--text-color);
   line-height: 1.6;
   margin: 0;
   font-size: 0.95rem;
@@ -883,34 +880,34 @@ onMounted(async () => {
 }
 
 .btn-rate-full {
-  background: var(--accent);
+  background: var(--accent-fill);
   color: #1a1a1a;
 }
 
 .btn-rate-full:hover {
-  background: #fff;
+  background: var(--accent-fill-hover);
 }
 
 .btn-trip-full {
-  background: var(--accent);
+  background: var(--accent-fill);
   color: #1a1a1a;
-  border: 1px solid var(--accent);
+  border: 1px solid var(--accent-fill);
 }
 
 .btn-trip-full:hover {
-  background: #fff;
+  background: var(--accent-fill-hover);
   color: #1a1a1a;
-  border-color: #fff;
+  border-color: var(--accent-fill-hover);
 }
 
 .btn-trip-full.edit-btn {
-  background: var(--accent);
+  background: var(--accent-fill);
   color: #1a1a1a;
-  border-color: var(--accent);
+  border-color: var(--accent-fill);
 }
 .btn-trip-full.edit-btn:hover {
-  background: #fff;
-  border-color: #fff;
+  background: var(--accent-fill-hover);
+  border-color: var(--accent-fill-hover);
 }
 
 @media (max-width: 900px) {

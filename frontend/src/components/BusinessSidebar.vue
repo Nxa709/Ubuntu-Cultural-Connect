@@ -130,7 +130,7 @@ function handleLogout() {
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  background: #ffffff;
+  background: var(--glass-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -178,7 +178,7 @@ function handleLogout() {
   width: 34px;
   height: 34px;
   border-radius: 9px;
-  background: var(--accent);
+  background: var(--accent-fill);
   color: #1a1a1a;
   font-family: 'Poppins', sans-serif;
   font-weight: 700;
@@ -253,7 +253,7 @@ function handleLogout() {
 }
 
 .sidebar-link.active {
-  background: var(--accent);
+  background: var(--accent-fill);
   color: #1a1a1a;
   font-weight: 600;
 }

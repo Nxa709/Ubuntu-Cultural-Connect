@@ -45,7 +45,7 @@
 <style scoped>
 .about-page {
   min-height: 100vh;
-  background: #ffffff;
+  background: var(--glass-bg);
 }
 
 .about-hero {
@@ -106,7 +106,7 @@
 }
 
 .about-card {
-  background: #ffffff;
+  background: var(--glass-bg);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 16px;
   padding: 32px 24px;
@@ -128,7 +128,7 @@
 
 .about-card p {
   font-size: 0.9rem;
-  color: #555;
+  color: var(--text-secondary);
   line-height: 1.6;
 }
 

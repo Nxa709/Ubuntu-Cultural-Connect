@@ -297,7 +297,7 @@ function getCategoryImage(cat) {
 
 .btn-primary-sm {
   padding: 8px 18px;
-  background: var(--accent);
+  background: var(--accent-fill);
   color: #1a1a1a;
   border-radius: 50px;
   font-size: 0.88rem;
@@ -320,7 +320,7 @@ function getCategoryImage(cat) {
 }
 
 .pref-tag {
-  background: rgba(255, 182, 18, 0.2);
+  background: rgba(232, 162, 0, 0.2);
   color: var(--accent);
   padding: 4px 12px;
   border-radius: 20px;
@@ -370,8 +370,8 @@ function getCategoryImage(cat) {
 }
 
 .rec-body { padding: 14px; }
-.rec-body h4 { font-size: 0.88rem; color: #fff; margin-bottom: 4px; }
-.rec-loc { font-size: 0.78rem; color: rgba(255, 255, 255, 0.88); margin-bottom: 8px; }
+.rec-body h4 { font-size: 0.88rem; color: var(--heading-color); margin-bottom: 4px; }
+.rec-loc { font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 8px; }
 
 .rec-footer {
   display: flex;
@@ -395,12 +395,12 @@ function getCategoryImage(cat) {
 }
 
 .empty-rec {
-  color: rgba(255, 255, 255, 0.80);
+  color: var(--text-secondary);
   font-size: 0.88rem;
   padding: 20px 0;
 }
 
-.empty-rec a { color: var(--accent); font-weight: 500; }
+.empty-rec a { color: var(--accent-text); font-weight: 500; }
 
 .quick-grid {
   display: grid;

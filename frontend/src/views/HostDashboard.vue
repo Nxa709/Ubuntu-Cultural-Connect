@@ -370,8 +370,8 @@ onMounted(async () => {
 
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.btn-primary { background: var(--accent); color: #fff; }
-.btn-primary:hover { background: var(--accent-hover); }
+.btn-primary { background: var(--accent-fill); color: #1a1a1a; }
+.btn-primary:hover { background: var(--accent-fill-hover); }
 
 .filter-bar {
   display: flex;
@@ -386,7 +386,7 @@ onMounted(async () => {
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.28);
   backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
-  color: #666;
+  color: var(--text-secondary);
   cursor: pointer;
   font-size: 0.85rem;
   transition: all 0.2s;
@@ -412,7 +412,7 @@ onMounted(async () => {
   left: 14px;
   top: 50%;
   transform: translateY(-50%);
-  color: rgba(255, 255, 255, 0.70);
+  color: var(--text-muted);
   pointer-events: none;
 }
 
@@ -446,7 +446,7 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   padding: 4rem 2rem;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .spinner {
@@ -535,24 +535,24 @@ onMounted(async () => {
   letter-spacing: 0.5px;
 }
 
-.hc-status.active { background: #43A047; color: #fff; }
+.hc-status.active { background: var(--success); color: #fff; }
 .hc-status.inactive { background: #7B1FA2; color: #fff; }
-.hc-status.pending { background: #FF8F00; color: #fff; }
-.hc-status.rejected { background: #C62828; color: #fff; }
+.hc-status.pending { background: var(--warning); color: #fff; }
+.hc-status.rejected { background: var(--error); color: #fff; }
 
 .rejection-banner {
   background: rgba(198, 40, 40, 0.18);
   border: 1px solid rgba(198, 40, 40, 0.35);
   border-radius: 8px;
   padding: 10px 12px;
-  color: #fff;
+  color: var(--text-color);
   font-size: 0.82rem;
   line-height: 1.5;
   margin-bottom: 12px;
 }
 
 .rejection-banner strong {
-  color: #EF9A9A;
+  color: var(--error);
 }
 
 .hc-body {
@@ -612,11 +612,11 @@ onMounted(async () => {
 .hc-btn-edit:hover { background: #1976D2; }
 
 .hc-btn-appeal {
-  background: var(--accent);
+  background: var(--accent-fill);
   color: #1a1a1a;
   font-weight: 600;
 }
-.hc-btn-appeal:hover { background: #fff; }
+.hc-btn-appeal:hover { background: var(--accent-fill-hover); }
 
 .hc-btn-activate {
   background: #43A047;

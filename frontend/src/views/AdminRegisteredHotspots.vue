@@ -130,10 +130,8 @@ onMounted(async () => {
 }
 
 .hs-card {
-  background: rgba(255, 255, 255, 0.28);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 16px;
   overflow: hidden;
   transition: transform 0.2s, box-shadow 0.2s;
@@ -197,8 +195,8 @@ onMounted(async () => {
   letter-spacing: 0.5px;
 }
 
-.hc-status.approved { background: #43A047; color: #fff; }
-.hc-status.pending { background: #FF8F00; color: #fff; }
+.hc-status.approved { background: var(--success); color: #fff; }
+.hc-status.pending { background: var(--warning); color: #fff; }
 .hc-status.inactive { background: #7B1FA2; color: #fff; }
 
 .hc-body {
@@ -216,7 +214,7 @@ onMounted(async () => {
   align-items: center;
   gap: 6px;
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.97);
+  color: var(--text-secondary);
 }
 
 .hc-stat svg {

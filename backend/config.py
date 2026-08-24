@@ -1,4 +1,11 @@
 import os
+from pathlib import Path
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv(Path(__file__).parent / ".env")
+except ImportError:
+    pass
 
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./data.db")
 SECRET_KEY = os.getenv("SECRET_KEY", "ubuntu-cultural-connect-secret-key-change-in-production")

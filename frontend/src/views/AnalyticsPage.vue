@@ -653,13 +653,13 @@ onUnmounted(() => {
   font-family: 'Poppins', sans-serif;
   font-size: 1.7rem;
   font-weight: 700;
-  color: #16212f;
+  color: var(--heading-color);
   margin: 0 0 4px;
 }
 
 .ana-head-left p {
   font-size: 0.9rem;
-  color: #6c757d;
+  color: var(--text-secondary);
   margin: 0;
 }
 
@@ -674,7 +674,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: #ffffff;
+  background: var(--glass-bg);
   border: 1px solid #e5e9ef;
   border-radius: 10px;
   padding: 9px 14px;
@@ -687,14 +687,14 @@ onUnmounted(() => {
   background: transparent;
   font-family: 'Poppins', sans-serif;
   font-size: 0.85rem;
-  color: #16212f;
+  color: var(--heading-color);
   cursor: pointer;
   appearance: none;
   padding-right: 6px;
 }
 
 .date-select i {
-  color: #6c757d;
+  color: var(--text-secondary);
   font-size: 0.9rem;
 }
 
@@ -715,7 +715,7 @@ onUnmounted(() => {
 }
 
 .export-btn:hover {
-  background: var(--accent);
+  background: var(--accent-fill);
   color: #1a1a1a;
 }
 
@@ -728,7 +728,7 @@ onUnmounted(() => {
 }
 
 .kpi-card {
-  background: #ffffff;
+  background: var(--glass-bg);
   border: 1px solid #e5e9ef;
   border-radius: 12px;
   padding: 18px;
@@ -760,7 +760,7 @@ onUnmounted(() => {
   font-weight: 600;
   letter-spacing: 0.02em;
   text-transform: uppercase;
-  color: #6c757d;
+  color: var(--text-secondary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -770,7 +770,7 @@ onUnmounted(() => {
   font-family: 'Poppins', sans-serif;
   font-size: 1.7rem;
   font-weight: 700;
-  color: #16212f;
+  color: var(--heading-color);
   line-height: 1.1;
   margin-bottom: 6px;
 }
@@ -798,7 +798,7 @@ onUnmounted(() => {
 
 .kpi-vs {
   font-size: 0.7rem;
-  color: #98a2b3;
+  color: var(--text-muted);
 }
 
 .kpi-hint {
@@ -824,7 +824,7 @@ onUnmounted(() => {
 
 /* Cards */
 .card {
-  background: #ffffff;
+  background: var(--glass-bg);
   border: 1px solid #e5e9ef;
   border-radius: 12px;
   padding: 18px;
@@ -843,13 +843,13 @@ onUnmounted(() => {
   font-family: 'Poppins', sans-serif;
   font-size: 0.95rem;
   font-weight: 600;
-  color: #16212f;
+  color: var(--heading-color);
   margin: 0;
 }
 
 .card-sub {
   font-size: 0.75rem;
-  color: #98a2b3;
+  color: var(--text-muted);
 }
 
 /* Layout rows */
@@ -899,7 +899,7 @@ onUnmounted(() => {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: #98a2b3;
+  color: var(--text-muted);
   padding: 8px 10px;
   border-bottom: 1px solid #eef1f5;
 }
@@ -934,7 +934,7 @@ onUnmounted(() => {
 
 .listing-name {
   font-weight: 500;
-  color: #16212f;
+  color: var(--heading-color);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1013,7 +1013,7 @@ onUnmounted(() => {
 }
 
 .insight-text strong {
-  color: #16212f;
+  color: var(--heading-color);
   font-weight: 700;
 }
 
@@ -1157,7 +1157,7 @@ onUnmounted(() => {
   justify-content: center;
   height: 100%;
   min-height: 90px;
-  color: #98a2b3;
+  color: var(--text-muted);
   font-size: 0.85rem;
   text-align: center;
   padding: 16px;

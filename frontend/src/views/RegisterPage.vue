@@ -124,7 +124,7 @@ async function handleSubmit() {
 .form-subtitle {
   text-align: center;
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.94);
+  color: var(--text-secondary);
   margin-bottom: 8px;
 }
 
@@ -138,15 +138,15 @@ async function handleSubmit() {
 }
 
 .alert-error {
-  background: rgba(255, 77, 77, 0.2);
-  color: #ff6b6b;
-  border: 1px solid rgba(255, 77, 77, 0.3);
+  background: var(--error-light);
+  color: var(--error);
+  border: 1px solid rgba(220, 38, 38, 0.3);
 }
 
 .alert-success {
-  background: rgba(46, 125, 50, 0.2);
-  color: #81c784;
-  border: 1px solid rgba(46, 125, 50, 0.3);
+  background: var(--success-light);
+  color: var(--success);
+  border: 1px solid rgba(22, 163, 74, 0.3);
 }
 
 .btn-gold {

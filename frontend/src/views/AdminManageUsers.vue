@@ -309,21 +309,21 @@ onMounted(async () => {
 }
 
 .search-bar svg {
-  color: rgba(255, 255, 255, 0.80);
+  color: var(--text-muted);
   flex-shrink: 0;
 }
 
 .search-bar input {
   background: none;
   border: none;
-  color: #fff;
+  color: var(--text-color);
   font-size: 0.9rem;
   width: 100%;
   outline: none;
 }
 
 .search-bar input::placeholder {
-  color: rgba(255, 255, 255, 0.70);
+  color: var(--text-muted);
 }
 
 .search-bar:focus-within {
@@ -336,7 +336,7 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   padding: 4rem 2rem;
-  color: rgba(255, 255, 255, 0.88);
+  color: var(--text-secondary);
 }
 
 .spinner {
@@ -360,10 +360,8 @@ onMounted(async () => {
 }
 
 .user-card {
-  background: rgba(255, 255, 255, 0.28);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 1.25rem;
 }
@@ -379,7 +377,7 @@ onMounted(async () => {
   width: 48px;
   height: 48px;
   border-radius: 12px;
-  background: rgba(255, 182, 18, 0.2);
+  background: rgba(232, 162, 0, 0.2);
   color: var(--accent);
   display: flex;
   align-items: center;
@@ -405,7 +403,7 @@ onMounted(async () => {
 
 .user-name-row h3 {
   margin: 0;
-  color: #fff;
+  color: var(--heading-color);
   font-family: 'Poppins', sans-serif;
   font-size: 1.05rem;
 }
@@ -421,17 +419,17 @@ onMounted(async () => {
 
 .role-badge.tourist {
   background: rgba(100, 181, 246, 0.2);
-  color: #90CAF9;
+  color: #1976D2;
 }
 
 .role-badge.business_owner {
-  background: rgba(255, 182, 18, 0.2);
-  color: var(--accent);
+  background: rgba(232, 162, 0, 0.2);
+  color: var(--accent-dark);
 }
 
 .role-badge.admin {
   background: rgba(206, 147, 216, 0.2);
-  color: #CE93D8;
+  color: #8E24AA;
 }
 
 .status-badge.inactive {
@@ -441,7 +439,7 @@ onMounted(async () => {
   font-size: 0.75rem;
   font-weight: 600;
   background: rgba(239, 83, 80, 0.2);
-  color: #EF9A9A;
+  color: var(--error);
 }
 
 .user-meta {
@@ -454,7 +452,7 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 4px;
-  color: rgba(255, 255, 255, 0.88);
+  color: var(--text-secondary);
   font-size: 0.85rem;
 }
 
@@ -467,7 +465,7 @@ onMounted(async () => {
   align-items: center;
   gap: 0.75rem;
   padding-top: 0.75rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.28);
+  border-top: 1px solid var(--border);
   flex-wrap: wrap;
 }
 
@@ -479,22 +477,22 @@ onMounted(async () => {
 
 .action-label {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.80);
+  color: var(--text-secondary);
 }
 
 .role-select {
   padding: 0.4rem 0.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.45);
+  border: 1px solid var(--border-strong);
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.26);
-  color: #fff;
+  background: var(--glass-bg);
+  color: var(--text-color);
   font-size: 0.85rem;
   cursor: pointer;
 }
 
 .role-select option {
-  background: #2a2a2a;
-  color: #fff;
+  background: var(--glass-bg);
+  color: var(--text-color);
 }
 
 .role-select:disabled {
@@ -518,7 +516,7 @@ onMounted(async () => {
 
 .btn-deactivate {
   background: rgba(255, 183, 77, 0.2);
-  color: #FFB74D;
+  color: #B45309;
 }
 
 .btn-deactivate:hover:not(:disabled) {
@@ -526,17 +524,17 @@ onMounted(async () => {
 }
 
 .btn-activate {
-  background: rgba(129, 199, 132, 0.2);
-  color: #81C784;
+  background: rgba(22, 163, 74, 0.2);
+  color: var(--success);
 }
 
 .btn-activate:hover:not(:disabled) {
-  background: rgba(129, 199, 132, 0.35);
+  background: rgba(22, 163, 74, 0.35);
 }
 
 .btn-delete {
   background: rgba(239, 83, 80, 0.2);
-  color: #EF9A9A;
+  color: var(--error);
 }
 
 .btn-delete:hover:not(:disabled) {

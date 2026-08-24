@@ -191,7 +191,7 @@ onUnmounted(() => {
 }
 
 .mark-all-btn:hover {
-  background: rgba(255, 182, 18, 0.12);
+  background: rgba(232, 162, 0, 0.12);
 }
 
 .notif-list {
@@ -215,7 +215,7 @@ onUnmounted(() => {
 }
 
 .notif-item.unread {
-  background: rgba(255, 182, 18, 0.06);
+  background: rgba(232, 162, 0, 0.06);
 }
 
 .notif-dot {
@@ -223,7 +223,7 @@ onUnmounted(() => {
   height: 8px;
   min-width: 8px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--accent-fill);
   margin-top: 5px;
 }
 

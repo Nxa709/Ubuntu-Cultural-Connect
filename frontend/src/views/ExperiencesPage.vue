@@ -209,7 +209,7 @@ function getCategoryImage(cat) {
 
 <style scoped>
 .experiences-page {
-  background: #ffffff;
+  background: var(--glass-bg);
   position: relative;
   min-height: 100vh;
 }
@@ -308,7 +308,7 @@ function getCategoryImage(cat) {
 }
 
 .search-bar:focus-within {
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25), 0 0 0 3px rgba(255, 182, 18, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25), 0 0 0 3px rgba(232, 162, 0, 0.2);
 }
 
 .search-icon {
@@ -330,13 +330,13 @@ function getCategoryImage(cat) {
 }
 
 .search-input::placeholder {
-  color: #999;
+  color: var(--text-muted);
 }
 
 .search-btn {
   flex-shrink: 0;
   border: none;
-  background: var(--accent);
+  background: var(--accent-fill);
   color: #1a1a1a;
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
@@ -349,7 +349,7 @@ function getCategoryImage(cat) {
 }
 
 .search-btn:hover {
-  background: var(--accent-hover);
+  background: var(--accent-fill-hover);
   color: #1a1a1a;
 }
 
@@ -465,8 +465,8 @@ function getCategoryImage(cat) {
 .results-count {
   font-size: 0.9rem;
   font-weight: 500;
-  color: #666;
-  background: rgba(255, 182, 18, 0.15);
+  color: var(--text-secondary);
+  background: rgba(232, 162, 0, 0.15);
   padding: 3px 12px;
   border-radius: 20px;
   margin-left: 10px;
@@ -483,7 +483,7 @@ function getCategoryImage(cat) {
   display: block;
   text-decoration: none;
   color: inherit;
-  background: #ffffff;
+  background: var(--glass-bg);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 16px;
   overflow: hidden;
@@ -513,7 +513,7 @@ function getCategoryImage(cat) {
   font-weight: 600;
   font-family: 'Poppins', sans-serif;
   color: #1a1a1a;
-  background: var(--accent);
+  background: var(--accent-fill);
 }
 
 .search-result-body {
@@ -530,7 +530,7 @@ function getCategoryImage(cat) {
 
 .search-result-loc {
   font-size: 0.8rem;
-  color: #888;
+  color: var(--text-secondary);
   margin: 0 0 12px;
 }
 
@@ -552,13 +552,13 @@ function getCategoryImage(cat) {
 
 .search-result-owner {
   font-size: 0.78rem;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .no-results {
   text-align: center;
   padding: 40px 20px;
-  color: #888;
+  color: var(--text-secondary);
   font-size: 0.95rem;
 }
 
@@ -630,7 +630,7 @@ function getCategoryImage(cat) {
   font-weight: 600;
   font-family: 'Poppins', sans-serif;
   color: #1a1a1a;
-  background: var(--accent);
+  background: var(--accent-fill);
 }
 
 .featured-overlay {

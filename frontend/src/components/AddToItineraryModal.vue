@@ -672,7 +672,7 @@ watch(() => props.visible, async (val) => {
   background: rgba(255, 255, 255, 0.22); color: rgba(255, 255, 255, 0.70);
   transition: all 0.3s;
 }
-.step-badge.active { background: var(--accent); color: #1a1a1a; }
+.step-badge.active { background: var(--accent-fill); color: #1a1a1a; }
 .step-badge.done { background: rgba(76,175,80,0.3); color: #81c784; }
 .step-line { width: 40px; height: 2px; background: rgba(255, 255, 255, 0.26); margin: 0 4px; }
 .step-line.done { background: #81c784; }
@@ -706,12 +706,12 @@ watch(() => props.visible, async (val) => {
   cursor: pointer;
   opacity: 1;
 }
-.itinerary-modal .form-group input:focus { border-color: var(--accent); }
+.itinerary-modal .form-group input:focus { border-color: var(--accent-fill); }
 .day-count-badge { text-align: center; padding: 8px 0 12px; font-size: 0.9rem; color: rgba(255, 255, 255, 0.88); }
 .day-count-num {
   display: inline-flex; align-items: center; justify-content: center;
   width: 28px; height: 28px; border-radius: 50%;
-  background: var(--accent); color: #1a1a1a; font-weight: 700; font-size: 0.85rem; margin-right: 4px;
+  background: var(--accent-fill); color: #1a1a1a; font-weight: 700; font-size: 0.85rem; margin-right: 4px;
 }
 .date-error { text-align: center; color: #ff6b6b; font-size: 0.82rem; padding: 4px 0 8px; }
 
@@ -742,12 +742,12 @@ watch(() => props.visible, async (val) => {
 }
 
 .option-card.selected {
-  border-color: var(--accent);
-  background: rgba(255, 182, 18, 0.1);
+  border-color: var(--accent-fill);
+  background: rgba(232, 162, 0, 0.1);
 }
 
 .option-card input[type="radio"] {
-  accent-color: var(--accent);
+  accent-color: var(--accent-fill);
   width: 16px;
   height: 16px;
   flex-shrink: 0;
@@ -786,10 +786,10 @@ watch(() => props.visible, async (val) => {
   cursor: pointer; transition: all 0.2s; text-align: center;
 }
 .itinerary-modal .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-.itinerary-modal .btn-primary { background: var(--accent); color: #1a1a1a; }
-.itinerary-modal .btn-primary:hover:not(:disabled) { background: #fff; }
+.itinerary-modal .btn-primary { background: var(--accent-fill); color: #1a1a1a; }
+.itinerary-modal .btn-primary:hover:not(:disabled) { background: var(--accent-fill-hover); }
 .itinerary-modal .btn-outline { background: transparent; border: 1px solid rgba(255, 255, 255, 0.55); color: #fff; }
-.itinerary-modal .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+.itinerary-modal .btn-outline:hover { border-color: var(--accent-fill); color: var(--accent-fill); }
 .day-cards { display: flex; flex-direction: column; gap: 8px; margin-bottom: 4px; }
 .day-card {
   display: flex; align-items: center; gap: 14px; padding: 12px 16px;
@@ -797,19 +797,19 @@ watch(() => props.visible, async (val) => {
   background: rgba(255, 255, 255, 0.16); cursor: pointer; transition: all 0.2s;
 }
 .day-card:hover { background: rgba(255, 255, 255, 0.24); border-color: rgba(255, 255, 255, 0.50); }
-.day-card.selected { border-color: var(--accent); background: rgba(255,182,18,0.1); }
-.day-card-number { font-size: 0.85rem; font-weight: 700; color: var(--accent); min-width: 50px; }
+.day-card.selected { border-color: var(--accent-fill); background: rgba(232,162,0,0.1); }
+.day-card-number { font-size: 0.85rem; font-weight: 700; color: var(--accent-fill); min-width: 50px; }
 .day-card-date { flex: 1; font-size: 0.88rem; color: #fff; }
-.day-card-entries { font-size: 0.77rem; color: var(--accent); background: rgba(255,182,18,0.12); padding: 2px 10px; border-radius: 12px; }
+.day-card-entries { font-size: 0.77rem; color: var(--accent-fill); background: rgba(232,162,0,0.12); padding: 2px 10px; border-radius: 12px; }
 .day-card-empty { font-size: 0.77rem; color: rgba(255, 255, 255, 0.60); font-style: italic; }
 .time-picker-simple { max-width: 280px; margin: 0 auto 8px; }
 .time-suggestion { text-align: center; margin-top: 8px; }
 .btn-suggestion {
   background: none; border: 1px dashed rgba(255, 255, 255, 0.55);
-  color: var(--accent); padding: 6px 16px; border-radius: 6px;
+  color: var(--accent-fill); padding: 6px 16px; border-radius: 6px;
   font-size: 0.82rem; cursor: pointer; font-family: inherit; transition: all 0.2s;
 }
-.btn-suggestion:hover { border-color: var(--accent); background: rgba(255,182,18,0.08); }
+.btn-suggestion:hover { border-color: var(--accent-fill); background: rgba(232,162,0,0.08); }
 .timeline-container { margin: 4px 0 8px; }
 .timeline { display: flex; flex-direction: column; gap: 4px; }
 .timeline-slot {
@@ -819,7 +819,7 @@ watch(() => props.visible, async (val) => {
 .timeline-slot.available { cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.24); background: rgba(255, 255, 255, 0.14); }
 .timeline-slot.available:hover { background: rgba(76,175,80,0.1); border-color: rgba(76,175,80,0.3); }
 .timeline-slot.available.selected { background: rgba(76,175,80,0.18); border-color: #81c784; }
-.timeline-slot.recommended { border-color: var(--accent) !important; background: rgba(255,182,18,0.08) !important; }
+.timeline-slot.recommended { border-color: var(--accent-fill) !important; background: rgba(232,162,0,0.08) !important; }
 .timeline-slot.occupied { background: rgba(255, 255, 255, 0.18); border: 1px solid rgba(255, 255, 255, 0.20); opacity: 0.7; }
 .timeline-slot.fits-disabled { border-style: dashed; border-color: rgba(255, 255, 255, 0.35); }
 .timeline-slot.fits-disabled:hover { background: rgba(76,175,80,0.08); border-color: #81c784; }
@@ -831,8 +831,8 @@ watch(() => props.visible, async (val) => {
 .slot-time-range { font-size: 0.85rem; font-weight: 600; color: #fff; }
 .slot-label { font-size: 0.78rem; color: rgba(255, 255, 255, 0.80); margin-top: 1px; }
 .slot-recommended {
-  display: inline-block; font-size: 0.7rem; color: var(--accent);
-  background: rgba(255,182,18,0.15); padding: 1px 8px; border-radius: 10px;
+  display: inline-block; font-size: 0.7rem; color: var(--accent-fill);
+  background: rgba(232,162,0,0.15); padding: 1px 8px; border-radius: 10px;
   margin-top: 3px; font-weight: 600;
 }
 .slot-too-small { font-size: 0.7rem; color: #ff6b6b; margin-top: 2px; }
