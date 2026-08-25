@@ -394,9 +394,12 @@ async function loadTravelHistory() {
           if (entry.type === 'experience' && entry.name) {
             const key = entry.experience_id || entry.name
             if (seen.has(key)) continue
-            seen.add(key)
             let expId = entry.experience_id || null
             if (!expId) expId = nameToId.get(String(entry.name).toLowerCase()) || null
+            // Only show experiences that exist in the platform and can be
+            // rated/reviewed. Skip stale entries with no matching hotspot.
+            if (!expId) continue
+            seen.add(key)
             items.push({
               name: entry.name,
               location: entry.location || '',
@@ -413,6 +416,7 @@ async function loadTravelHistory() {
       }
 
       for (const day of trip.days || []) {
+        // Only include days tied to a real experience (skip stale/null refs).
         if (day.experience_id && !seen.has(day.experience_id)) {
           seen.add(day.experience_id)
           items.push({
