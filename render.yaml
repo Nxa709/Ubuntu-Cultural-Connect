@@ -22,6 +22,7 @@ services:
   - type: web
     name: ubuntu-frontend
     runtime: static
+    rootDir: frontend
     buildCommand: npm install && npm run build
     staticPublishPath: ./frontend/dist
     autoDeploy: true
