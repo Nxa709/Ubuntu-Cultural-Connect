@@ -1,0 +1,39 @@
+# Render Blueprint - Ubuntu Cultural Connect
+# Deploys: backend (Docker/FastAPI) + frontend (Vite static site)
+# Docs: https://docs.render.com/blueprint-spec
+
+services:
+  # ── Backend API ──────────────────────────────────────────────
+  - type: web
+    name: ubuntu-backend
+    runtime: docker
+    rootDir: backend
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: DATABASE_URL
+        sync: false # you'll be prompted for your Supabase URL
+      - key: SECRET_KEY
+        sync: false # you'll be prompted for a secret
+
+  # ── Frontend (Vue SPA) ───────────────────────────────────────
+  - type: web
+    name: ubuntu-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./frontend/dist
+    autoDeploy: true
+    envVars:
+      # Points the built SPA at the backend. Render injects the
+      # backend's public URL at deploy time.
+      - key: VITE_API_URL
+        value: https://ubuntu-backend.onrender.com/api
+    routes:
+      # SPA fallback: any non-file path serves index.html
+      - type: rewrite
+        source: /*
+        destination: /index.html

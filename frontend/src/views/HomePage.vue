@@ -9,9 +9,6 @@
             Discover authentic South African cultural experiences. Connect with local community hosts
             and immerse yourself in indigenous traditions, township life, and rural heritage.
           </p>
-          <div class="hero-actions" v-if="!auth.isLoggedIn">
-            <router-link to="/login" class="btn-outline-light">Login</router-link>
-          </div>
         </div>
       </div>
     </section>
@@ -537,24 +534,12 @@ function toggleWishlist(id) {
   background: var(--accent);
 }
 
-.hotspot-badge.badge-top {
-  background: var(--accent);
-  color: #1a1a1a;
-}
-
-.hotspot-badge.badge-popular {
-  background: #ff6b6b;
-  color: #fff;
-}
-
-.hotspot-badge.badge-trending {
-  background: #4dabf7;
-  color: #fff;
-}
-
+.hotspot-badge.badge-top,
+.hotspot-badge.badge-popular,
+.hotspot-badge.badge-trending,
 .hotspot-badge.badge-new {
-  background: #2F9E44;
-  color: #fff;
+  background: var(--accent-fill);
+  color: #1a1a1a;
 }
 
 .wishlist-btn {
@@ -569,7 +554,7 @@ function toggleWishlist(id) {
   background: rgba(255, 255, 255, 0.95);
   border: none;
   border-radius: 50%;
-  color: #ff4d4f;
+  color: var(--accent-fill);
   font-size: 1.15rem;
   cursor: pointer;
   transition: all 0.2s;
@@ -577,12 +562,12 @@ function toggleWishlist(id) {
 }
 
 .wishlist-btn:hover {
-  color: #ff4d4f;
+  color: var(--accent-fill);
   transform: scale(1.1);
 }
 
 .wishlist-btn.active {
-  color: #ff4d4f;
+  color: var(--accent-fill);
 }
 
 .hotspot-overlay {

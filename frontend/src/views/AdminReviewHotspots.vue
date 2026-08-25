@@ -77,7 +77,7 @@
           </div>
           <div class="detail-item">
             <span class="detail-label">Reviews</span>
-            <span class="detail-value">{{ hotspot.rating_count }} (avg {{ hotspot.avg_rating || 'â€”' }})</span>
+            <span class="detail-value">{{ hotspot.rating_count }} (avg {{ hotspot.avg_rating || '—' }})</span>
           </div>
 
           <div class="owner-section">

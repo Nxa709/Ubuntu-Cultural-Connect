@@ -286,25 +286,25 @@ main.sidebar-shifted {
   background: linear-gradient(rgba(15, 23, 42, 0.25), rgba(15, 23, 42, 0.45)), url('/img/cultures/woman.jpeg') no-repeat center top / cover !important;
   background-size: cover !important;
   text-align: center !important;
-  padding: 60px 20px 56px !important;
+  padding: 40px 20px 36px !important;
   position: relative !important;
-  min-height: 640px !important;
+  min-height: 340px !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
-  justify-content: flex-end !important;
+  justify-content: center !important;
 }
 
 .ana-header {
   background: linear-gradient(rgba(15, 23, 42, 0.25), rgba(15, 23, 42, 0.45)), url('/img/cultures/woman.jpeg') no-repeat center top / cover !important;
   background-size: cover !important;
-  min-height: 640px !important;
+  min-height: 340px !important;
   display: flex !important;
-  align-items: flex-end !important;
+  align-items: center !important;
   justify-content: space-between !important;
   gap: 16px !important;
   flex-wrap: wrap !important;
-  padding: 60px 28px 56px !important;
+  padding: 40px 28px 36px !important;
   position: relative !important;
 }
 
@@ -889,7 +889,8 @@ main.sidebar-shifted {
 }
 
 .preferences-page .rec-cat-badge {
-  color: var(--heading-color) !important;
+  background: var(--accent-fill) !important;
+  color: #1a1a1a !important;
 }
 
 /* Context: keep white on image banners (detail hero, card photo overlays, flip-card fronts) */

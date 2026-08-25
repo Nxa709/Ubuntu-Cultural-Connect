@@ -89,7 +89,7 @@
                 <span class="review-date">{{ formatDate(r.created_at) }}</span>
               </div>
               <div class="review-score">
-                <span v-for="n in 5" :key="n" class="mini-star" :class="{ filled: n <= r.score }">â˜…</span>
+                <span v-for="n in 5" :key="n" class="mini-star" :class="{ filled: n <= r.score }">★</span>
               </div>
             </div>
             <p class="review-comment" v-if="r.comment">{{ r.comment }}</p>

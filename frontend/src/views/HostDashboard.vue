@@ -94,18 +94,12 @@
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
                 </svg>
-                <span>{{ exp.duration_hours ? exp.duration_hours + 'h' : 'â€”' }}</span>
+                <span>{{ exp.duration_hours ? exp.duration_hours + 'h' : '—' }}</span>
               </div>
             </div>
           </div>
 
           <div class="hc-actions">
-            <router-link :to="`/host/analytics/${exp.id}`" class="hc-btn hc-btn-analytics">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
-              </svg>
-              Analytics
-            </router-link>
             <router-link :to="`/host/edit/${exp.id}`" class="hc-btn" :class="exp.rejected_at ? 'hc-btn-appeal' : 'hc-btn-edit'">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -253,33 +247,31 @@ onMounted(async () => {
 
 <style scoped>
 .host-page {
-  background: url('/img/cultures/woman.jpeg') no-repeat center top;
-  background-size: cover;
-  background-attachment: fixed;
   position: relative;
   min-height: 100vh;
-  padding: 5rem 1rem 2rem;
-}
-
-.host-page::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.15);
-  z-index: 0;
+  padding: 0;
 }
 
 .host-page > * {
   position: relative;
   z-index: 1;
-  max-width: 1100px;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .hero-header {
   text-align: center;
-  padding: 40px 20px 48px;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+.owner-overview,
+.filter-bar,
+.search-bar,
+.hotspots-grid,
+.empty-state {
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .hero-header h1 {
@@ -312,9 +304,10 @@ onMounted(async () => {
 
 .owner-overview {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  margin: 24px auto 1.5rem;
+  padding: 0 16px;
 }
 
 .ov-card {
@@ -325,11 +318,10 @@ onMounted(async () => {
   gap: 4px;
   text-align: center;
   padding: 22px 16px;
-  background: rgba(255, 255, 255, 0.28);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 14px;
+  box-shadow: var(--shadow-sm);
   min-width: 0;
 }
 
@@ -337,7 +329,7 @@ onMounted(async () => {
   font-family: 'Poppins', sans-serif;
   font-size: 2rem;
   font-weight: 800;
-  color: var(--accent);
+  color: var(--accent-dark);
   line-height: 1.1;
 }
 
@@ -346,13 +338,7 @@ onMounted(async () => {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.6px;
-  color: rgba(255, 255, 255, 0.95);
-}
-
-@media (max-width: 700px) {
-  .owner-overview {
-    grid-template-columns: 1fr 1fr;
-  }
+  color: var(--text-secondary);
 }
 
 @media (max-width: 420px) {
@@ -384,22 +370,23 @@ onMounted(async () => {
   gap: 0.5rem;
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
+  padding: 0 16px;
 }
 
 .filter-btn {
-  padding: 0.4rem 0.9rem;
-  border: 1px solid rgba(255, 255, 255, 0.45);
+  padding: 0.45rem 1rem;
+  border: 1px solid var(--border-strong);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.28);
-  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  background: var(--surface);
   color: var(--text-secondary);
   cursor: pointer;
   font-size: 0.85rem;
+  font-family: inherit;
   transition: all 0.2s;
 }
 
 .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
-.filter-btn.active { background: rgba(255, 255, 255, 0.40); color: #fff; border-color: rgba(255, 255, 255, 0.60); }
+.filter-btn.active { background: var(--accent-fill); color: #1a1a1a; border-color: var(--accent-fill); font-weight: 600; }
 
 .count {
   margin-left: 4px;
@@ -411,11 +398,12 @@ onMounted(async () => {
   position: relative;
   margin-bottom: 1.5rem;
   max-width: 400px;
+  padding: 0 16px;
 }
 
 .search-icon {
   position: absolute;
-  left: 14px;
+  left: 30px;
   top: 50%;
   transform: translateY(-50%);
   color: var(--text-muted);
@@ -425,21 +413,19 @@ onMounted(async () => {
 .search-input {
   width: 100%;
   padding: 10px 14px 10px 42px;
-  border: 1px solid rgba(255, 255, 255, 0.38);
+  border: 1px solid var(--border-strong);
   border-radius: 10px;
   font-size: 0.88rem;
   font-family: inherit;
-  background: rgba(255, 255, 255, 0.26);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  color: #fff;
+  background: var(--surface);
+  color: var(--text-color);
   outline: none;
   transition: border-color 0.2s;
   box-sizing: border-box;
 }
 
 .search-input::placeholder {
-  color: rgba(255, 255, 255, 0.70);
+  color: var(--text-muted);
 }
 
 .search-input:focus {
@@ -470,6 +456,7 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1.5rem;
+  padding: 0 16px 40px;
 }
 
 @media (max-width: 900px) {
@@ -616,17 +603,6 @@ onMounted(async () => {
   color: #fff;
 }
 .hc-btn-edit:hover { background: #1976D2; }
-
-.hc-btn-analytics {
-  background: var(--surface-secondary);
-  color: var(--text-color);
-  border: 1px solid var(--border-strong);
-}
-.hc-btn-analytics:hover {
-  background: var(--accent-light);
-  color: var(--accent-text);
-  border-color: var(--accent);
-}
 
 .hc-btn-appeal {
   background: var(--accent-fill);

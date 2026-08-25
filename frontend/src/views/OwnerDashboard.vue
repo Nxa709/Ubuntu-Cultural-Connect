@@ -68,7 +68,7 @@
             <span class="s-label">Total Reviews</span>
           </div>
           <div class="s-card">
-            <span class="s-value">{{ stats?.avg_rating || 'â€”' }}</span>
+            <span class="s-value">{{ stats?.avg_rating || '—' }}</span>
             <span class="s-label">Avg Rating</span>
           </div>
           <div class="s-card">

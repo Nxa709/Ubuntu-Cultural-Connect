@@ -627,18 +627,18 @@ def get_experience_analytics(
     for a in adds:
         hourly_counts[a.created_at.hour] += 1
     hourly = [{"hour": h, "count": hourly_counts.get(h, 0)} for h in range(24)]
-    morning = sum(hourly_counts[h] for h in range(6, 12))
-    afternoon = sum(hourly_counts[h] for h in range(12, 18))
-    evening = sum(hourly_counts[h] for h in range(18, 24)) + sum(hourly_counts[h] for h in range(0, 6))
+    morning = sum(hourly_counts[h] for h in range(9, 13))
+    afternoon = sum(hourly_counts[h] for h in range(13, 19))
+    evening = sum(hourly_counts[h] for h in range(19, 24)) + sum(hourly_counts[h] for h in range(0, 9))
     peak_times = [
         {"period": "Morning", "count": morning},
         {"period": "Afternoon", "count": afternoon},
         {"period": "Evening", "count": evening},
     ]
     period_ranges = {
-        "Morning": list(range(6, 12)),
-        "Afternoon": list(range(12, 18)),
-        "Evening": list(range(18, 24)) + list(range(0, 6)),
+        "Morning": list(range(9, 13)),
+        "Afternoon": list(range(13, 19)),
+        "Evening": list(range(19, 24)) + list(range(0, 9)),
     }
     peak_heatmap = [
         {
@@ -1291,7 +1291,11 @@ def rate_experience(
             Trip.user_id == current_user.id,
             TripDay.experience_id == exp_id,
         ).first()
-        if not in_itinerary:
+        added = db.query(ItineraryAdd).filter(
+            ItineraryAdd.user_id == current_user.id,
+            ItineraryAdd.experience_id == exp_id,
+        ).first()
+        if not in_itinerary and not added:
             raise HTTPException(
                 status_code=403,
                 detail="You can only rate an experience after adding it to your trip itinerary",

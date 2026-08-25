@@ -278,19 +278,18 @@ function getIcon(cat) {
   padding: 20px 12px;
   border: 2px solid var(--accent);
   border-radius: 12px;
-  background: var(--accent-fill);
+  background: transparent;
   cursor: pointer;
   transition: all 0.2s;
   font-family: inherit;
-  color: #1a1a1a;
+  color: var(--accent);
 }
 
 .cat-btn:hover {
-  border-color: var(--accent-fill);
-  background: var(--accent-fill);
-  color: #1a1a1a;
+  background: var(--accent-light);
+  color: var(--accent-text);
   transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
 .cat-btn.selected {
@@ -301,22 +300,22 @@ function getIcon(cat) {
 }
 
 .cat-icon {
-  color: #1a1a1a;
+  color: inherit;
 }
 
 .cat-btn:hover .cat-icon {
-  color: #1a1a1a;
+  color: inherit;
 }
 
 .cat-btn.selected .cat-icon {
-  color: #1a1a1a;
+  color: inherit;
 }
 
 .cat-label {
   font-size: 0.78rem;
   font-weight: 500;
   text-align: center;
-  color: #1a1a1a;
+  color: inherit;
 }
 
 .card-actions {

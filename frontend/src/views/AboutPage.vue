@@ -19,10 +19,10 @@
           </p>
         </div>
         <div class="about-card">
-          <i class="bi bi-globe-africa"></i>
+          <i class="bi bi-book-half"></i>
           <h3>Our Story</h3>
           <p>
-            Born from the spirit of Ubuntu â€” "I am because we are" â€” we believe travel should
+            Born from the spirit of Ubuntu, "I am because we are". We believe travel should
             connect people, not just places.
           </p>
         </div>

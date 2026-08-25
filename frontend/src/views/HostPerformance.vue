@@ -69,7 +69,7 @@
 
             <div class="star-bars">
               <div v-for="s in [5,4,3,2,1]" :key="s" class="bar-row">
-                <span class="bar-label">{{ s }}â˜…</span>
+                <span class="bar-label">{{ s }}★</span>
                 <div class="bar-track">
                   <div class="bar-fill" :style="{ width: getBarWidth(item.star_distribution[s] || 0, item.total_ratings) }"></div>
                 </div>

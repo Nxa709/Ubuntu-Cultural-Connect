@@ -32,6 +32,7 @@ import DestinationDetail from '../views/DestinationDetail.vue'
 import KznDirectoryPage from '../views/KznDirectoryPage.vue'
 import KznItemDetail from '../views/KznItemDetail.vue'
 import HotspotAnalytics from '../views/HotspotAnalytics.vue'
+import OverallAnalytics from '../views/OverallAnalytics.vue'
 
 const routes = [
   { path: '/', name: 'Home', component: HomePage },
@@ -45,6 +46,7 @@ const routes = [
   { path: '/plan-trip', name: 'PlanTrip', component: PlanTripPage, meta: { requiresAuth: true } },
   { path: '/rate/:id', name: 'RateExperience', component: RateExperiencePage, meta: { requiresAuth: true } },
   { path: '/analytics', name: 'Analytics', component: AnalyticsPage, meta: { requiresAuth: true } },
+  { path: '/overall-analytics', name: 'OverallAnalytics', component: OverallAnalytics, meta: { requiresAuth: true } },
   { path: '/kzn-directory', name: 'KznDirectory', component: KznDirectoryPage },
   { path: '/kzn-directory/item/:slug', name: 'KznItemDetail', component: KznItemDetail },
   { path: '/province/:slug', name: 'Province', component: ProvincePage },
@@ -60,6 +62,7 @@ const routes = [
   { path: '/host/edit/:id', name: 'EditHotspot', component: EditHotspot, meta: { requiresAuth: true, requiresHost: true } },
   { path: '/host/reviews', name: 'HostReviews', component: HostReviews, meta: { requiresAuth: true, requiresHost: true } },
   { path: '/host/performance', name: 'HostPerformance', component: HostPerformance, meta: { requiresAuth: true, requiresHost: true } },
+  { path: '/host/analytics', redirect: '/analytics' },
   { path: '/host/analytics/:id', name: 'HotspotAnalytics', component: HotspotAnalytics, meta: { requiresAuth: true, requiresHost: true } },
   { path: '/plan-trip/edit/:id', name: 'EditTrip', component: EditTripPage, meta: { requiresAuth: true } },
   { path: '/journal', name: 'TravelJournal', component: TravelJournalPage, meta: { requiresAuth: true } },

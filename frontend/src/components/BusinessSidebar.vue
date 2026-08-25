@@ -79,7 +79,7 @@ const navItems = computed(() => {
       { path: '/admin', label: 'Dashboard', icon: 'bi-grid-1x2' },
       { path: '/admin/hotspots', label: 'Listings', icon: 'bi-briefcase' },
       { path: '/admin/comments', label: 'Reviews', icon: 'bi-chat-square-text' },
-      { path: '/analytics', label: 'Analytics', icon: 'bi-bar-chart-line' },
+      { path: '/analytics', label: 'Business Analytics', icon: 'bi-bar-chart-line' },
       { path: '/profile', label: 'Profile', icon: 'bi-person' },
       { path: null, label: 'Settings', icon: 'bi-gear' },
     ]
@@ -88,7 +88,7 @@ const navItems = computed(() => {
     { path: '/host/dashboard', label: 'Dashboard', icon: 'bi-grid-1x2' },
     { path: '/my-hotspots', label: 'My Hotspots', icon: 'bi-briefcase' },
     { path: '/host/reviews', label: 'Reviews', icon: 'bi-chat-square-text' },
-    { path: '/analytics', label: 'Analytics', icon: 'bi-bar-chart-line' },
+    { path: '/analytics', label: 'Business Analytics', icon: 'bi-bar-chart-line' },
     { path: '/profile', label: 'Profile', icon: 'bi-person' },
   ]
 })

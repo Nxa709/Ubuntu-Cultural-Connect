@@ -70,7 +70,12 @@
             </div>
             <div class="heatmap">
               <div class="hm-x-labels">
-                <span v-for="h in 24" :key="h" class="hm-x-label">{{ hourLabel(h - 1) }}</span>
+                <span
+                  v-for="h in 24"
+                  :key="h"
+                  class="hm-x-label"
+                  :class="{ 'hm-x-label--major': [1, 10, 13, 19, 22].includes(h) }"
+                >{{ hourLabel(h - 1) }}</span>
               </div>
               <div class="hm-body">
                 <div class="hm-row" v-for="row in data.peak_heatmap" :key="row.period">
@@ -147,13 +152,30 @@ function destroyCharts() {
   charts = []
 }
 
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
 function shortDate(d) {
   const parts = d.split('-')
   return parts.length === 3 ? `${parts[1]}/${parts[2]}` : d
 }
 
+function monthBuckets(series) {
+  const byMonth = {}
+  for (const p of series || []) {
+    const key = String(p.date || p.period || '').slice(0, 7)
+    if (!key) continue
+    byMonth[key] = (byMonth[key] || 0) + (p.count || 0)
+  }
+  return Object.entries(byMonth)
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([key, count]) => {
+      const [y, m] = key.split('-').map(Number)
+      return { label: new Date(y, m - 1, 1).toLocaleString('en-US', { month: 'long' }), count }
+    })
+}
+
 function hourLabel(h) {
-  return h === 0 ? '12a' : h < 12 ? `${h}a` : h === 12 ? '12p' : `${h - 12}p`
+  return h === 0 ? '12am' : h < 12 ? `${h}am` : h === 12 ? '12pm' : `${h - 12}pm`
 }
 
 const maxAdds = ref(0)
@@ -195,25 +217,25 @@ function renderCharts() {
 
   // Views over time (line)
   if (timeEl.value && (data.value.views_over_time || []).length) {
-    const vot = data.value.views_over_time
+    const mb = monthBuckets(data.value.views_over_time)
     charts.push(new Chart(timeEl.value, {
       type: 'line',
       data: {
-        labels: vot.map(d => shortDate(d.date)),
+        labels: mb.map(d => d.label),
         datasets: [{
           label: 'Itinerary Adds',
-          data: vot.map(d => d.count),
+          data: mb.map(d => d.count),
           borderColor: PALETTE.gold,
           backgroundColor: 'rgba(232,162,0,0.15)',
           fill: true,
           tension: 0.35,
           pointBackgroundColor: PALETTE.brownDark,
-          pointRadius: 4,
+          pointRadius: mb.length > 30 ? 2 : 4,
           pointHoverRadius: 6,
           borderWidth: 2.5,
         }],
       },
-      options: baseOptions('Date'),
+      options: baseOptions('Month'),
     }))
   }
 
@@ -286,8 +308,8 @@ function renderCharts() {
   }
 
   // Most active days (bar)
-  if (daysEl.value && (data.value.active_days || []).length) {
-    const ad = data.value.active_days
+  const ad = (data.value.active_days || []).filter(d => d && d.day && d.count > 0)
+  if (daysEl.value && ad.length) {
     charts.push(new Chart(daysEl.value, {
       type: 'bar',
       data: {
@@ -485,10 +507,15 @@ onUnmounted(destroyCharts)
   margin-bottom: 4px;
 }
 .hm-x-label {
-  font-size: 0.6rem;
+  font-size: 0.62rem;
   color: var(--text-muted);
   text-align: center;
   white-space: nowrap;
+}
+.hm-x-label--major {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-secondary);
 }
 .hm-body { display: flex; flex-direction: column; gap: 4px; }
 .hm-row { display: grid; grid-template-columns: repeat(24, 1fr); gap: 3px; }

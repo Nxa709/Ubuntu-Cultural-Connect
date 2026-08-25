@@ -159,6 +159,17 @@ export const useExperienceStore = defineStore('experience', () => {
     return r.data
   }
 
+  async function recordView(id) {
+    try {
+      await api.post(`/experiences/${id}/view`)
+    } catch (e) { /* tracking is best-effort */ }
+  }
+
+  async function recordContact(id) {
+    const r = await api.post(`/experiences/${id}/contact`)
+    return r.data
+  }
+
   async function fetchMyJournals() {
     const r = await api.get('/experiences/journals/mine')
     myJournals.value = r.data
@@ -214,7 +225,7 @@ export const useExperienceStore = defineStore('experience', () => {
     uploadImage, updateExperience, deleteExperience, toggleActive, fetchMyExperiences, fetchOwnerStats,
     fetchPreferences, savePreferences, fetchRecommended,
     fetchMyTrips, createTrip, deleteTrip, updateTrip, addTripDay, updateTripDay, deleteTripDay, getItinerary, addExperienceToTrip,
-    getRatings, submitRating, getAnalytics, getHotspotAnalytics,
+    getRatings, submitRating, getAnalytics, getHotspotAnalytics, recordView, recordContact,
     fetchMyJournals, createJournal, updateJournal, deleteJournal, fetchMyReviews,
     fetchHostReviews, fetchHostPerformance,
   }

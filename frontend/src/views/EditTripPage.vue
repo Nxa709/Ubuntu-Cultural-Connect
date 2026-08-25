@@ -27,7 +27,7 @@
                   <option v-for="prov in provinceList" :key="prov.name" :value="prov.name">
                     {{ prov.name }}
                   </option>
-                  <optgroup v-for="prov in provinceList" :key="prov.name + '-loc'" :label="prov.name + ' â€” Locations'">
+                  <optgroup v-for="prov in provinceList" :key="prov.name + '-loc'" :label="prov.name + ' — Locations'">
                     <option v-for="loc in prov.locations" :key="loc" :value="loc">
                       {{ loc }}
                     </option>

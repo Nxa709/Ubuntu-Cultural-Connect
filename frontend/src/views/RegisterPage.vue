@@ -23,10 +23,24 @@
         <input class="input-modern" v-model="form.phone_number" type="tel" placeholder="Phone Number (optional)" />
         <input class="input-modern" v-model="form.password" type="password" placeholder="Password (min 6 characters)" required minlength="6" />
 
-        <select class="input-modern" v-model="form.role">
+        <select class="input-modern" v-model="form.role" @change="syncVisitorFields">
           <option value="tourist">I am a Tourist</option>
           <option value="business_owner">I am a Business Owner (Host)</option>
         </select>
+
+        <template v-if="form.role === 'tourist'">
+          <select class="input-modern" v-model="form.visitor_type">
+            <option value="local">Local Visitor (South Africa)</option>
+            <option value="international">International Tourist</option>
+          </select>
+          <input
+            v-if="form.visitor_type === 'international'"
+            class="input-modern"
+            v-model="form.country"
+            type="text"
+            placeholder="Country of Origin (e.g. United Kingdom)"
+          />
+        </template>
 
         <button class="btn-gold" type="submit" :disabled="loading">
           {{ loading ? 'Creating account...' : 'Register' }}
@@ -54,11 +68,22 @@ const form = reactive({
   phone_number: '',
   password: '',
   role: 'tourist',
+  visitor_type: 'local',
+  country: 'South Africa',
 })
 
 const loading = ref(false)
 const error = ref('')
 const success = ref('')
+
+function syncVisitorFields() {
+  if (form.role !== 'tourist') {
+    form.visitor_type = 'local'
+    form.country = ''
+  } else if (form.visitor_type === 'local') {
+    form.country = 'South Africa'
+  }
+}
 
 async function handleSubmit() {
   loading.value = true

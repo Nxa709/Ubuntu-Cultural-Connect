@@ -2,7 +2,7 @@
   <div class="profile-page">
     <div class="hero-header">
       <h1><span class="accent-word">My</span> Profile</h1>
-      <p>{{ auth.isBusinessOwner ? 'Manage your business account, view performance metrics, and keep your information up to date.' : auth.isAdmin ? 'Your administration center â€” monitor platform activity, manage users, and oversee registered hotspots.' : 'Your personal travel hub â€” manage preferences, view your travel history, and review experiences.' }}</p>
+      <p>{{ auth.isBusinessOwner ? 'Manage your business account, view performance metrics, and keep your information up to date.' : auth.isAdmin ? 'Your administration center. Monitor platform activity, manage users, and oversee registered hotspots.' : 'Your personal travel hub. Manage preferences, view your travel history, and review experiences.' }}</p>
     </div>
 
     <div v-if="success" class="alert alert-success">{{ success }}</div>
@@ -72,7 +72,7 @@
               <span class="bs-label">Total Reviews</span>
             </div>
             <div class="bs-item">
-              <span class="bs-value">{{ ownerStats.avg_rating || 'â€”' }}</span>
+              <span class="bs-value">{{ ownerStats.avg_rating || '—' }}</span>
               <span class="bs-label">Avg Rating</span>
             </div>
             <div class="bs-item">
@@ -155,7 +155,7 @@
                 </div>
 
                 <!-- Review Section -->
-                <div class="history-review">
+                <div class="history-review" v-if="item.experience_id">
                   <div v-if="submittingReview === item.experience_id" class="review-form">
                     <div class="star-rating">
                       <button v-for="n in 5" :key="n" type="button" class="star-btn" :class="{ filled: n <= (reviewForm.score) }" @click="reviewForm.score = n">
@@ -318,6 +318,7 @@ function existingReview(expId) {
 }
 
 function startReview(expId) {
+  if (!expId) return
   reviewForm.score = 0
   reviewForm.comment = ''
   submittingReview.value = expId
@@ -339,7 +340,7 @@ function cancelReview() {
 }
 
 async function submitReview(expId) {
-  if (reviewForm.score === 0) return
+  if (!expId || reviewForm.score === 0) return
   savingReview.value = true
   try {
     await expStore.submitRating(expId, {
@@ -485,20 +486,9 @@ async function handleUpdate() {
 
 <style scoped>
 .profile-page {
-  background: url('/img/cultures/woman.jpeg') no-repeat center top;
-  background-size: cover;
-  background-attachment: fixed;
   position: relative;
   min-height: 100vh;
-  padding: 100px 20px 60px;
-}
-
-.profile-page::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.15);
-  z-index: 0;
+  padding: 0;
 }
 
 .profile-page > * {
@@ -508,7 +498,6 @@ async function handleUpdate() {
 
 .hero-header {
   text-align: center;
-  padding: 20px 20px 32px;
 }
 
 .hero-header h1 {
@@ -536,7 +525,7 @@ async function handleUpdate() {
 .alert {
   padding: 10px 14px;
   border-radius: 8px;
-  margin: 0 auto 16px;
+  margin: 16px auto;
   font-size: 0.88rem;
   max-width: 1100px;
 }
@@ -557,6 +546,7 @@ async function handleUpdate() {
 .profile-layout {
   max-width: 1100px;
   margin: 0 auto;
+  padding: 24px 20px 48px;
   display: grid;
   grid-template-columns: 380px 1fr;
   gap: 24px;
@@ -698,12 +688,12 @@ async function handleUpdate() {
 }
 
 .favorite-card {
-  background: rgba(255, 255, 255, 0.22);
-  border: 1px solid rgba(255, 255, 255, 0.30);
+  background: var(--surface-secondary);
+  border: 1px solid var(--border);
   border-radius: 10px;
   overflow: hidden;
   text-decoration: none;
-  color: #fff;
+  color: var(--text-color);
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
@@ -786,8 +776,8 @@ async function handleUpdate() {
 }
 
 .bs-item {
-  background: rgba(255, 255, 255, 0.22);
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: var(--surface-secondary);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 14px 10px;
   text-align: center;
@@ -797,18 +787,18 @@ async function handleUpdate() {
   display: block;
   font-size: 1.8rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--heading-color);
   font-family: 'Poppins', sans-serif;
   line-height: 1;
 }
 
-.bs-value.active-v { color: #00E676; }
-.bs-value.pending-v { color: #FFD740; }
+.bs-value.active-v { color: var(--success); }
+.bs-value.pending-v { color: var(--warning); }
 
 .bs-label {
   display: block;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.88);
+  color: var(--text-secondary);
   margin-top: 4px;
   text-transform: uppercase;
   letter-spacing: 0.3px;
@@ -821,15 +811,16 @@ async function handleUpdate() {
 
 .history-count {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.80);
-  background: rgba(255, 255, 255, 0.22);
+  color: var(--text-secondary);
+  background: var(--surface-secondary);
+  border: 1px solid var(--border);
   padding: 2px 10px;
   border-radius: 20px;
 }
 
 .card-desc {
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--text-secondary);
   margin-bottom: 16px;
   line-height: 1.5;
 }
@@ -843,15 +834,15 @@ async function handleUpdate() {
 .history-item {
   display: flex;
   gap: 14px;
-  background: rgba(255, 255, 255, 0.20);
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: var(--surface-secondary);
+  border: 1px solid var(--border);
   border-radius: 12px;
   overflow: hidden;
   transition: border-color 0.2s;
 }
 
 .history-item:hover {
-  border-color: rgba(255, 255, 255, 0.50);
+  border-color: var(--accent);
 }
 
 .history-img {
@@ -893,15 +884,16 @@ async function handleUpdate() {
 .history-top-row h3 {
   font-size: 0.92rem;
   font-weight: 600;
-  color: #fff;
+  color: var(--heading-color);
   margin: 0;
 }
 
 .history-province {
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.80);
+  color: var(--text-secondary);
   white-space: nowrap;
-  background: rgba(255, 255, 255, 0.22);
+  background: var(--surface);
+  border: 1px solid var(--border);
   padding: 1px 8px;
   border-radius: 4px;
 }
@@ -955,10 +947,10 @@ async function handleUpdate() {
 .review-textarea {
   width: 100%;
   padding: 8px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.38);
+  border: 1px solid var(--border-strong);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.20);
-  color: #fff;
+  background: var(--surface);
+  color: var(--text-color);
   font-size: 0.82rem;
   font-family: inherit;
   resize: vertical;
@@ -988,7 +980,7 @@ async function handleUpdate() {
 }
 
 .star {
-  color: rgba(255, 255, 255, 0.55);
+  color: #d1d5db;
   font-size: 0.95rem;
 }
 
@@ -998,13 +990,13 @@ async function handleUpdate() {
 
 .existing-score {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.80);
+  color: var(--text-secondary);
   margin-left: 4px;
 }
 
 .existing-comment {
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.94);
+  color: var(--text-color);
   line-height: 1.5;
   margin: 0;
 }

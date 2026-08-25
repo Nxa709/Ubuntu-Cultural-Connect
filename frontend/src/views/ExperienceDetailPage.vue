@@ -33,7 +33,7 @@
           </svg>
           <div>
             <span class="banner-title">{{ currentTripInfo.title }}</span>
-            <span class="banner-meta">{{ formatDate(currentTripInfo.start_date) }} â€“ {{ formatDate(currentTripInfo.end_date) }} &middot; {{ currentTripInfo.entryCount }} activit{{ currentTripInfo.entryCount === 1 ? 'y' : 'ies' }}</span>
+            <span class="banner-meta">{{ formatDate(currentTripInfo.start_date) }} – {{ formatDate(currentTripInfo.end_date) }} &middot; {{ currentTripInfo.entryCount }} activit{{ currentTripInfo.entryCount === 1 ? 'y' : 'ies' }}</span>
           </div>
         </div>
         <router-link :to="`/plan-trip?trip=${currentTripInfo.id}`" class="banner-link">
@@ -112,7 +112,7 @@
 
               <div class="star-breakdown">
                 <div v-for="s in [5,4,3,2,1]" :key="s" class="bar-row">
-                  <span class="bar-label">{{ s }}â˜…</span>
+                  <span class="bar-label">{{ s }}★</span>
                   <div class="bar-track">
                     <div class="bar-fill" :style="{ width: getStarPercent(s) + '%' }"></div>
                   </div>
@@ -174,7 +174,7 @@
                 Edit Hotspot
               </router-link>
             </template>
-            <template v-else-if="auth.isTourist">
+            <template v-if="auth.isTourist">
               <button class="btn-trip-full" @click="openItineraryModal" :disabled="addingToTrip">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
@@ -193,7 +193,7 @@
               </div>
               <div class="mini-itinerary-body">
                 <div class="mini-trip-name">{{ currentTripInfo.title }}</div>
-                <div class="mini-trip-dates">{{ formatDate(currentTripInfo.start_date) }} â€“ {{ formatDate(currentTripInfo.end_date) }}</div>
+                <div class="mini-trip-dates">{{ formatDate(currentTripInfo.start_date) }} – {{ formatDate(currentTripInfo.end_date) }}</div>
                 <div class="mini-trip-entries">{{ currentTripInfo.entryCount }} activit{{ currentTripInfo.entryCount === 1 ? 'y' : 'ies' }}</div>
               </div>
               <router-link :to="`/plan-trip?trip=${currentTripInfo.id}`" class="mini-itinerary-link">
@@ -309,6 +309,7 @@ onMounted(async () => {
       store.getExperience(id),
       store.getRatings(id),
     ])
+    store.recordView(id)
   } catch (e) {
     exp.value = null
   }
