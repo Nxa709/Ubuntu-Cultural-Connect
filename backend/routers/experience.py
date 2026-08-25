@@ -1089,7 +1089,7 @@ def generate_itinerary(
     for e in exps:
         cat = e.category.value if hasattr(e.category, "value") else e.category
         pref_match = 2 if cat in prefs else (1 if any(p in cat or cat in p for p in prefs) else 0)
-        rating = rating_agg.get(e.id) or 0
+        rating = float(rating_agg.get(e.id) or 0)
         popularity = itinerary_counts.get(e.id) or 0
         score = pref_match * 3.0 + rating * 2.0 + min(popularity, 20) * 0.3
         scored.append({"exp": e, "cat": cat, "pref": pref_match, "rating": rating, "score": score})
