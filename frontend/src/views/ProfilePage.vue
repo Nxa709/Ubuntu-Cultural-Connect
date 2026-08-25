@@ -368,6 +368,16 @@ async function loadTravelHistory() {
     const items = []
     const seen = new Set()
 
+    // Build a lookup of experience titles -> ids so history entries that
+    // were saved without an experience_id can still be rated/reviewed.
+    const nameToId = new Map()
+    try {
+      await expStore.fetchExperiences()
+      for (const e of expStore.experiences || []) {
+        if (e.id && e.title) nameToId.set(String(e.title).toLowerCase(), e.id)
+      }
+    } catch (e) { /* ignore */ }
+
     for (const trip of expStore.myTrips) {
       const tripDate = trip.created_at || trip.start_date
       let notesEntries = []
@@ -385,13 +395,15 @@ async function loadTravelHistory() {
             const key = entry.experience_id || entry.name
             if (seen.has(key)) continue
             seen.add(key)
+            let expId = entry.experience_id || null
+            if (!expId) expId = nameToId.get(String(entry.name).toLowerCase()) || null
             items.push({
               name: entry.name,
               location: entry.location || '',
               province: entry.province || '',
               category: entry.category || 'Cultural Experience',
               image: null,
-              experience_id: entry.experience_id || null,
+              experience_id: expId,
               addedDate: formatDate(tripDate),
               visitDate: day.date ? formatDate(day.date) : null,
               tripTitle: trip.title,
@@ -428,6 +440,7 @@ async function loadTravelHistory() {
             item.category = exp.category || item.category
             item.province = exp.province || item.province
             item.location = exp.location || item.location
+            item.name = exp.title || item.name
           }
         } catch (e) { /* silently fail */ }
       }
