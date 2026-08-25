@@ -21,6 +21,7 @@ from schemas.experience import (
     JournalCreate, JournalUpdate, JournalResponse, ReviewHistoryItem,
     HostReviewItem, ExperiencePerformance,
     GenerateItineraryRequest, GenerateItineraryResponse, GeneratedDay, ItineraryEntry,
+    TravelHistoryItem,
 )
 from routers.auth import get_current_user, get_optional_user
 from cache import get as cache_get, set as cache_set
@@ -299,6 +300,41 @@ def list_my_trips(
 ):
     trips = db.query(Trip).filter(Trip.user_id == current_user.id).all()
     return [_trip_to_response(t) for t in trips]
+
+
+@router.get("/travel-history", response_model=list[TravelHistoryItem])
+def my_travel_history(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Every experience the tourist added to any itinerary (from ItineraryAdd),
+    deduplicated by experience. This is the authoritative 'added to itinerary' list."""
+    rows = (
+        db.query(ItineraryAdd, Trip, Experience)
+        .outerjoin(Trip, Trip.id == ItineraryAdd.trip_id)
+        .join(Experience, Experience.id == ItineraryAdd.experience_id)
+        .filter(ItineraryAdd.user_id == current_user.id)
+        .order_by(ItineraryAdd.created_at.desc())
+        .all()
+    )
+    seen = set()
+    result = []
+    for add, trip, exp in rows:
+        if exp.id in seen:
+            continue
+        seen.add(exp.id)
+        result.append(TravelHistoryItem(
+            experience_id=exp.id,
+            title=exp.title,
+            category=exp.category.value if hasattr(exp.category, "value") else exp.category,
+            location=exp.location,
+            province=exp.province,
+            image_url=exp.image_url,
+            trip_id=trip.id if trip else None,
+            trip_title=trip.title if trip else None,
+            added_at=add.created_at,
+        ))
+    return result
 
 
 @router.post("/trips", response_model=TripResponse, status_code=201)

@@ -252,6 +252,19 @@ class ReviewHistoryItem(BaseModel):
     model_config = {"from_attributes": True}
 
 
+# ── Travel History ──────────────────────────────────────
+class TravelHistoryItem(BaseModel):
+    experience_id: int
+    title: str
+    category: str
+    location: Optional[str] = None
+    province: Optional[str] = None
+    image_url: Optional[str] = None
+    trip_id: Optional[int] = None
+    trip_title: Optional[str] = None
+    added_at: datetime
+
+
 # ── Host Reviews & Performance ───────────────────────────
 class HostReviewItem(BaseModel):
     id: int

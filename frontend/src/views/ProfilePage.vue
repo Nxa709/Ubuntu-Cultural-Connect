@@ -364,93 +364,20 @@ async function submitReview(expId) {
 async function loadTravelHistory() {
   loadingHistory.value = true
   try {
-    await expStore.fetchMyTrips()
-    const items = []
-    const seen = new Set()
-
-    // Build a lookup of experience titles -> ids so history entries that
-    // were saved without an experience_id can still be rated/reviewed.
-    const nameToId = new Map()
-    try {
-      await expStore.fetchExperiences()
-      for (const e of expStore.experiences || []) {
-        if (e.id && e.title) nameToId.set(String(e.title).toLowerCase(), e.id)
-      }
-    } catch (e) { /* ignore */ }
-
-    for (const trip of expStore.myTrips) {
-      const tripDate = trip.created_at || trip.start_date
-      let notesEntries = []
-      if (trip.notes) {
-        try {
-          const parsed = JSON.parse(trip.notes)
-          notesEntries = Array.isArray(parsed) ? parsed : []
-        } catch (e) { /* ignore */ }
-      }
-
-      for (const day of notesEntries) {
-        const entries = day.entries || []
-        for (const entry of entries) {
-          if (entry.type === 'experience' && entry.name) {
-            const key = entry.experience_id || entry.name
-            if (seen.has(key)) continue
-            let expId = entry.experience_id || null
-            if (!expId) expId = nameToId.get(String(entry.name).toLowerCase()) || null
-            // Only show experiences that exist in the platform and can be
-            // rated/reviewed. Skip stale entries with no matching hotspot.
-            if (!expId) continue
-            seen.add(key)
-            items.push({
-              name: entry.name,
-              location: entry.location || '',
-              province: entry.province || '',
-              category: entry.category || 'Cultural Experience',
-              image: null,
-              experience_id: expId,
-              addedDate: formatDate(tripDate),
-              visitDate: day.date ? formatDate(day.date) : null,
-              tripTitle: trip.title,
-            })
-          }
-        }
-      }
-
-      for (const day of trip.days || []) {
-        // Only include days tied to a real experience (skip stale/null refs).
-        if (day.experience_id && !seen.has(day.experience_id)) {
-          seen.add(day.experience_id)
-          items.push({
-            name: day.experience_title || `Experience #${day.experience_id}`,
-            location: '',
-            province: '',
-            category: 'Cultural Experience',
-            image: null,
-            experience_id: day.experience_id,
-            addedDate: formatDate(tripDate),
-            visitDate: day.date ? formatDate(day.date) : null,
-            tripTitle: trip.title,
-          })
-        }
-      }
-    }
-
-    // Fetch details for experiences that have experience_id
-    for (const item of items) {
-      if (item.experience_id) {
-        try {
-          const exp = await expStore.getExperience(item.experience_id)
-          if (exp) {
-            item.image = exp.image_url || item.image
-            item.category = exp.category || item.category
-            item.province = exp.province || item.province
-            item.location = exp.location || item.location
-            item.name = exp.title || item.name
-          }
-        } catch (e) { /* silently fail */ }
-      }
-    }
-
-    travelHistory.value = items
+    // Authoritative list: every experience the tourist added to an itinerary
+    // (from the ItineraryAdd records). Guarantees anything added shows up here.
+    const rows = await expStore.fetchTravelHistory()
+    travelHistory.value = (rows || []).map(r => ({
+      name: r.title,
+      location: r.location || '',
+      province: r.province || '',
+      category: r.category || 'Cultural Experience',
+      image: r.image_url || null,
+      experience_id: r.experience_id,
+      tripTitle: r.trip_title || '',
+      addedDate: r.added_at ? formatDate(r.added_at) : '',
+      visitDate: '',
+    }))
   } catch (e) {
     // silently fail
   } finally {
