@@ -30,7 +30,7 @@ services:
       # Points the built SPA at the backend. Render injects the
       # backend's public URL at deploy time.
       - key: VITE_API_URL
-        value: https://ubuntu-backend.onrender.com/api
+        value: https://ubuntu-backend-2pjg.onrender.com/api
     routes:
       # SPA fallback: any non-file path serves index.html
       - type: rewrite
