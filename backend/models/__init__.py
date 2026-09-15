@@ -3,8 +3,9 @@ from models.experience import (
     Experience, UserPreference, Trip, TripDay, Rating, CulturalCategory
 )
 from models.notification import Notification
+from models.province import Province
 
 __all__ = [
     "User", "Experience", "UserPreference", "Trip", "TripDay",
-    "Rating", "CulturalCategory", "Notification",
+    "Rating", "CulturalCategory", "Notification", "Province",
 ]

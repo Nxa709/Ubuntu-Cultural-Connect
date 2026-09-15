@@ -12,6 +12,7 @@ from routers.experience import router as experience_router
 from routers.admin import router as admin_router
 from routers.notification import router as notification_router
 from routers.upload import router as upload_router
+from routers.province import router as province_router
 
 # Create tables
 Base.metadata.create_all(bind=engine)
@@ -51,6 +52,7 @@ app.include_router(experience_router)
 app.include_router(admin_router)
 app.include_router(notification_router)
 app.include_router(upload_router)
+app.include_router(province_router)
 
 
 @app.get("/api/health")
