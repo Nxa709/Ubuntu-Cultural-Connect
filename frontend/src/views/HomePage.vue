@@ -98,6 +98,10 @@ const store = useExperienceStore()
 
 const selectedCategory = ref('')
 
+/* Visitor's detected province (GPS → nearest province centroid). */
+const detectedProvince = ref('')
+const LOCATION_KEY = 'ucc_province'
+
 function selectCategory(name) {
   selectedCategory.value = selectedCategory.value === name ? '' : name
 }
@@ -136,6 +140,7 @@ const hasFilters = computed(() => selectedCategory.value !== '')
 const sectionTitle = computed(() => {
   const cat = selectedCategory.value
   if (cat) return cat
+  if (detectedProvince.value) return `Popular in ${detectedProvince.value}`
   return 'Popular near you'
 })
 
@@ -179,13 +184,63 @@ const homeCategoryMap = {
   'Cultural Experience': ['Township Life', 'Rural Heritage'],
 }
 
+/* Distance in km between two coordinates. */
+function haversineKm(lat1, lon1, lat2, lon2) {
+  const R = 6371
+  const toRad = (d) => (d * Math.PI) / 180
+  const dLat = toRad(lat2 - lat1)
+  const dLon = toRad(lon2 - lon1)
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2
+  return 2 * R * Math.asin(Math.sqrt(a))
+}
+
+/* Nearest province to the given coordinates (uses the DB province centroids). */
+function nearestProvince(lat, lng) {
+  let best = null
+  let bestDist = Infinity
+  for (const p of store.provinceDirectory) {
+    if (p.latitude == null || p.longitude == null) continue
+    const d = haversineKm(lat, lng, p.latitude, p.longitude)
+    if (d < bestDist) {
+      bestDist = d
+      best = p
+    }
+  }
+  return best
+}
+
+function detectProvince() {
+  try {
+    const cached = localStorage.getItem(LOCATION_KEY)
+    if (cached) detectedProvince.value = cached
+  } catch (e) {}
+
+  if (!('geolocation' in navigator)) return
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const p = nearestProvince(pos.coords.latitude, pos.coords.longitude)
+      if (p) {
+        detectedProvince.value = p.name
+        try { localStorage.setItem(LOCATION_KEY, p.name) } catch (e) {}
+      }
+    },
+    () => {},
+    { enableHighAccuracy: false, timeout: 8000, maximumAge: 10 * 60 * 1000 }
+  )
+}
+
 const popularHotspots = computed(() => {
+  const province = detectedProvince.value
   const all = store.experiences.map((e) => ({
     id: e.id,
     name: e.title,
     category: e.category,
     location: e.location,
+    province: e.province,
     rating: e.avg_rating,
+    adds: e.itinerary_adds || 0,
     image: e.image_url || getCategoryImage(e.category),
   }))
   let result = all
@@ -194,18 +249,31 @@ const popularHotspots = computed(() => {
       .map(normalizeCategory)
     result = result.filter((d) => targets.includes(normalizeCategory(d.category)))
   }
-  if (!hasFilters.value) {
+
+  if (province) {
+    // Province-aware: show that province's hotspots (fall back to all if empty).
+    const inProvince = result.filter((d) => d.province === province)
+    if (inProvince.length) result = inProvince
+  } else {
+    // No location: national top-rated.
     result = result.filter((d) => (d.rating || 0) >= 4.5)
   }
+
   return result
-    .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+    .sort((a, b) => (b.rating || 0) - (a.rating || 0) || b.adds - a.adds)
     .slice(0, 8)
 })
 
-onMounted(() => {
+onMounted(async () => {
   store.fetchExperiences().catch((e) => {
     console.error('Failed to load experiences:', e)
   })
+  try {
+    await store.fetchProvinceDirectory()
+  } catch (e) {
+    console.error('Failed to load provinces:', e)
+  }
+  detectProvince()
 })
 
 function getBadge(h, index) {
