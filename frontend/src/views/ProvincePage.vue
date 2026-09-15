@@ -84,8 +84,6 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { provinces } from '../data/provinces'
-import { kznCategories } from '../data/kznCulturalData'
-import { provinceImages } from '../data/provinceImages'
 import { useAuthStore } from '../stores/auth'
 import AddToItineraryModal from '../components/AddToItineraryModal.vue'
 import api from '../services/api'
@@ -102,15 +100,34 @@ function goBack() {
   }
 }
 
+function normalizeCategory(c) {
+  return (c || '').trim().toLowerCase().replace(/s$/, '')
+}
+
+/* The tabs use display names; map them to the database categories. */
+const dbCategoryMap = {
+  'Local Restaurants': ['Traditional Cooking'],
+  'Museums': ['Heritage Tours'],
+  'Nature Reserves': ['Nature & Wildlife'],
+  'Game Reserves': ['Nature & Wildlife'],
+  'Lodges': ['Accommodation & Lodging'],
+  'Cultural Storytelling': ['Storytelling'],
+  'Cultural Attire Market': ['Textile & Weaving'],
+  'Traditional Healing': ['Traditional Healing'],
+  'Historical Landmarks': ['Heritage Tours'],
+  'Cultural Theatre': ['Music & Dance'],
+  'Cultural Tours': ['Crafts & Art', 'Township Life', 'Rural Heritage', 'Photography Tours'],
+}
+
 const selectedCategorySlug = ref('')
 const apiExperiences = ref([])
 const loading = ref(true)
 const showItineraryModal = ref(false)
 const selectedForItinerary = ref(null)
 
-const province = computed(() => {
-  return provinces.find(p => p.slug === route.params.slug) || {}
-})
+const provinceMeta = ref(null)
+const staticProvince = computed(() => provinces.find(p => p.slug === route.params.slug) || {})
+const province = computed(() => provinceMeta.value || staticProvince.value)
 
 const CATEGORY_SLUGS = [
   { name: 'Local Restaurants', slug: 'local-restaurants' },
@@ -163,7 +180,9 @@ function slugify(text) {
 }
 
 function goToItem(item) {
-  if (item.id) {
+  if (item.experience?.id) {
+    router.push(`/experience/${item.experience.id}`)
+  } else if (item.id) {
     router.push(`/destination/${item.id}`)
   } else if (item.name) {
     router.push(`/kzn-directory/item/${slugify(item.name)}`)
@@ -171,21 +190,9 @@ function goToItem(item) {
 }
 
 function buildCategory(name) {
-  const slug = categoryMap[name]
-  let kznItems = []
-  if (province.value.slug === 'kwaZulu-natal') {
-    const kznCat = kznCategories.find(c => c.slug === slug)
-    if (kznCat) {
-      kznItems = kznCat.items.map(item => ({ ...item, category: name, image: kznCat.image }))
-    }
-  }
-
-  const staticItems = (province.value.destinations || [])
-    .filter(d => d.category === name)
-    .map(d => ({ ...d, category: name }))
-
-  const apiItems = apiExperiences.value
-    .filter(e => e.category === name)
+  const targets = (dbCategoryMap[name] || [name]).map(normalizeCategory)
+  return apiExperiences.value
+    .filter(e => targets.includes(normalizeCategory(e.category)))
     .map(e => ({
       name: e.title,
       location: e.location,
@@ -194,18 +201,10 @@ function buildCategory(name) {
       contact: null,
       website: null,
       services: e.description ? [e.description.slice(0, 100)] : [],
-      image: e.image_url,
+      image: e.image_url || categoryImages[name] || '/img/cultures/Safari.jpg',
       category: name,
+      experience: e,
     }))
-
-  const seen = new Set()
-  const merged = [...kznItems, ...staticItems, ...apiItems].filter(item => {
-    if (seen.has(item.name)) return false
-    seen.add(item.name)
-    return true
-  })
-
-  return merged
 }
 
 const categories = computed(() => {
@@ -221,26 +220,31 @@ const categories = computed(() => {
 const currentItems = computed(() => {
   const cat = categories.value.find(c => c.slug === selectedCategorySlug.value)
   if (!cat) return []
-  return cat.items.map(item => ({
-    ...item,
-    image: provinceImages[item.name] || item.image || categoryImages[item.category] || '/img/cultures/Safari.jpg',
-  }))
+  return cat.items
 })
 
 function openItineraryFor(item) {
-  selectedForItinerary.value = {
+  selectedForItinerary.value = item.experience || {
     title: item.name,
     location: item.location,
     province: province.value.name || '',
     description: item.services ? item.services.join(', ') : '',
-    price: item.priceRange ? parseFloat(item.priceRange.replace(/[^0-9.]/g, '')) || 0 : 0,
+    price: 0,
     duration_hours: null,
-    id: null,
+    id: item.id || null,
   }
   showItineraryModal.value = true
 }
 
 onMounted(async () => {
+  // Province metadata from the database (falls back to static config if unavailable).
+  try {
+    const r = await api.get(`/provinces/${route.params.slug}`)
+    provinceMeta.value = r.data
+  } catch (e) {
+    provinceMeta.value = null
+  }
+
   if (!province.value.name) {
     router.push('/experiences')
     return

@@ -10,6 +10,7 @@ export const useExperienceStore = defineStore('experience', () => {
   const myTrips = ref([])
   const categories = ref([])
   const provinces = ref([])
+  const provinceDirectory = ref([])
   const ownerStats = ref(null)
   const myJournals = ref([])
   const myReviews = ref([])
@@ -25,6 +26,12 @@ export const useExperienceStore = defineStore('experience', () => {
   async function fetchProvinces() {
     const r = await api.get('/experiences/provinces')
     provinces.value = r.data
+  }
+
+  async function fetchProvinceDirectory() {
+    const r = await api.get('/provinces/')
+    provinceDirectory.value = r.data
+    return r.data
   }
 
   async function fetchExperiences(params = {}) {
@@ -227,13 +234,13 @@ export const useExperienceStore = defineStore('experience', () => {
 
   return {
     experiences, myExperiences, recommended, preferences, myTrips, categories, provinces, ownerStats,
-    myJournals, myReviews, hostReviews, hostPerformance, travelHistory,
+    myJournals, myReviews, hostReviews, hostPerformance, travelHistory, provinceDirectory,
     fetchCategories, fetchProvinces, fetchExperiences, getExperience, createExperience,
     uploadImage, updateExperience, deleteExperience, toggleActive, fetchMyExperiences, fetchOwnerStats,
     fetchPreferences, savePreferences, fetchRecommended,
     fetchMyTrips, createTrip, deleteTrip, updateTrip, addTripDay, updateTripDay, deleteTripDay, getItinerary, addExperienceToTrip,
     getRatings, submitRating, getAnalytics, getHotspotAnalytics, recordView, recordContact,
     fetchMyJournals, createJournal, updateJournal, deleteJournal, fetchMyReviews,
-    fetchHostReviews, fetchHostPerformance, fetchTravelHistory,
+    fetchHostReviews, fetchHostPerformance, fetchTravelHistory, fetchProvinceDirectory,
   }
 })

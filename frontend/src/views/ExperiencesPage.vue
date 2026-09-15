@@ -128,7 +128,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useExperienceStore } from '../stores/experience'
-import { provinces as provinceData } from '../data/provinces'
+import { provinces as fallbackProvinces } from '../data/provinces'
 
 const route = useRoute()
 const router = useRouter()
@@ -163,6 +163,11 @@ const featuredExperiences = computed(() => {
   return experiences.value.slice(0, 4)
 })
 
+/* Provinces from the database, with the static config as a fallback. */
+const provinceData = computed(() =>
+  store.provinceDirectory.length ? store.provinceDirectory : fallbackProvinces
+)
+
 const resultsSection = ref(null)
 
 function performSearch() {
@@ -173,6 +178,7 @@ function performSearch() {
 
 onMounted(async () => {
   search.value = (route.query.q || '').toString()
+  store.fetchProvinceDirectory().catch(e => console.error('Failed to load provinces:', e))
   await loadExperiences()
 })
 

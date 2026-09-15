@@ -58,7 +58,7 @@
           </div>
         </div>
         <div class="popular-grid">
-          <router-link class="hotspot-card" :to="`/destination/${h.id}`" v-for="(h, i) in popularHotspots" :key="h.id">
+          <router-link class="hotspot-card" :to="`/experience/${h.id}`" v-for="(h, i) in popularHotspots" :key="h.id">
             <div class="hotspot-img" :style="{ backgroundImage: `url(${h.image})` }">
               <button
                 class="wishlist-btn"
@@ -89,11 +89,12 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useAuthStore } from '../stores/auth'
-import { provinces } from '../data/provinces'
+import { useExperienceStore } from '../stores/experience'
 
 const auth = useAuthStore()
+const store = useExperienceStore()
 
 const selectedCategory = ref('')
 
@@ -142,21 +143,69 @@ function clearFilters() {
   selectedCategory.value = ''
 }
 
+/* Fallback images for database experiences without an image_url. */
+const categoryImages = {
+  'Traditional Cooking': '/img/categories/Traditional_Food.jpeg',
+  'Storytelling': '/img/categories/Storytelling.jpg',
+  'Music & Dance': '/img/categories/Dancing.jpg',
+  'Crafts & Art': '/img/categories/Craft_Art.jpg',
+  'Heritage Tours': '/img/categories/Heritage_Tours.jpg',
+  'Township Life': '/img/categories/Township_Life.webp',
+  'Rural Heritage': '/img/categories/Rural_Heritage.jpg',
+  'Traditional Healing': '/img/categories/Traditional_Healing.jpg',
+  'Textile & Weaving': '/img/categories/Textile_Weaving.jpg',
+  'Photography Tours': '/img/categories/Traditional_Photographs.jpg',
+  'Nature & Wildlife': '/img/categories/Wildlife.jpg',
+  'Accommodation & Lodging': '/img/categories/Accomodation_Lodging.webp',
+}
+
+function getCategoryImage(cat) {
+  return categoryImages[cat] || '/img/categories/Heritage_Tours.jpg'
+}
+
+/* The category boxes use display names; map them to the database categories. */
+const homeCategoryMap = {
+  'Museums': ['Heritage Tours'],
+  'Game Reserves': ['Nature & Wildlife'],
+  'Nature Reserves': ['Nature & Wildlife'],
+  'Lodges': ['Accommodation & Lodging'],
+  'Cultural Theatre': ['Music & Dance'],
+  'Local Restaurants': ['Traditional Cooking'],
+  'Cultural Storytelling': ['Storytelling'],
+  'Cultural Tours': ['Heritage Tours'],
+  'Historical Landmarks': ['Heritage Tours'],
+  'Cultural Attire Market': ['Textile & Weaving'],
+  'Traditional Healing': ['Traditional Healing'],
+  'Cultural Experience': ['Township Life', 'Rural Heritage'],
+}
+
 const popularHotspots = computed(() => {
-  const all = provinces.flatMap((p) =>
-    p.destinations.map((d) => ({ ...d, provinceSlug: p.slug, provinceName: p.name }))
-  )
+  const all = store.experiences.map((e) => ({
+    id: e.id,
+    name: e.title,
+    category: e.category,
+    location: e.location,
+    rating: e.avg_rating,
+    image: e.image_url || getCategoryImage(e.category),
+  }))
   let result = all
   if (selectedCategory.value) {
-    const target = normalizeCategory(selectedCategory.value)
-    result = result.filter((d) => normalizeCategory(d.category) === target)
+    const targets = (homeCategoryMap[selectedCategory.value] || [selectedCategory.value])
+      .map(normalizeCategory)
+    result = result.filter((d) => targets.includes(normalizeCategory(d.category)))
   }
   if (!hasFilters.value) {
-    result = result.filter((d) => d.rating >= 4.5)
+    result = result.filter((d) => (d.rating || 0) >= 4.5)
   }
   return result
-    .sort((a, b) => b.rating - a.rating)
+    .sort((a, b) => (b.rating || 0) - (a.rating || 0))
     .slice(0, 8)
+})
+
+onMounted(() => {
+  store.fetchExperiences().catch((e) => {
+    console.error('Failed to load experiences:', e)
+  })
 })
 
 function getBadge(h, index) {
