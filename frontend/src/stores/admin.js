@@ -60,6 +60,12 @@ export const useAdminStore = defineStore('admin', () => {
     return r.data
   }
 
+  /* Remove a hotspot from the current list after it leaves the pending queue. */
+  function removeHotspot(id) {
+    hotspots.value = hotspots.value.filter(h => h.id !== id)
+    if (pendingHotspotCount.value > 0) pendingHotspotCount.value -= 1
+  }
+
   async function fetchUsers(roleFilter = 'all', search = '') {
     const r = await api.get('/admin/users', { params: { role_filter: roleFilter, search } })
     users.value = r.data
@@ -84,7 +90,7 @@ export const useAdminStore = defineStore('admin', () => {
   return {
     comments, hotspots, users, pendingCommentCount, pendingHotspotCount, stats,
     fetchStats, fetchComments, fetchPendingCommentCount, approveComment, rejectComment,
-    fetchHotspots, fetchPendingHotspotCount, approveHotspot, rejectHotspot,
+    fetchHotspots, fetchPendingHotspotCount, approveHotspot, rejectHotspot, removeHotspot,
     fetchUsers, changeUserRole, toggleUserActive, deleteUser,
   }
 })

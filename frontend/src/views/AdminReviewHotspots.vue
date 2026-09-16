@@ -219,8 +219,9 @@ async function handleApprove(id) {
   processing.value = true
   try {
     await admin.approveHotspot(id)
-    await admin.fetchHotspots(activeFilter.value)
-    await admin.fetchPendingHotspotCount()
+    admin.removeHotspot(id)
+  } catch (e) {
+    alert('Failed to approve hotspot. Please try again.')
   } finally {
     processing.value = false
   }
@@ -240,12 +241,14 @@ function closeRejectModal() {
 
 async function handleReject() {
   if (!rejectTarget.value || !rejectReason.value.trim()) return
+  const id = rejectTarget.value.id
   processing.value = true
   try {
-    await admin.rejectHotspot(rejectTarget.value.id, rejectReason.value.trim())
+    await admin.rejectHotspot(id, rejectReason.value.trim())
+    admin.removeHotspot(id)
     closeRejectModal()
-    await admin.fetchHotspots(activeFilter.value)
-    await admin.fetchPendingHotspotCount()
+  } catch (e) {
+    alert('Failed to reject hotspot. Please try again.')
   } finally {
     processing.value = false
   }

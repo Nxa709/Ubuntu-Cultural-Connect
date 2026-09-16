@@ -33,6 +33,30 @@ def _migrate_sqlite():
 
 _migrate_sqlite()
 
+
+def _ensure_indexes():
+    """Create indexes on FK/filter columns if missing (idempotent, cheap)."""
+    from sqlalchemy import text
+    stmts = [
+        "CREATE INDEX IF NOT EXISTS ix_ratings_experience_id ON ratings (experience_id)",
+        "CREATE INDEX IF NOT EXISTS ix_ratings_is_approved ON ratings (is_approved)",
+        "CREATE INDEX IF NOT EXISTS ix_trip_days_experience_id ON trip_days (experience_id)",
+        "CREATE INDEX IF NOT EXISTS ix_itinerary_adds_experience_id ON itinerary_adds (experience_id)",
+        "CREATE INDEX IF NOT EXISTS ix_experiences_owner_id ON experiences (owner_id)",
+        "CREATE INDEX IF NOT EXISTS ix_experiences_is_approved ON experiences (is_approved)",
+        "CREATE INDEX IF NOT EXISTS ix_experiences_rejected_at ON experiences (rejected_at)",
+        "CREATE INDEX IF NOT EXISTS ix_experiences_created_at ON experiences (created_at)",
+    ]
+    for stmt in stmts:
+        try:
+            with engine.begin() as conn:
+                conn.execute(text(stmt))
+        except Exception:
+            pass
+
+
+_ensure_indexes()
+
 app = FastAPI(
     title="Ubuntu Cultural Connect API",
     description="Backend API for Ubuntu Cultural Connect — South African cultural tourism platform",

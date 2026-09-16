@@ -5,7 +5,7 @@ from datetime import datetime, timezone #Time Zone stored in UTC Format so it wi
 from fastapi import APIRouter, Depends, HTTPException, status #Imports 3 functions from FastAPI
 
 #Assession is your conversaytion with the database
-from sqlalchemy.orm import Session #This is the ORM(Object Relational Mapper)
+from sqlalchemy.orm import Session, joinedload #This is the ORM(Object Relational Mapper)
 
 from database import get_db #Import the function that creates the database session
 
@@ -180,7 +180,35 @@ def list_hotspots(
     else:
         raise HTTPException(status_code=400, detail="Invalid status_filter. Use: pending, approved, rejected, all")
 
-    experiences = q.order_by(Experience.created_at.desc()).all()
+    # Eager-load owners and batch the aggregates so this is a handful of
+    # queries total instead of ~4 per hotspot (avoids the N+1 slowdown).
+    experiences = (
+        q.options(joinedload(Experience.owner))
+        .order_by(Experience.created_at.desc())
+        .all()
+    )
+
+    ids = [e.id for e in experiences]
+    rating_agg = {}
+    itinerary_counts = {}
+    if ids:
+        rating_rows = db.query(
+            Rating.experience_id, func.count(Rating.id), func.avg(Rating.score)
+        ).filter(
+            Rating.experience_id.in_(ids), Rating.is_approved == True
+        ).group_by(Rating.experience_id).all()
+        rating_agg = {r[0]: (r[1], r[2]) for r in rating_rows}
+
+        itin_rows = db.query(
+            TripDay.experience_id, func.count(TripDay.id)
+        ).filter(
+            TripDay.experience_id.in_(ids)
+        ).group_by(TripDay.experience_id).all()
+        itinerary_counts = dict(itin_rows)
+
+    def _avg(eid):
+        cnt, avg = rating_agg.get(eid, (0, None))
+        return round(float(avg), 1) if avg is not None else 0.0
 
     return [
         HotspotResponse(
@@ -202,9 +230,9 @@ def list_hotspots(
             is_approved=e.is_approved,
             rejection_reason=e.rejection_reason,
             rejected_at=e.rejected_at,
-            rating_count=len(e.ratings) if e.ratings else 0,
-            avg_rating=round(float(db.query(func.avg(Rating.score)).filter(Rating.experience_id == e.id, Rating.is_approved == True).scalar() or 0), 1),
-            itinerary_adds=db.query(func.count(TripDay.id)).filter(TripDay.experience_id == e.id).scalar() or 0,
+            rating_count=rating_agg.get(e.id, (0, None))[0],
+            avg_rating=_avg(e.id),
+            itinerary_adds=itinerary_counts.get(e.id, 0),
             created_at=e.created_at,
         )
         for e in experiences
