@@ -765,7 +765,7 @@ def update_experience(
     exp = db.query(Experience).filter(Experience.id == exp_id).first()
     if not exp:
         raise HTTPException(status_code=404, detail="Experience not found")
-    if exp.owner_id != current_user.id:
+    if exp.owner_id != current_user.id and current_user.role.value != "admin":
         raise HTTPException(status_code=403, detail="You can only edit your own hotspots")
 
     update_data = data.model_dump(exclude_unset=True)
@@ -794,7 +794,7 @@ def delete_experience(
     exp = db.query(Experience).filter(Experience.id == exp_id).first()
     if not exp:
         raise HTTPException(status_code=404, detail="Experience not found")
-    if exp.owner_id != current_user.id:
+    if exp.owner_id != current_user.id and current_user.role.value != "admin":
         raise HTTPException(status_code=403, detail="You can only delete your own hotspots")
 
     db.delete(exp)
@@ -812,7 +812,7 @@ def toggle_active(
     exp = db.query(Experience).filter(Experience.id == exp_id).first()
     if not exp:
         raise HTTPException(status_code=404, detail="Experience not found")
-    if exp.owner_id != current_user.id:
+    if exp.owner_id != current_user.id and current_user.role.value != "admin":
         raise HTTPException(status_code=403, detail="You can only modify your own hotspots")
 
     exp.is_active = not exp.is_active
