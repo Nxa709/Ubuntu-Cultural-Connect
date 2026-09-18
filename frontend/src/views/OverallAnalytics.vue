@@ -260,19 +260,20 @@ const PLATFORM_GROWTH_MONTHS = [3, 4, 5, 6, 7, 8]
 const platformGrowthMonths = computed(() => {
   const rows = adminAnalytics.value?.tourists_per_month || []
   const counts = {}
-  let latestYear = null
+  const years = new Set()
   for (const row of rows) {
     const [year, month] = String(row.month || '').split('-').map(Number)
-    if (!year || !month) continue
+    if (!year || !PLATFORM_GROWTH_MONTHS.includes(month)) continue
     const key = `${year}-${String(month).padStart(2, '0')}`
     counts[key] = (counts[key] || 0) + (Number(row.count) || 0)
-    if (latestYear === null || year > latestYear) latestYear = year
+    years.add(year)
   }
-  const year = latestYear || new Date().getFullYear()
-  return PLATFORM_GROWTH_MONTHS.map(month => {
-    const key = `${year}-${String(month).padStart(2, '0')}`
-    return { month: key, count: counts[key] || 0 }
-  })
+  return [...years].sort((a, b) => a - b).flatMap(year =>
+    PLATFORM_GROWTH_MONTHS.map(month => {
+      const key = `${year}-${String(month).padStart(2, '0')}`
+      return { month: key, count: counts[key] || 0 }
+    })
+  )
 })
 
 const SECTIONS = [
