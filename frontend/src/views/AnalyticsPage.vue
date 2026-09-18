@@ -48,9 +48,26 @@
         </div>
       </header>
 
+      <!-- Quick navigation -->
+      <nav class="ana-quicknav" aria-label="Analytics sections">
+        <div
+          v-for="s in SECTIONS"
+          :key="s.id"
+          class="quicknav-item"
+          role="link"
+          tabindex="0"
+          @click="scrollToSection(s.id)"
+          @keydown.enter.prevent="scrollToSection(s.id)"
+          @keydown.space.prevent="scrollToSection(s.id)"
+        >
+          <span class="kpi-icon" :class="'kpi-' + s.color"><i :class="['bi', s.icon]"></i></span>
+          <span class="quicknav-label">{{ s.label }}</span>
+        </div>
+      </nav>
+
       <template v-if="data">
         <!-- KPI row -->
-        <div class="kpi-grid">
+        <div class="kpi-grid" id="platform-growth">
           <div class="kpi-card">
             <div class="kpi-top">
               <span class="kpi-icon kpi-gold"><i class="bi bi-eye"></i></span>
@@ -142,7 +159,7 @@
           </div>
         </div>
 
-        <div class="chart-grid">
+        <div class="chart-grid" id="cultural-demand">
           <!-- Profile views over time: line -->
           <div class="chart-card wide">
             <div class="card-head">
@@ -242,7 +259,7 @@
           </div>
 
           <!-- Top performing hotspots -->
-          <div class="chart-card wide">
+          <div class="chart-card wide" id="business-supply">
             <div class="card-head">
               <h3>Top Performing Hotspots</h3>
               <span class="card-sub">Your experiences ranked by engagement</span>
@@ -269,7 +286,7 @@
           </div>
 
           <!-- Recent reviews -->
-          <div class="chart-card wide">
+          <div class="chart-card wide" id="experience-performance">
             <div class="card-head">
               <h3>Recent Reviews</h3>
               <span class="card-sub">Latest feedback from travellers</span>
@@ -295,7 +312,7 @@
         </div>
 
         <!-- Business insights -->
-        <section class="insights-section" v-if="insights.length">
+        <section class="insights-section" id="attention-required" v-if="insights.length">
           <div class="card-head insights-head">
             <h3><i class="bi bi-graph-up"></i> Business Insights</h3>
             <span class="card-sub">Why it matters — auto-detected from your data</span>
@@ -398,6 +415,19 @@ const ranges = [
   { value: '365d', label: '12M' },
   { value: 'all', label: 'All' },
 ]
+
+const SECTIONS = [
+  { id: 'platform-growth', label: 'Platform Growth', icon: 'bi-graph-up-arrow', color: 'brown' },
+  { id: 'cultural-demand', label: 'Cultural Demand', icon: 'bi-people', color: 'gold' },
+  { id: 'business-supply', label: 'Business Supply', icon: 'bi-shop', color: 'brownMid' },
+  { id: 'experience-performance', label: 'Experience Performance', icon: 'bi-star-fill', color: 'tan' },
+  { id: 'attention-required', label: 'Attention Required', icon: 'bi-exclamation-triangle', color: 'brownDark' },
+]
+
+function scrollToSection(id) {
+  const el = document.getElementById(id)
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
 
 let charts = []
 
@@ -1170,6 +1200,57 @@ onUnmounted(() => {
   flex-wrap: wrap;
 }
 
+/* Quick navigation */
+.ana-quicknav {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.quicknav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 0;
+}
+
+.quicknav-item:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow);
+  transform: translateY(-1px);
+}
+
+.quicknav-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.quicknav-label {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--heading-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#platform-growth,
+#cultural-demand,
+#business-supply,
+#experience-performance,
+#attention-required {
+  scroll-margin-top: 90px;
+}
+
 /* Range tabs */
 .range-tabs {
   display: flex;
@@ -1358,6 +1439,7 @@ onUnmounted(() => {
 .kpi-brown { color: #8B5A2B; background: rgba(139, 90, 43, 0.13); }
 .kpi-brownDark { color: #5C3A21; background: rgba(92, 58, 33, 0.13); }
 .kpi-tan { color: #C9A227; background: rgba(201, 162, 39, 0.14); }
+.kpi-brownMid { color: #A67C52; background: rgba(166, 124, 82, 0.14); }
 
 /* Chart grid */
 .chart-grid {
@@ -1830,6 +1912,7 @@ onUnmounted(() => {
 /* Responsive */
 @media (max-width: 1280px) {
   .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+  .ana-quicknav { grid-template-columns: repeat(3, 1fr); }
 }
 
 @media (max-width: 1024px) {
@@ -1852,11 +1935,13 @@ onUnmounted(() => {
   .ana-page { padding: 96px 14px 40px; }
   .kpi-grid { grid-template-columns: repeat(2, 1fr); }
   .ana-header { align-items: flex-start; flex-direction: column; }
+  .ana-quicknav { grid-template-columns: repeat(2, 1fr); }
   .hotspot-select { width: 100%; min-width: 0; }
   .range-tabs { width: 100%; justify-content: space-between; }
 }
 
 @media (max-width: 420px) {
   .kpi-grid { grid-template-columns: 1fr; }
+  .ana-quicknav { grid-template-columns: 1fr; }
 }
 </style>
