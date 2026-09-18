@@ -11,6 +11,23 @@
         </div>
       </header>
 
+      <!-- Quick navigation -->
+      <nav class="ana-quicknav" aria-label="Analytics sections">
+        <div
+          v-for="s in SECTIONS"
+          :key="s.id"
+          class="quicknav-item"
+          role="link"
+          tabindex="0"
+          @click="scrollToSection(s.id)"
+          @keydown.enter.prevent="scrollToSection(s.id)"
+          @keydown.space.prevent="scrollToSection(s.id)"
+        >
+          <span class="kpi-icon" :class="'kpi-' + s.color"><i :class="['bi', s.icon]"></i></span>
+          <span class="quicknav-label">{{ s.label }}</span>
+        </div>
+      </nav>
+
       <!-- No hotspots -->
       <div class="empty-state" v-if="!hasData">
         <i class="bi bi-graph-up"></i>
@@ -20,23 +37,6 @@
 
       <!-- Overall analytics -->
       <template v-else>
-        <!-- Quick navigation -->
-        <nav class="ana-quicknav" aria-label="Analytics sections">
-          <div
-            v-for="s in SECTIONS"
-            :key="s.id"
-            class="quicknav-item"
-            role="link"
-            tabindex="0"
-            @click="scrollToSection(s.id)"
-            @keydown.enter.prevent="scrollToSection(s.id)"
-            @keydown.space.prevent="scrollToSection(s.id)"
-          >
-            <span class="kpi-icon" :class="'kpi-' + s.color"><i :class="['bi', s.icon]"></i></span>
-            <span class="quicknav-label">{{ s.label }}</span>
-          </div>
-        </nav>
-
         <!-- KPI row -->
         <div class="kpi-grid" id="platform-growth">
           <div class="kpi-card">
