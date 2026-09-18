@@ -258,8 +258,21 @@ const hasData = ref(false)
 const PLATFORM_GROWTH_MONTHS = [3, 4, 5, 6, 7, 8]
 
 const platformGrowthMonths = computed(() => {
-  const months = adminAnalytics.value?.tourists_per_month || []
-  return months.filter(m => PLATFORM_GROWTH_MONTHS.includes(Number(String(m.month).split('-')[1])))
+  const rows = adminAnalytics.value?.tourists_per_month || []
+  const counts = {}
+  let latestYear = null
+  for (const row of rows) {
+    const [year, month] = String(row.month || '').split('-').map(Number)
+    if (!year || !month) continue
+    const key = `${year}-${String(month).padStart(2, '0')}`
+    counts[key] = (counts[key] || 0) + (Number(row.count) || 0)
+    if (latestYear === null || year > latestYear) latestYear = year
+  }
+  const year = latestYear || new Date().getFullYear()
+  return PLATFORM_GROWTH_MONTHS.map(month => {
+    const key = `${year}-${String(month).padStart(2, '0')}`
+    return { month: key, count: counts[key] || 0 }
+  })
 })
 
 const SECTIONS = [
