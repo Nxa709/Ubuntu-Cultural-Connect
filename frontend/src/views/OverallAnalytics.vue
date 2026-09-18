@@ -35,7 +35,7 @@
             <h3>Platform Growth</h3>
             <span class="card-sub">Tourists per month</span>
           </div>
-          <div class="chart-box" v-if="adminAnalytics.tourists_per_month.length">
+          <div class="chart-box" v-if="platformGrowthMonths.length">
             <canvas ref="adminTouristsEl"></canvas>
           </div>
           <div class="chart-empty" v-else>No tourist registrations yet</div>
@@ -254,6 +254,13 @@ const topHotspot = ref(null)
 const heatmapData = ref([])
 const maxHeatmapValue = ref(1)
 const hasData = ref(false)
+
+const PLATFORM_GROWTH_MONTHS = [3, 4, 5, 6, 7, 8]
+
+const platformGrowthMonths = computed(() => {
+  const months = adminAnalytics.value?.tourists_per_month || []
+  return months.filter(m => PLATFORM_GROWTH_MONTHS.includes(Number(String(m.month).split('-')[1])))
+})
 
 const SECTIONS = [
   { id: 'platform-growth', label: 'Platform Growth', icon: 'bi-graph-up-arrow', color: 'brown' },
@@ -572,11 +579,61 @@ function generateInsights() {
 
 const insights = computed(() => generateInsights())
 
+function hexToRgb(hex) {
+  let value = String(hex).replace('#', '')
+  if (value.length === 3) value = value.split('').map(c => c + c).join('')
+  return {
+    r: parseInt(value.slice(0, 2), 16),
+    g: parseInt(value.slice(2, 4), 16),
+    b: parseInt(value.slice(4, 6), 16),
+  }
+}
+
+function readableTextColor(bg) {
+  if (typeof bg !== 'string' || !bg.startsWith('#')) return '#FFFFFF'
+  const { r, g, b } = hexToRgb(bg)
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+  return luminance > 0.6 ? '#2C2416' : '#FFFFFF'
+}
+
+const piePercentageLabels = {
+  id: 'piePercentageLabels',
+  afterDatasetsDraw(chart) {
+    const values = chart.data?.datasets?.[0]?.data || []
+    const total = values.reduce((sum, v) => sum + (Number(v) || 0), 0)
+    if (!total) return
+    const backgrounds = chart.data?.datasets?.[0]?.backgroundColor
+    const meta = chart.getDatasetMeta(0)
+    const { ctx } = chart
+    ctx.save()
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.font = '700 11px Roboto, sans-serif'
+    meta.data.forEach((arc, i) => {
+      const value = Number(values[i]) || 0
+      if (value <= 0) return
+      const pct = Math.round((value / total) * 100)
+      if (pct <= 0) return
+      const props = arc.getProps(['x', 'y', 'startAngle', 'endAngle', 'innerRadius', 'outerRadius'], true)
+      const mid = (props.startAngle + props.endAngle) / 2
+      const radius = (props.outerRadius + props.innerRadius) / 2
+      const x = props.x + Math.cos(mid) * radius
+      const y = props.y + Math.sin(mid) * radius
+      const bg = Array.isArray(backgrounds) ? backgrounds[i] : backgrounds
+      ctx.fillStyle = readableTextColor(bg)
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.35)'
+      ctx.shadowBlur = 3
+      ctx.fillText(`${pct}%`, x, y)
+    })
+    ctx.restore()
+  },
+}
+
 function renderAdminCharts() {
   const data = adminAnalytics.value
   if (!data) return
 
-  const months = data.tourists_per_month || []
+  const months = platformGrowthMonths.value
   if (adminTouristsEl.value && months.length) {
     charts.push(new Chart(adminTouristsEl.value, {
       type: 'line',
@@ -618,6 +675,7 @@ function renderAdminCharts() {
           borderWidth: 3,
         }],
       },
+      plugins: [piePercentageLabels],
       options: {
         responsive: true,
         maintainAspectRatio: false,
