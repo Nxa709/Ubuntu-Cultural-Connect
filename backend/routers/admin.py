@@ -19,7 +19,7 @@ from models.notification import Notification
 from sqlalchemy import func
 
 #This are like contracts that define what the Client Sends and what the API returns 
-from schemas.admin import CommentResponse, HotspotResponse, HotspotRejectRequest, AdminActionResponse, AdminStatsResponse, UserResponse, UserRoleUpdate, UserActionResponse
+from schemas.admin import CommentResponse, HotspotResponse, HotspotRejectRequest, AdminActionResponse, AdminStatsResponse, UserResponse, UserRoleUpdate, UserActionResponse, AdminAnalyticsOverview
 
 #This is authentication
 #Every Token contains the JWT token: What is the JWT Token?
@@ -347,6 +347,44 @@ def get_admin_stats(
         total_ratings=total_ratings,
         pending_comments=pending_comments,
         total_trips=total_trips,
+    )
+
+
+# -- Admin Analytics (platform-wide) --
+
+@router.get("/analytics/overview", response_model=AdminAnalyticsOverview)
+def get_admin_analytics_overview(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    # Platform growth: tourists grouped by registration month
+    month_counts = {}
+    for (created_at,) in db.query(User.created_at).filter(User.role == UserRole.tourist).all():
+        if not created_at:
+            continue
+        key = created_at.strftime("%Y-%m")
+        month_counts[key] = month_counts.get(key, 0) + 1
+    tourists_per_month = [
+        {"month": month, "count": month_counts[month]}
+        for month in sorted(month_counts.keys())
+    ]
+
+    # Cultural demand: itinerary adds grouped by experience category
+    demand_rows = (
+        db.query(Experience.category, func.count(ItineraryAdd.id))
+        .join(ItineraryAdd, ItineraryAdd.experience_id == Experience.id)
+        .group_by(Experience.category)
+        .all()
+    )
+    category_demand = []
+    for category, count in demand_rows:
+        label = category.value if hasattr(category, "value") else str(category)
+        category_demand.append({"category": label, "count": count})
+    category_demand.sort(key=lambda item: item["count"], reverse=True)
+
+    return AdminAnalyticsOverview(
+        tourists_per_month=tourists_per_month,
+        category_demand=category_demand,
     )
 
 

@@ -9,10 +9,17 @@ export const useAdminStore = defineStore('admin', () => {
   const pendingCommentCount = ref(0)
   const pendingHotspotCount = ref(0)
   const stats = ref(null)
+  const analytics = ref(null)
 
   async function fetchStats() {
     const r = await api.get('/admin/stats')
     stats.value = r.data
+    return r.data
+  }
+
+  async function fetchAnalyticsOverview() {
+    const r = await api.get('/admin/analytics/overview')
+    analytics.value = r.data
     return r.data
   }
 
@@ -88,8 +95,8 @@ export const useAdminStore = defineStore('admin', () => {
   }
 
   return {
-    comments, hotspots, users, pendingCommentCount, pendingHotspotCount, stats,
-    fetchStats, fetchComments, fetchPendingCommentCount, approveComment, rejectComment,
+    comments, hotspots, users, pendingCommentCount, pendingHotspotCount, stats, analytics,
+    fetchStats, fetchAnalyticsOverview, fetchComments, fetchPendingCommentCount, approveComment, rejectComment,
     fetchHotspots, fetchPendingHotspotCount, approveHotspot, rejectHotspot, removeHotspot,
     fetchUsers, changeUserRole, toggleUserActive, deleteUser,
   }

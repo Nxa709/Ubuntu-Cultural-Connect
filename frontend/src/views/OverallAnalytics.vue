@@ -28,15 +28,39 @@
         </div>
       </nav>
 
+      <!-- Admin platform graphs -->
+      <div class="chart-grid graph-row" v-if="adminAnalytics">
+        <div class="chart-card" id="platform-growth">
+          <div class="card-head">
+            <h3>Platform Growth</h3>
+            <span class="card-sub">Tourists per month</span>
+          </div>
+          <div class="chart-box" v-if="adminAnalytics.tourists_per_month.length">
+            <canvas ref="adminTouristsEl"></canvas>
+          </div>
+          <div class="chart-empty" v-else>No tourist registrations yet</div>
+        </div>
+        <div class="chart-card" id="cultural-demand">
+          <div class="card-head">
+            <h3>Cultural Demand</h3>
+            <span class="card-sub">Itinerary adds by category</span>
+          </div>
+          <div class="chart-box" v-if="adminAnalytics.category_demand.length">
+            <canvas ref="adminCategoryEl"></canvas>
+          </div>
+          <div class="chart-empty" v-else>No itinerary adds yet</div>
+        </div>
+      </div>
+
       <!-- No hotspots -->
-      <div class="empty-state" v-if="!hasData">
+      <div class="empty-state" v-if="!hasData && !auth.isAdmin">
         <i class="bi bi-graph-up"></i>
         <h2>No analytics data yet</h2>
         <p>Once visitors interact with your hotspots, insights will appear here.</p>
       </div>
 
       <!-- Overall analytics -->
-      <template v-else>
+      <template v-if="hasData">
         <!-- KPI row -->
         <div class="kpi-grid" id="platform-growth">
           <div class="kpi-card">
@@ -191,20 +215,25 @@ import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import Chart from 'chart.js/auto'
 import { useExperienceStore } from '../stores/experience'
 import { useAuthStore } from '../stores/auth'
+import { useAdminStore } from '../stores/admin'
 import LoadingSpinner from '../components/LoadingSpinner.vue'
 
 const store = useExperienceStore()
 const auth = useAuthStore()
+const adminStore = useAdminStore()
 
 const loading = ref(true)
 const overallData = ref(null)
 const hotspotAnalyticsList = ref([])
+const adminAnalytics = ref(null)
 
 const timeEl = ref(null)
 const visitorTypeEl = ref(null)
 const countriesEl = ref(null)
 const daysEl = ref(null)
 const hotspotsEl = ref(null)
+const adminTouristsEl = ref(null)
+const adminCategoryEl = ref(null)
 
 const PALETTE = {
   gold: '#E8A200',
@@ -247,6 +276,13 @@ function destroyCharts() {
 }
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+function monthLabel(key) {
+  if (!key) return ''
+  const [y, m] = String(key).split('-').map(Number)
+  if (!y || !m) return key
+  return `${MONTHS[m - 1]} ${String(y).slice(2)}`
+}
 
 function shortDate(d) {
   const parts = d.split('-')
@@ -536,8 +572,69 @@ function generateInsights() {
 
 const insights = computed(() => generateInsights())
 
+function renderAdminCharts() {
+  const data = adminAnalytics.value
+  if (!data) return
+
+  const months = data.tourists_per_month || []
+  if (adminTouristsEl.value && months.length) {
+    charts.push(new Chart(adminTouristsEl.value, {
+      type: 'line',
+      data: {
+        labels: months.map(m => monthLabel(m.month)),
+        datasets: [{
+          label: 'Tourists',
+          data: months.map(m => m.count),
+          borderColor: PALETTE.gold,
+          backgroundColor: 'rgba(232,162,0,0.15)',
+          fill: true,
+          tension: 0.35,
+          pointBackgroundColor: PALETTE.goldDark,
+          pointBorderColor: PALETTE.cream,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          borderWidth: 2.5,
+        }],
+      },
+      options: baseOptions('Month', 'Tourists'),
+    }))
+  }
+
+  const cats = data.category_demand || []
+  if (adminCategoryEl.value && cats.length) {
+    const colors = [
+      PALETTE.gold, PALETTE.brownMid, PALETTE.tan, PALETTE.brown,
+      PALETTE.goldDark, PALETTE.brownDark, '#D9B26A', '#7A5230',
+      '#B08D57', '#E0C48A', '#6B4A28', '#C9A227',
+    ]
+    charts.push(new Chart(adminCategoryEl.value, {
+      type: 'pie',
+      data: {
+        labels: cats.map(c => c.category),
+        datasets: [{
+          data: cats.map(c => c.count),
+          backgroundColor: cats.map((_, i) => colors[i % colors.length]),
+          borderColor: PALETTE.cream,
+          borderWidth: 3,
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom', labels: { color: TEXT_COLOR, font: { size: 11 }, padding: 12, boxWidth: 12, boxHeight: 12 } },
+          tooltip: { backgroundColor: '#2C2416', titleColor: '#F6F0E3', bodyColor: '#F6F0E3' },
+        },
+      },
+    }))
+  }
+}
+
 function renderCharts() {
   destroyCharts()
+
+  renderAdminCharts()
+
   if (!overallData.value) return
 
   // 1. Profile views over time (line)
@@ -674,10 +771,21 @@ function renderCharts() {
 
 async function loadOverallAnalytics() {
   try {
+    if (auth.isAdmin) {
+      try {
+        adminAnalytics.value = await adminStore.fetchAnalyticsOverview()
+      } catch (e) {
+        console.error('Failed to load admin analytics', e)
+        adminAnalytics.value = null
+      }
+    }
+
     const myExperiences = await store.fetchMyExperiences()
     if (!myExperiences || myExperiences.length === 0) {
       hasData.value = false
       loading.value = false
+      await nextTick()
+      renderCharts()
       return
     }
 
@@ -926,6 +1034,17 @@ onUnmounted(() => {
 
 .chart-box { height: 280px; position: relative; }
 .chart-card.wide .chart-box { height: 260px; }
+
+.graph-row { margin-bottom: 20px; }
+
+.chart-empty {
+  height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
 
 /* Heatmap */
 .heatmap-wrap {

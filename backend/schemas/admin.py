@@ -88,3 +88,18 @@ class UserRoleUpdate(BaseModel):
 class UserActionResponse(BaseModel):
     message: str
     id: int
+
+
+class MonthlyCount(BaseModel):
+    month: str
+    count: int
+
+
+class CategoryDemand(BaseModel):
+    category: str
+    count: int
+
+
+class AdminAnalyticsOverview(BaseModel):
+    tourists_per_month: list[MonthlyCount]
+    category_demand: list[CategoryDemand]
