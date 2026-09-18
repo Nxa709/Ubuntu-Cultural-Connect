@@ -382,9 +382,38 @@ def get_admin_analytics_overview(
         category_demand.append({"category": label, "count": count})
     category_demand.sort(key=lambda item: item["count"], reverse=True)
 
+    # Business supply: available (approved) businesses and tourist interest per province
+    business_rows = (
+        db.query(Experience.province, func.count(Experience.id))
+        .filter(Experience.is_approved == True)
+        .group_by(Experience.province)
+        .all()
+    )
+    interest_rows = (
+        db.query(Experience.province, func.count(ItineraryAdd.id))
+        .join(ItineraryAdd, ItineraryAdd.experience_id == Experience.id)
+        .group_by(Experience.province)
+        .all()
+    )
+    province_map = {}
+    for province, count in business_rows:
+        name = province or "Unspecified"
+        entry = province_map.setdefault(name, {"province": name, "businesses": 0, "interest": 0})
+        entry["businesses"] += count
+    for province, count in interest_rows:
+        name = province or "Unspecified"
+        entry = province_map.setdefault(name, {"province": name, "businesses": 0, "interest": 0})
+        entry["interest"] += count
+    province_supply = sorted(
+        province_map.values(),
+        key=lambda item: (item["businesses"], item["interest"]),
+        reverse=True,
+    )
+
     return AdminAnalyticsOverview(
         tourists_per_month=tourists_per_month,
         category_demand=category_demand,
+        province_supply=province_supply,
     )
 
 

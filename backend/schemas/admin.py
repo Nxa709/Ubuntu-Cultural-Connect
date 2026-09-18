@@ -100,6 +100,13 @@ class CategoryDemand(BaseModel):
     count: int
 
 
+class ProvinceSupply(BaseModel):
+    province: str
+    businesses: int
+    interest: int
+
+
 class AdminAnalyticsOverview(BaseModel):
     tourists_per_month: list[MonthlyCount]
     category_demand: list[CategoryDemand]
+    province_supply: list[ProvinceSupply]

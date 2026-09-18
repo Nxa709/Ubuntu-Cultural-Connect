@@ -50,6 +50,16 @@
           </div>
           <div class="chart-empty" v-else>No itinerary adds yet</div>
         </div>
+        <div class="chart-card wide" id="business-supply">
+          <div class="card-head">
+            <h3>Business Supply</h3>
+            <span class="card-sub">Available businesses vs tourist interest by province</span>
+          </div>
+          <div class="chart-box" v-if="adminAnalytics.province_supply && adminAnalytics.province_supply.length">
+            <canvas ref="adminSupplyEl"></canvas>
+          </div>
+          <div class="chart-empty" v-else>No province data yet</div>
+        </div>
       </div>
 
       <!-- No hotspots -->
@@ -234,6 +244,7 @@ const daysEl = ref(null)
 const hotspotsEl = ref(null)
 const adminTouristsEl = ref(null)
 const adminCategoryEl = ref(null)
+const adminSupplyEl = ref(null)
 
 const PALETTE = {
   gold: '#E8A200',
@@ -698,6 +709,33 @@ function renderAdminCharts() {
           tooltip: { backgroundColor: '#2C2416', titleColor: '#F6F0E3', bodyColor: '#F6F0E3' },
         },
       },
+    }))
+  }
+
+  const supply = data.province_supply || []
+  if (adminSupplyEl.value && supply.length) {
+    charts.push(new Chart(adminSupplyEl.value, {
+      type: 'bar',
+      data: {
+        labels: supply.map(p => p.province),
+        datasets: [
+          {
+            label: 'Available Businesses',
+            data: supply.map(p => p.businesses),
+            backgroundColor: PALETTE.brownMid,
+            borderRadius: 4,
+            maxBarThickness: 26,
+          },
+          {
+            label: 'Tourist Interest',
+            data: supply.map(p => p.interest),
+            backgroundColor: PALETTE.gold,
+            borderRadius: 4,
+            maxBarThickness: 26,
+          },
+        ],
+      },
+      options: baseOptions('Province', 'Count'),
     }))
   }
 }
