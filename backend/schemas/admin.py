@@ -115,8 +115,27 @@ class ExperiencePerformanceItem(BaseModel):
     avg_rating: Optional[float] = None
 
 
+class AttentionBusiness(BaseModel):
+    id: int
+    title: str
+    image_url: Optional[str] = None
+    avg_rating: Optional[float] = None
+
+
+class AttentionGroup(BaseModel):
+    count: int
+    items: list[AttentionBusiness]
+
+
+class AttentionRequired(BaseModel):
+    pending_registrations: AttentionGroup
+    low_rating: AttentionGroup
+    inactive: AttentionGroup
+
+
 class AdminAnalyticsOverview(BaseModel):
     tourists_per_month: list[MonthlyCount]
     category_demand: list[CategoryDemand]
     province_supply: list[ProvinceSupply]
     experience_performance: list[ExperiencePerformanceItem]
+    attention_required: AttentionRequired

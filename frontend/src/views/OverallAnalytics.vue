@@ -13,19 +13,16 @@
 
       <!-- Quick navigation -->
       <nav class="ana-quicknav" aria-label="Analytics sections">
-        <div
+        <a
           v-for="s in SECTIONS"
           :key="s.id"
           class="quicknav-item"
-          role="link"
-          tabindex="0"
-          @click="scrollToSection(s.id)"
-          @keydown.enter.prevent="scrollToSection(s.id)"
-          @keydown.space.prevent="scrollToSection(s.id)"
+          :href="'#' + s.id"
+          @click.prevent="scrollToSection(s.id)"
         >
           <span class="kpi-icon" :class="'kpi-' + s.color"><i :class="['bi', s.icon]"></i></span>
           <span class="quicknav-label">{{ s.label }}</span>
-        </div>
+        </a>
       </nav>
 
       <!-- Admin platform graphs -->
@@ -91,6 +88,45 @@
           <div class="chart-empty" v-else>No experience data yet</div>
         </div>
       </div>
+
+      <!-- Attention required -->
+      <section class="attention-section" id="attention-required" v-if="adminAnalytics">
+        <div class="card-head insights-head">
+          <h3><i class="bi bi-exclamation-triangle"></i> Attention Required</h3>
+          <span class="card-sub">Items that need your review</span>
+        </div>
+
+        <div class="attention-actions">
+          <a
+            v-for="g in attentionGroups"
+            :key="'action-' + g.id"
+            href="#"
+            class="attention-action"
+            @click.prevent="scrollToSection(g.id)"
+          >
+            <i :class="['bi', g.icon]"></i>
+            <span>{{ g.label }}</span>
+            <span class="attention-count">{{ g.count }}</span>
+          </a>
+        </div>
+
+        <div class="attention-grid">
+          <div class="attention-card" v-for="g in attentionGroups" :key="g.id" :id="g.id">
+            <div class="attention-card-head">
+              <h4>{{ g.label }}</h4>
+              <span class="attention-count">{{ g.count }}</span>
+            </div>
+            <ul class="attention-list" v-if="g.items.length">
+              <li v-for="item in g.items" :key="item.id">
+                <span class="attention-thumb" :style="{ backgroundImage: `url(${item.image_url || fallbackImage})` }"></span>
+                <span class="attention-name" :title="item.title">{{ item.title }}</span>
+                <span class="attention-rating" v-if="item.avg_rating != null">{{ item.avg_rating.toFixed(1) }}★</span>
+              </li>
+            </ul>
+            <p class="attention-empty" v-else>Nothing to review.</p>
+          </div>
+        </div>
+      </section>
 
       <!-- No hotspots -->
       <div class="empty-state" v-if="!hasData && !auth.isAdmin">
@@ -319,9 +355,19 @@ const platformGrowthMonths = computed(() => {
   )
 })
 
+const attentionGroups = computed(() => {
+  const a = adminAnalytics.value?.attention_required
+  const empty = () => ({ count: 0, items: [] })
+  return [
+    { id: 'attention-pending', label: 'Pending Business Registrations', icon: 'bi-hourglass-split', ...(a?.pending_registrations || empty()) },
+    { id: 'attention-low-rating', label: 'Businesses with Low Rating', icon: 'bi-star-half', ...(a?.low_rating || empty()) },
+    { id: 'attention-inactive', label: 'Inactive Businesses', icon: 'bi-slash-circle', ...(a?.inactive || empty()) },
+  ]
+})
+
 const SECTIONS = [
   { id: 'platform-growth', label: 'Platform Growth', icon: 'bi-graph-up-arrow', color: 'brown' },
-  { id: 'cultural-demand', label: 'Cultural Demand', icon: 'bi-people', color: 'gold' },
+  { id: 'cultural-demand', label: 'Platform Demand', icon: 'bi-people', color: 'gold' },
   { id: 'business-supply', label: 'Business Supply', icon: 'bi-shop', color: 'brownMid' },
   { id: 'experience-performance', label: 'Experience Performance', icon: 'bi-star-fill', color: 'tan' },
   { id: 'attention-required', label: 'Attention Required', icon: 'bi-exclamation-triangle', color: 'brownDark' },
@@ -1037,6 +1083,8 @@ onUnmounted(() => {
   cursor: pointer;
   transition: all 0.2s;
   min-width: 0;
+  text-decoration: none;
+  color: inherit;
 }
 
 .quicknav-item:hover {
@@ -1242,6 +1290,136 @@ onUnmounted(() => {
   white-space: nowrap;
 }
 
+/* Attention required */
+.attention-section {
+  margin-top: 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  scroll-margin-top: 90px;
+}
+
+.attention-section .insights-head { margin-bottom: 16px; }
+
+.attention-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.attention-action {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  background: var(--surface-secondary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.attention-action:hover {
+  border-color: var(--accent);
+  color: var(--accent-dark);
+}
+
+.attention-action .attention-count { margin-left: auto; }
+
+.attention-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--accent-light);
+  color: var(--accent-dark);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.attention-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.attention-card {
+  background: var(--surface-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  scroll-margin-top: 90px;
+}
+
+.attention-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.attention-card-head h4 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--heading-color);
+  margin: 0;
+}
+
+.attention-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.attention-list li { display: flex; align-items: center; gap: 8px; }
+
+.attention-thumb {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--surface);
+  flex-shrink: 0;
+}
+
+.attention-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.attention-rating {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent-dark);
+  white-space: nowrap;
+}
+
+.attention-empty {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
 /* Heatmap */
 .heatmap-wrap {
   display: flex;
@@ -1415,6 +1593,7 @@ onUnmounted(() => {
 @media (max-width: 1024px) {
   .chart-grid { grid-template-columns: 1fr; }
   .chart-card.wide { grid-column: span 1; }
+  .attention-actions, .attention-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 640px) {

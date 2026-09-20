@@ -1,5 +1,5 @@
 <template>
-  <aside class="sidebar" v-if="auth.isBusinessOwner || auth.isAdmin">
+  <aside class="sidebar" :class="{ 'sidebar--admin': auth.isAdmin }" v-if="auth.isBusinessOwner || auth.isAdmin">
     <div class="sidebar-brand">
       <div class="brand-icon">
         <img src="/img/Ubuntu_logo/Ubuntu-logo.png" alt="Ubuntu Cultural Connect" />
@@ -116,6 +116,35 @@ function handleLogout() {
   flex-direction: column;
   z-index: 998;
   padding: 20px 14px 16px;
+}
+
+.sidebar--admin {
+  background: #5C3A21;
+}
+
+.sidebar--admin .brand-sub,
+.sidebar--admin .account-role,
+.sidebar--admin .account-caret,
+.sidebar--admin .user-role,
+.sidebar--admin .logout-btn {
+  color: #E7CDB0;
+}
+
+.sidebar--admin .sidebar-link {
+  color: #F1E2D0;
+}
+
+.sidebar--admin .sidebar-link:hover {
+  background: rgba(255, 255, 255, 0.10);
+  color: #ffffff;
+}
+
+.sidebar--admin .user-avatar {
+  background: #7A5230;
+}
+
+.sidebar--admin .sidebar-bottom {
+  border-top-color: rgba(255, 255, 255, 0.18);
 }
 
 .sidebar-brand {

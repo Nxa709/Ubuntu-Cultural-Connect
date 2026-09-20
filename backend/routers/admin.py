@@ -19,7 +19,7 @@ from models.notification import Notification
 from sqlalchemy import func
 
 #This are like contracts that define what the Client Sends and what the API returns 
-from schemas.admin import CommentResponse, HotspotResponse, HotspotRejectRequest, AdminActionResponse, AdminStatsResponse, UserResponse, UserRoleUpdate, UserActionResponse, AdminAnalyticsOverview
+from schemas.admin import CommentResponse, HotspotResponse, HotspotRejectRequest, AdminActionResponse, AdminStatsResponse, UserResponse, UserRoleUpdate, UserActionResponse, AdminAnalyticsOverview, AttentionRequired, AttentionGroup, AttentionBusiness
 
 #This is authentication
 #Every Token contains the JWT token: What is the JWT Token?
@@ -424,6 +424,7 @@ def get_admin_analytics_overview(
     )
     rating_avgs = dict(
         db.query(Rating.experience_id, func.avg(Rating.score))
+        .filter(Rating.is_approved == True)
         .group_by(Rating.experience_id)
         .all()
     )
@@ -454,11 +455,60 @@ def get_admin_analytics_overview(
         )
         experience_performance = experience_performance[:5]
 
+    # Attention required: pending registrations, low-rated and inactive businesses
+    LOW_RATING_THRESHOLD = 3.5
+
+    def _attention_item(exp):
+        avg = rating_avgs.get(exp.id)
+        return {
+            "id": exp.id,
+            "title": exp.title,
+            "image_url": exp.image_url,
+            "avg_rating": round(float(avg), 1) if avg is not None else None,
+        }
+
+    pending_exps = (
+        db.query(Experience)
+        .filter(Experience.is_approved == False, Experience.rejected_at == None)
+        .order_by(Experience.created_at.desc())
+        .all()
+    )
+    inactive_exps = (
+        db.query(Experience)
+        .filter(Experience.is_active == False)
+        .order_by(Experience.created_at.desc())
+        .all()
+    )
+    low_rating_exps = (
+        db.query(Experience)
+        .filter(Experience.id.in_(list(rating_avgs.keys())))
+        .all()
+        if rating_avgs else []
+    )
+    low_rating_exps = [e for e in low_rating_exps if float(rating_avgs.get(e.id) or 0) < LOW_RATING_THRESHOLD]
+    low_rating_exps.sort(key=lambda e: float(rating_avgs.get(e.id) or 0))
+
+    attention_required = AttentionRequired(
+        pending_registrations=AttentionGroup(
+            count=len(pending_exps),
+            items=[_attention_item(e) for e in pending_exps[:5]],
+        ),
+        low_rating=AttentionGroup(
+            count=len(low_rating_exps),
+            items=[_attention_item(e) for e in low_rating_exps[:5]],
+        ),
+        inactive=AttentionGroup(
+            count=len(inactive_exps),
+            items=[_attention_item(e) for e in inactive_exps[:5]],
+        ),
+    )
+
     return AdminAnalyticsOverview(
         tourists_per_month=tourists_per_month,
         category_demand=category_demand,
         province_supply=province_supply,
         experience_performance=experience_performance,
+        attention_required=attention_required,
     )
 
 
