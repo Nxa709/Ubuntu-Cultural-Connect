@@ -109,6 +109,7 @@ class ProvinceSupply(BaseModel):
 class ExperiencePerformanceItem(BaseModel):
     id: int
     title: str
+    image_url: Optional[str] = None
     views: int
     itinerary_selections: int
     avg_rating: Optional[float] = None

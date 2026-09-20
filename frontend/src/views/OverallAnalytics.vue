@@ -77,7 +77,10 @@
               </thead>
               <tbody>
                 <tr v-for="row in adminAnalytics.experience_performance" :key="row.id">
-                  <td class="exp-name" :title="row.title">{{ row.title }}</td>
+                  <td class="exp-name" :title="row.title">
+                    <span class="exp-thumb" :style="{ backgroundImage: `url(${row.image_url || fallbackImage})` }"></span>
+                    <span class="exp-title">{{ row.title }}</span>
+                  </td>
                   <td>{{ row.views }}</td>
                   <td>{{ row.itinerary_selections }}</td>
                   <td>{{ row.avg_rating != null ? row.avg_rating.toFixed(1) : '—' }}</td>
@@ -272,6 +275,8 @@ const hotspotsEl = ref(null)
 const adminTouristsEl = ref(null)
 const adminCategoryEl = ref(null)
 const adminSupplyEl = ref(null)
+
+const fallbackImage = '/img/cultures/Safari.jpg'
 
 const PALETTE = {
   gold: '#E8A200',
@@ -1213,9 +1218,25 @@ onUnmounted(() => {
 .exp-table tbody tr:last-child td { border-bottom: none; }
 
 .exp-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-weight: 500;
   color: var(--heading-color);
-  max-width: 180px;
+  max-width: 220px;
+}
+
+.exp-thumb {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--surface-secondary);
+  flex-shrink: 0;
+}
+
+.exp-title {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

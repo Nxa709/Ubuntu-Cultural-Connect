@@ -430,8 +430,8 @@ def get_admin_analytics_overview(
     perf_ids = set(view_counts) | set(add_counts) | set(rating_avgs)
     experience_performance = []
     if perf_ids:
-        for exp_id, title in (
-            db.query(Experience.id, Experience.title)
+        for exp_id, title, image_url in (
+            db.query(Experience.id, Experience.title, Experience.image_url)
             .filter(Experience.id.in_(perf_ids))
             .all()
         ):
@@ -439,6 +439,7 @@ def get_admin_analytics_overview(
             experience_performance.append({
                 "id": exp_id,
                 "title": title,
+                "image_url": image_url,
                 "views": int(view_counts.get(exp_id, 0)),
                 "itinerary_selections": int(add_counts.get(exp_id, 0)),
                 "avg_rating": round(float(avg), 1) if avg is not None else None,
