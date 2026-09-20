@@ -7,7 +7,6 @@
       <header class="ana-header">
         <div class="ana-head-left">
           <h1>Overall Analytics</h1>
-          <p>Comprehensive insights across all your hotspots.</p>
         </div>
       </header>
 
@@ -94,20 +93,6 @@
         <div class="card-head insights-head">
           <h3><i class="bi bi-exclamation-triangle"></i> Attention Required</h3>
           <span class="card-sub">Items that need your review</span>
-        </div>
-
-        <div class="attention-actions">
-          <a
-            v-for="g in attentionGroups"
-            :key="'action-' + g.id"
-            href="#"
-            class="attention-action"
-            @click.prevent="scrollToSection(g.id)"
-          >
-            <i :class="['bi', g.icon]"></i>
-            <span>{{ g.label }}</span>
-            <span class="attention-count">{{ g.count }}</span>
-          </a>
         </div>
 
         <div class="attention-grid">
@@ -367,7 +352,7 @@ const attentionGroups = computed(() => {
 
 const SECTIONS = [
   { id: 'platform-growth', label: 'Platform Growth', icon: 'bi-graph-up-arrow', color: 'brown' },
-  { id: 'cultural-demand', label: 'Platform Demand', icon: 'bi-people', color: 'gold' },
+  { id: 'cultural-demand', label: 'Cultural Demand', icon: 'bi-people', color: 'gold' },
   { id: 'business-supply', label: 'Business Supply', icon: 'bi-shop', color: 'brownMid' },
   { id: 'experience-performance', label: 'Experience Performance', icon: 'bi-star-fill', color: 'tan' },
   { id: 'attention-required', label: 'Attention Required', icon: 'bi-exclamation-triangle', color: 'brownDark' },
@@ -1303,35 +1288,6 @@ onUnmounted(() => {
 
 .attention-section .insights-head { margin-bottom: 16px; }
 
-.attention-actions {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.attention-action {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  text-decoration: none;
-  background: var(--surface-secondary);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 10px 12px;
-  color: var(--text-secondary);
-  font-size: 0.82rem;
-  font-weight: 500;
-  transition: all 0.2s;
-}
-
-.attention-action:hover {
-  border-color: var(--accent);
-  color: var(--accent-dark);
-}
-
-.attention-action .attention-count { margin-left: auto; }
-
 .attention-count {
   display: inline-flex;
   align-items: center;
@@ -1593,7 +1549,7 @@ onUnmounted(() => {
 @media (max-width: 1024px) {
   .chart-grid { grid-template-columns: 1fr; }
   .chart-card.wide { grid-column: span 1; }
-  .attention-actions, .attention-grid { grid-template-columns: 1fr; }
+  .attention-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 640px) {
