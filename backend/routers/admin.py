@@ -12,7 +12,7 @@ from database import get_db #Import the function that creates the database sessi
 #Import the user database table and the user role enumeration
 #This all imports the models or the tables from the database
 from models.user import User, UserRole
-from models.experience import Experience, Rating, TripDay, ItineraryAdd
+from models.experience import Experience, Rating, TripDay, ItineraryAdd, ExperienceEvent
 from models.notification import Notification
 
 #Function allows sql aggregate functions such as sum, avg, count, max, min and sum
@@ -410,10 +410,54 @@ def get_admin_analytics_overview(
         reverse=True,
     )
 
+    # Experience performance: top 5 experiences by page views
+    view_counts = dict(
+        db.query(ExperienceEvent.experience_id, func.count(ExperienceEvent.id))
+        .filter(ExperienceEvent.event_type == "profile_view")
+        .group_by(ExperienceEvent.experience_id)
+        .all()
+    )
+    add_counts = dict(
+        db.query(ItineraryAdd.experience_id, func.count(ItineraryAdd.id))
+        .group_by(ItineraryAdd.experience_id)
+        .all()
+    )
+    rating_avgs = dict(
+        db.query(Rating.experience_id, func.avg(Rating.score))
+        .group_by(Rating.experience_id)
+        .all()
+    )
+    perf_ids = set(view_counts) | set(add_counts) | set(rating_avgs)
+    experience_performance = []
+    if perf_ids:
+        for exp_id, title in (
+            db.query(Experience.id, Experience.title)
+            .filter(Experience.id.in_(perf_ids))
+            .all()
+        ):
+            avg = rating_avgs.get(exp_id)
+            experience_performance.append({
+                "id": exp_id,
+                "title": title,
+                "views": int(view_counts.get(exp_id, 0)),
+                "itinerary_selections": int(add_counts.get(exp_id, 0)),
+                "avg_rating": round(float(avg), 1) if avg is not None else None,
+            })
+        experience_performance.sort(
+            key=lambda item: (
+                item["views"],
+                item["itinerary_selections"],
+                item["avg_rating"] or 0,
+            ),
+            reverse=True,
+        )
+        experience_performance = experience_performance[:5]
+
     return AdminAnalyticsOverview(
         tourists_per_month=tourists_per_month,
         category_demand=category_demand,
         province_supply=province_supply,
+        experience_performance=experience_performance,
     )
 
 

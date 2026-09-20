@@ -106,7 +106,16 @@ class ProvinceSupply(BaseModel):
     interest: int
 
 
+class ExperiencePerformanceItem(BaseModel):
+    id: int
+    title: str
+    views: int
+    itinerary_selections: int
+    avg_rating: Optional[float] = None
+
+
 class AdminAnalyticsOverview(BaseModel):
     tourists_per_month: list[MonthlyCount]
     category_demand: list[CategoryDemand]
     province_supply: list[ProvinceSupply]
+    experience_performance: list[ExperiencePerformanceItem]

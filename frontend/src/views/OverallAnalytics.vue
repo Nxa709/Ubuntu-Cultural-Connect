@@ -50,7 +50,7 @@
           </div>
           <div class="chart-empty" v-else>No itinerary adds yet</div>
         </div>
-        <div class="chart-card wide" id="business-supply">
+        <div class="chart-card" id="business-supply">
           <div class="card-head">
             <h3>Business Supply</h3>
             <span class="card-sub">Available businesses vs tourist interest by province</span>
@@ -59,6 +59,33 @@
             <canvas ref="adminSupplyEl"></canvas>
           </div>
           <div class="chart-empty" v-else>No province data yet</div>
+        </div>
+        <div class="chart-card" id="experience-performance">
+          <div class="card-head">
+            <h3>Experience Performance</h3>
+            <span class="card-sub">Top experiences by views</span>
+          </div>
+          <div class="exp-table-wrap" v-if="adminAnalytics.experience_performance && adminAnalytics.experience_performance.length">
+            <table class="exp-table">
+              <thead>
+                <tr>
+                  <th>Experience</th>
+                  <th>Views</th>
+                  <th>Itinerary Selection</th>
+                  <th>Avg Rating</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="row in adminAnalytics.experience_performance" :key="row.id">
+                  <td class="exp-name" :title="row.title">{{ row.title }}</td>
+                  <td>{{ row.views }}</td>
+                  <td>{{ row.itinerary_selections }}</td>
+                  <td>{{ row.avg_rating != null ? row.avg_rating.toFixed(1) : '—' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="chart-empty" v-else>No experience data yet</div>
         </div>
       </div>
 
@@ -1154,6 +1181,44 @@ onUnmounted(() => {
   justify-content: center;
   color: var(--text-muted);
   font-size: 0.85rem;
+}
+
+/* Experience performance table */
+.exp-table-wrap { overflow-x: auto; }
+
+.exp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.exp-table th {
+  text-align: left;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.exp-table td {
+  padding: 10px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+
+.exp-table tbody tr:last-child td { border-bottom: none; }
+
+.exp-name {
+  font-weight: 500;
+  color: var(--heading-color);
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Heatmap */
