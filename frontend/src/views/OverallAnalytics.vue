@@ -6,7 +6,7 @@
       <!-- Header -->
       <header class="ana-header">
         <div class="ana-head-left">
-          <h1>Overall Analytics</h1>
+          <h1><span class="accent-word">Overall</span> Analytics</h1>
         </div>
       </header>
 
@@ -1040,6 +1040,11 @@ onUnmounted(() => {
   font-weight: 700;
   color: var(--heading-color);
   margin: 0 0 4px;
+}
+
+.ana-head-left h1 .accent-word {
+  font-family: 'Pacifico', cursive;
+  font-weight: 400;
 }
 
 .ana-head-left p {
