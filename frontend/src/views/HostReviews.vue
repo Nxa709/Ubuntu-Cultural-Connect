@@ -150,6 +150,13 @@ onMounted(async () => {
   margin-right: auto;
 }
 
+/* Welcome/hero image spans the full width (no side gaps) */
+.host-page > .hero-header {
+  max-width: none;
+  margin-left: -1rem;
+  margin-right: -1rem;
+}
+
 .hero-header {
   text-align: center;
   padding: 40px 20px 32px;
