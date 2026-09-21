@@ -10,15 +10,6 @@
       </div>
     </div>
 
-    <div class="account-selector" v-if="!auth.isBusinessOwner">
-      <span class="account-avatar">{{ initials }}</span>
-      <div class="account-meta">
-        <span class="account-name">{{ auth.user?.full_name || 'My Business' }}</span>
-        <span class="account-role">{{ roleLabel }}</span>
-      </div>
-      <i class="bi bi-chevron-down account-caret"></i>
-    </div>
-
     <nav class="sidebar-nav">
       <template v-for="item in navItems" :key="item.label">
         <router-link
