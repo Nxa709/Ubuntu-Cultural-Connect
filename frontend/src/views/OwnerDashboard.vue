@@ -48,35 +48,6 @@
         </router-link>
       </div>
 
-      <div class="stats-preview" v-if="stats || store.myExperiences.length">
-        <h2>At a Glance</h2>
-        <div class="stats-row">
-          <div class="s-card highlight-card">
-            <span class="s-value">{{ stats?.registered_hotspots ?? registeredCount }}</span>
-            <span class="s-label">Registered Hotspots</span>
-          </div>
-          <div class="s-card">
-            <span class="s-value active-v">{{ stats?.active_hotspots ?? activeCount }}</span>
-            <span class="s-label">Active</span>
-          </div>
-          <div class="s-card">
-            <span class="s-value pending-v">{{ stats?.pending_approval ?? 0 }}</span>
-            <span class="s-label">Pending</span>
-          </div>
-          <div class="s-card">
-            <span class="s-value">{{ stats?.total_ratings ?? 0 }}</span>
-            <span class="s-label">Total Reviews</span>
-          </div>
-          <div class="s-card">
-            <span class="s-value">{{ stats?.avg_rating || '—' }}</span>
-            <span class="s-label">Avg Rating</span>
-          </div>
-          <div class="s-card">
-            <span class="s-value">{{ stats?.total_itinerary_adds ?? totalAdds }}</span>
-            <span class="s-label">Total Itinerary Adds</span>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </template>
