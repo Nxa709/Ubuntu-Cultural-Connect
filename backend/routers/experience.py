@@ -1656,6 +1656,22 @@ def get_analytics_overview(
         for cat, cnt in sorted(category_counts.items(), key=lambda item: item[1], reverse=True)
     ]
 
+    # Top visited business categories (by profile views across my businesses)
+    category_visits = defaultdict(int)
+    for e in exps:
+        cat = e.category.value if hasattr(e.category, "value") else e.category
+        category_visits[cat] += profile_views_by_exp.get(e.id, 0)
+    visits_total = sum(category_visits.values())
+    top_categories = [
+        {
+            "category": cat,
+            "count": cnt,
+            "percentage": round((cnt / visits_total) * 100) if visits_total else 0,
+        }
+        for cat, cnt in sorted(category_visits.items(), key=lambda item: item[1], reverse=True)
+        if cnt > 0
+    ]
+
     return {
         "total_customers": total_customers,
         "total_reviews": total_reviews,
@@ -1683,6 +1699,7 @@ def get_analytics_overview(
         "interests_over_time": interests_over_time,
         "tourist_origins": tourist_origins,
         "cultural_breakdown": cultural_breakdown,
+        "top_categories": top_categories,
         "experience_performance": experience_performance,
         "recent_reviews": recent_reviews,
     }

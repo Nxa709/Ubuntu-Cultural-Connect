@@ -99,7 +99,7 @@
           <div v-else class="no-data">No origin data yet.</div>
         </div>
 
-        <div class="card cultural-card">
+        <div class="card cultural-card" id="cultural-interest">
           <div class="card-head">
             <h2>Cultural interest breakdown</h2>
           </div>
@@ -118,46 +118,23 @@
         </div>
       </div>
 
-      <!-- Performance table + Insights -->
+      <!-- Top visited business categories + Business Insights -->
       <div class="grid-wide">
-        <div class="card table-card span-2">
+        <div class="card top-categories-card">
           <div class="card-head">
-            <h2>Experience Performance</h2>
-            <span class="card-sub">{{ rangeLabel }}</span>
+            <h2>Top visited Business categories</h2>
           </div>
-          <div class="table-scroll" v-if="experiencePerformance.length">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Experience</th>
-                  <th>Views</th>
-                  <th>Avg Rating</th>
-                  <th>Reviews</th>
-                  <th>Status</th>
-                  <th>Trend</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="row in experiencePerformance" :key="row.id">
-                  <td>
-                    <div class="listing-cell">
-                      <span class="thumb" :style="{ backgroundImage: `url(${row.image_url || fallbackImage})` }"></span>
-                      <div class="listing-info">
-                        <span class="listing-name">{{ row.title }}</span>
-                        <span class="listing-cat">{{ row.category }}</span>
-                      </div>
-                    </div>
-                  </td>
-                  <td><strong>{{ row.views }}</strong></td>
-                  <td>{{ row.avg_rating ? row.avg_rating.toFixed(1) : '—' }}</td>
-                  <td>{{ row.reviews }}</td>
-                  <td><span class="status-pill" :class="statusClass(row.status)">{{ row.status }}</span></td>
-                  <td><span class="trend-badge" :class="trendClass(row.trend)">{{ trendText(row.trend) }}</span></td>
-                </tr>
-              </tbody>
-            </table>
+          <div v-if="topCategories.length">
+            <div class="cat-row" v-for="c in topCategories" :key="c.category">
+              <i class="cat-icon" :class="['bi', categoryIcon(c.category)]"></i>
+              <span class="cat-name" :title="c.category">{{ c.category }}</span>
+              <div class="cat-track">
+                <div class="cat-fill" :style="{ width: c.percentage + '%' }"></div>
+              </div>
+              <span class="cat-pct">{{ c.percentage }}%</span>
+            </div>
           </div>
-          <div v-else class="no-data">No experiences yet.</div>
+          <div v-else class="no-data">No category visits yet.</div>
         </div>
 
         <div class="card insights-card" id="attention-required">
@@ -173,105 +150,45 @@
         </div>
       </div>
 
-      <!-- Charts row -->
-      <div class="grid-2" id="cultural-interest">
-        <div class="card">
-          <div class="card-head">
-            <h2>Most Viewed Experiences</h2>
-            <span class="card-sub">{{ rangeLabel }}</span>
-          </div>
-          <div class="chart-wrap-md">
-            <canvas v-if="mostViewed.length" ref="viewsEl"></canvas>
-            <div v-else class="no-data">No interest data yet.</div>
-          </div>
+      <!-- Performance table -->
+      <div class="card table-card" id="experience-performance">
+        <div class="card-head">
+          <h2>Experience Performance</h2>
+          <span class="card-sub">{{ rangeLabel }}</span>
         </div>
-        <div class="card">
-          <div class="card-head">
-            <h2>Visitor Interest Over Time</h2>
-            <span class="card-sub">{{ rangeLabel }}</span>
-          </div>
-          <div class="chart-wrap-md">
-            <canvas v-if="interestOverTime.length" ref="interestEl"></canvas>
-            <div v-else class="no-data">No interest data yet.</div>
-          </div>
+        <div class="table-scroll" v-if="experiencePerformance.length">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Experience</th>
+                <th>Views</th>
+                <th>Avg Rating</th>
+                <th>Reviews</th>
+                <th>Status</th>
+                <th>Trend</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="row in experiencePerformance" :key="row.id">
+                <td>
+                  <div class="listing-cell">
+                    <span class="thumb" :style="{ backgroundImage: `url(${row.image_url || fallbackImage})` }"></span>
+                    <div class="listing-info">
+                      <span class="listing-name">{{ row.title }}</span>
+                      <span class="listing-cat">{{ row.category }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td><strong>{{ row.views }}</strong></td>
+                <td>{{ row.avg_rating ? row.avg_rating.toFixed(1) : '—' }}</td>
+                <td>{{ row.reviews }}</td>
+                <td><span class="status-pill" :class="statusClass(row.status)">{{ row.status }}</span></td>
+                <td><span class="trend-badge" :class="trendClass(row.trend)">{{ trendText(row.trend) }}</span></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </div>
-
-      <!-- Customer satisfaction -->
-      <div class="grid-3" id="experience-performance">
-        <div class="card sat-card">
-          <div class="card-head">
-            <h2>Customer Satisfaction</h2>
-          </div>
-          <div class="sat-stats">
-            <div class="sat-stat">
-              <span class="sat-val">{{ totalReviews ? avgRating.toFixed(1) : '—' }}</span>
-              <span class="sat-lbl">Avg Rating</span>
-            </div>
-            <div class="sat-stat">
-              <span class="sat-val">{{ totalReviews }}</span>
-              <span class="sat-lbl">Reviews</span>
-            </div>
-            <div class="sat-stat">
-              <span class="sat-val">{{ totalReviews ? positivePct + '%' : '—' }}</span>
-              <span class="sat-lbl">Positive (4★+)</span>
-            </div>
-          </div>
-          <div class="chart-wrap-sm">
-            <canvas v-if="starCount" ref="starsEl"></canvas>
-            <div v-else class="no-data">No ratings yet.</div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-head">
-            <h2>What Visitors Mention</h2>
-          </div>
-          <div class="bar-list" v-if="themes.length">
-            <div class="bar-row" v-for="t in themes" :key="t.key">
-              <div class="bar-label-row">
-                <span class="bar-name">{{ t.key }}</span>
-                <span class="bar-pct">{{ t.count }}</span>
-              </div>
-              <div class="bar-track">
-                <div class="bar-fill brown-fill" :style="{ width: themePct(t) + '%' }"></div>
-              </div>
-            </div>
-          </div>
-          <div v-else class="no-data">No comments in this period.</div>
-        </div>
-
-        <div class="card reviews-card">
-          <div class="card-head">
-            <h2>Recent Reviews</h2>
-          </div>
-          <div class="review-list" v-if="recentReviews.length">
-            <div class="review-item" v-for="r in recentReviews" :key="r.id">
-              <div class="review-top">
-                <span class="review-name">{{ r.user_name }}</span>
-                <span class="review-stars">{{ filledStars(r.score) }}</span>
-              </div>
-              <p class="review-text">{{ r.comment || 'No comment left.' }}</p>
-              <span class="review-meta">{{ r.experience_title }} · {{ formatDate(r.created_at) }}</span>
-            </div>
-          </div>
-          <div v-else class="no-data">No reviews in this period.</div>
-        </div>
-      </div>
-
-      <!-- Visitor profile -->
-      <div class="grid-wide">
-        <div class="card span-2 visitor-card">
-          <div class="card-head">
-            <h2>Visitor Profile</h2>
-          </div>
-          <p class="visitor-text">
-            Our system does not yet collect visitor demographics (origin, age group, interests),
-            so we can't show who your visitors are. This period we tracked
-            <strong>{{ uniqueVisitors }} unique visitors</strong> across
-            <strong>{{ totalViews }} views</strong>.
-          </p>
-        </div>
+        <div v-else class="no-data">No experiences yet.</div>
       </div>
 
       <p class="note-foot">
@@ -432,6 +349,27 @@ const CULTURAL_COLORS = ['#E8A200', '#8B5A2B', '#C9A227', '#A67C52', '#5C3A21', 
 
 function culturalColor(i) {
   return CULTURAL_COLORS[i % CULTURAL_COLORS.length]
+}
+
+const topCategories = computed(() => overview.value.top_categories || [])
+
+const CATEGORY_ICONS = {
+  'Traditional Cooking': 'bi-egg-fried',
+  'Storytelling': 'bi-book',
+  'Music & Dance': 'bi-music-note-beamed',
+  'Crafts & Art': 'bi-palette',
+  'Heritage Tours': 'bi-bank',
+  'Township Life': 'bi-people',
+  'Rural Heritage': 'bi-tree',
+  'Traditional Healing': 'bi-heart-pulse',
+  'Textile & Weaving': 'bi-scissors',
+  'Photography Tours': 'bi-camera',
+  'Nature & Wildlife': 'bi-binoculars',
+  'Accommodation & Lodging': 'bi-house-door',
+}
+
+function categoryIcon(name) {
+  return CATEGORY_ICONS[name] || 'bi-tag'
 }
 
 function hexToRgb(hex) {
@@ -1352,6 +1290,55 @@ onUnmounted(() => {
   text-overflow: ellipsis;
 }
 
+/* Top visited business categories */
+.cat-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.cat-row:last-child { margin-bottom: 0; }
+
+.cat-icon {
+  color: var(--accent);
+  font-size: 1rem;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.cat-name {
+  width: 150px;
+  font-size: 0.82rem;
+  color: #495057;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cat-track {
+  flex: 1;
+  height: 10px;
+  background: #eef1f5;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.cat-fill {
+  height: 100%;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #5C3A21, #C9A227);
+}
+
+.cat-pct {
+  width: 44px;
+  text-align: right;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #16212f;
+}
+
 /* Table */
 .table-scroll { overflow-x: auto; }
 
@@ -1595,6 +1582,13 @@ onUnmounted(() => {
 .review-meta {
   font-size: 0.72rem;
   color: #98a2b3;
+}
+
+.recent-reviews-card { margin-bottom: 20px; }
+
+.review-business {
+  color: #16212f;
+  font-weight: 700;
 }
 
 /* Visitor card */
