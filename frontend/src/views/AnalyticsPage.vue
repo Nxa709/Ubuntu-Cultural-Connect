@@ -42,7 +42,7 @@
       </nav>
 
       <!-- Business performance overview + Top performing business -->
-      <div class="grid-wide">
+      <div class="grid-wide performance-grid">
         <div class="card performance-card" id="business-performance">
           <div class="card-head">
             <h2>Business performance overview</h2>
@@ -78,6 +78,24 @@
           </div>
           <div v-else class="no-data">No data yet.</div>
         </div>
+      </div>
+
+      <!-- Customer demographics -->
+      <div class="card demographics-card" id="customer-demographics">
+        <div class="card-head">
+          <h2>Customer Demographics</h2>
+          <span class="card-sub">Tourist Origin</span>
+        </div>
+        <div v-if="touristOrigins.length">
+          <div class="demo-row" v-for="o in touristOrigins" :key="o.country">
+            <span class="demo-country" :title="o.country">{{ o.country }}</span>
+            <div class="demo-track">
+              <div class="demo-fill" :style="{ width: o.percentage + '%' }"></div>
+            </div>
+            <span class="demo-pct">{{ o.percentage }}%</span>
+          </div>
+        </div>
+        <div v-else class="no-data">No origin data yet.</div>
       </div>
 
       <!-- Performance table + Insights -->
@@ -223,7 +241,7 @@
 
       <!-- Visitor profile -->
       <div class="grid-wide">
-        <div class="card span-2 visitor-card" id="customer-demographics">
+        <div class="card span-2 visitor-card">
           <div class="card-head">
             <h2>Visitor Profile</h2>
           </div>
@@ -386,6 +404,8 @@ const topBusiness = computed(() => {
   if (!list.length) return null
   return [...list].sort((a, b) => (b.views || 0) - (a.views || 0))[0]
 })
+
+const touristOrigins = computed(() => overview.value.tourist_origins || [])
 
 function statusClass(status) {
   const map = {
@@ -1090,7 +1110,9 @@ onUnmounted(() => {
 .chart-wrap-sm { height: 200px; position: relative; }
 .chart-wrap-lg { height: 320px; position: relative; }
 
-.performance-card { margin-bottom: 20px; }
+.performance-grid { align-items: stretch; }
+
+.top-performer-card { height: 100%; }
 
 /* Top performing business */
 .top-performer {
@@ -1143,6 +1165,49 @@ onUnmounted(() => {
   font-size: 0.9rem;
   width: 18px;
   text-align: center;
+}
+
+/* Customer demographics */
+.demographics-card { margin-bottom: 20px; }
+
+.demo-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.demo-row:last-child { margin-bottom: 0; }
+
+.demo-country {
+  width: 140px;
+  font-size: 0.82rem;
+  color: #495057;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.demo-track {
+  flex: 1;
+  height: 10px;
+  background: #eef1f5;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.demo-fill {
+  height: 100%;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #5C3A21, #C9A227);
+}
+
+.demo-pct {
+  width: 44px;
+  text-align: right;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #16212f;
 }
 
 /* Table */

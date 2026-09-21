@@ -1,6 +1,6 @@
 import json
 from datetime import date, datetime, timedelta, timezone
-from collections import defaultdict
+from collections import defaultdict, Counter
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session, selectinload
@@ -1625,6 +1625,27 @@ def get_analytics_overview(
                 daily_interests[pref.updated_at.strftime("%Y-%m-%d")] += 1
     interests_over_time = [{"period": k, "count": c} for k, c in sorted(daily_interests.items())]
 
+    # Customer demographics: origin countries of tourists who added my businesses
+    origin_user_ids = {
+        uid for (uid,) in db.query(ItineraryAdd.user_id)
+        .filter(ItineraryAdd.experience_id.in_(my_exp_ids), ItineraryAdd.user_id.isnot(None))
+        .all()
+    }
+    origin_counts = Counter()
+    if origin_user_ids:
+        for u in db.query(User).filter(User.id.in_(origin_user_ids)).all():
+            country = (u.country or "").strip() or "Unknown"
+            origin_counts[country] += 1
+    origin_total = sum(origin_counts.values())
+    tourist_origins = [
+        {
+            "country": country,
+            "count": count,
+            "percentage": round((count / origin_total) * 100) if origin_total else 0,
+        }
+        for country, count in origin_counts.most_common()
+    ]
+
     return {
         "total_customers": total_customers,
         "total_reviews": total_reviews,
@@ -1650,6 +1671,7 @@ def get_analytics_overview(
         "interest_granularity": interest_granularity,
         "profile_views_over_time": profile_views_over_time,
         "interests_over_time": interests_over_time,
+        "tourist_origins": tourist_origins,
         "experience_performance": experience_performance,
         "recent_reviews": recent_reviews,
     }
