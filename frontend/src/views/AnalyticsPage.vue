@@ -41,23 +41,14 @@
         </div>
       </nav>
 
-      <!-- KPI row -->
-      <div class="kpi-grid" id="business-performance">
-        <div class="kpi-card" v-for="k in kpis" :key="k.label">
-          <div class="kpi-top">
-            <span class="kpi-icon" :class="'kpi-' + k.color"><i :class="['bi', k.icon]"></i></span>
-            <span class="kpi-label">{{ k.label }}</span>
-          </div>
-          <div class="kpi-value">{{ formatValue(k) }}</div>
-          <div class="kpi-delta" v-if="k.delta !== null && k.delta !== undefined">
-            <span class="delta-pill" :class="k.delta >= 0 ? 'up' : 'down'">
-              <i :class="k.delta >= 0 ? 'bi-arrow-up-short' : 'bi-arrow-down-short'"></i>
-              {{ Math.abs(k.delta).toFixed(0) }}%
-            </span>
-            <span class="kpi-vs">vs previous period</span>
-          </div>
-          <div class="kpi-delta" v-else><span class="kpi-vs">all-time snapshot</span></div>
-          <span class="kpi-hint">{{ k.hint }}</span>
+      <!-- Business performance overview -->
+      <div class="card performance-card" id="business-performance">
+        <div class="card-head">
+          <h2>Business performance overview</h2>
+          <span class="card-sub">July – September</span>
+        </div>
+        <div class="chart-wrap-lg">
+          <canvas ref="performanceEl"></canvas>
         </div>
       </div>
 
@@ -235,6 +226,7 @@ const store = useExperienceStore()
 const loading = ref(true)
 const range = ref('30d')
 const stats = ref(null)
+const perfOverview = ref(null)
 const overview = ref({
   total_views: 0,
   prev_total_views: 0,
@@ -326,6 +318,40 @@ const avgRating = computed(() => overview.value.avg_rating || 0)
 const positivePct = computed(() => overview.value.positive_review_pct || 0)
 const totalViews = computed(() => overview.value.total_views || 0)
 const uniqueVisitors = computed(() => overview.value.unique_visitors || 0)
+
+const PERFORMANCE_MONTHS = [7, 8, 9]
+
+function sumCountsByMonth(series) {
+  const totals = {}
+  for (const p of series || []) {
+    const key = String(p.period || p.date || '').slice(0, 7)
+    if (!key) continue
+    totals[key] = (totals[key] || 0) + (Number(p.count) || 0)
+  }
+  return totals
+}
+
+function monthLabelFromKey(key) {
+  const [y, m] = String(key).split('-').map(Number)
+  return `${MONTHS[m - 1]} '${String(y).slice(2)}`
+}
+
+const performanceMonths = computed(() => {
+  const o = perfOverview.value || {}
+  const all = [
+    ...(o.interest_over_time || []),
+    ...(o.profile_views_over_time || []),
+    ...(o.interests_over_time || []),
+  ]
+  let year = new Date().getFullYear()
+  let maxYear = null
+  for (const p of all) {
+    const y = Number(String(p.period || p.date || '').slice(0, 4))
+    if (y && (maxYear === null || y > maxYear)) maxYear = y
+  }
+  if (maxYear) year = maxYear
+  return PERFORMANCE_MONTHS.map(m => `${year}-${String(m).padStart(2, '0')}`)
+})
 
 function statusClass(status) {
   const map = {
@@ -531,6 +557,7 @@ function formatDate(iso) {
 const viewsEl = ref(null)
 const interestEl = ref(null)
 const starsEl = ref(null)
+const performanceEl = ref(null)
 let charts = []
 
 function destroyCharts() {
@@ -544,6 +571,69 @@ function renderCharts() {
   const textColor = '#6c757d'
   const gridColor = 'rgba(0,0,0,0.06)'
   const axisColor = 'rgba(0,0,0,0.12)'
+
+  if (performanceEl.value) {
+    const o = perfOverview.value || {}
+    const months = performanceMonths.value
+    const itin = sumCountsByMonth(o.interest_over_time)
+    const views = sumCountsByMonth(o.profile_views_over_time)
+    const interests = sumCountsByMonth(o.interests_over_time)
+    charts.push(new Chart(performanceEl.value, {
+      type: 'line',
+      data: {
+        labels: months.map(monthLabelFromKey),
+        datasets: [
+          {
+            label: 'Itineraries',
+            data: months.map(m => itin[m] || 0),
+            borderColor: PALETTE.brown,
+            backgroundColor: 'rgba(139, 90, 43, 0.10)',
+            tension: 0.35,
+            pointBackgroundColor: PALETTE.brown,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            borderWidth: 2.5,
+            fill: false,
+          },
+          {
+            label: 'Interests',
+            data: months.map(m => interests[m] || 0),
+            borderColor: PALETTE.tan,
+            backgroundColor: 'rgba(201, 162, 39, 0.10)',
+            tension: 0.35,
+            pointBackgroundColor: PALETTE.tan,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            borderWidth: 2.5,
+            fill: false,
+          },
+          {
+            label: 'Views',
+            data: months.map(m => views[m] || 0),
+            borderColor: PALETTE.gold,
+            backgroundColor: 'rgba(255, 182, 18, 0.12)',
+            tension: 0.35,
+            pointBackgroundColor: PALETTE.gold,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            borderWidth: 2.5,
+            fill: false,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom', labels: { color: textColor, font: { size: 11 }, boxWidth: 12, boxHeight: 12, padding: 12 } },
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { color: textColor, font: { size: 10 } }, border: { color: axisColor } },
+          y: { beginAtZero: true, grid: { color: gridColor }, ticks: { color: textColor, precision: 0, font: { size: 11 } }, border: { color: axisColor } },
+        },
+      },
+    }))
+  }
 
   if (viewsEl.value && mostViewed.value.length) {
     charts.push(new Chart(viewsEl.value, {
@@ -644,9 +734,11 @@ onMounted(async () => {
   const results = await Promise.allSettled([
     store.fetchOwnerStats(),
     store.getAnalytics(range.value),
+    store.getAnalytics('all'),
   ])
   if (results[0].status === 'fulfilled') stats.value = results[0].value || store.ownerStats || null
   if (results[1].status === 'fulfilled' && results[1].value) overview.value = results[1].value
+  if (results[2] && results[2].status === 'fulfilled' && results[2].value) perfOverview.value = results[2].value
   loading.value = false
   await nextTick()
   renderCharts()
@@ -962,6 +1054,9 @@ onUnmounted(() => {
 
 .chart-wrap-md { height: 260px; position: relative; }
 .chart-wrap-sm { height: 200px; position: relative; }
+.chart-wrap-lg { height: 320px; position: relative; }
+
+.performance-card { margin-bottom: 20px; }
 
 /* Table */
 .table-scroll { overflow-x: auto; }
