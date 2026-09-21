@@ -21,7 +21,7 @@ from datetime import datetime, timedelta, timezone
 from database import SessionLocal, engine, Base
 from models.user import User, UserRole
 from models.experience import (
-    Experience, ExperienceEvent, ItineraryAdd, Rating,
+    Experience, ExperienceEvent, ItineraryAdd, Rating, UserPreference, CulturalCategory,
 )
 from services.auth_service import hash_password
 
@@ -88,6 +88,21 @@ for t in db.query(User).filter(User.role == UserRole.tourist).all():
         tourist_objs.append(t)
 
 db.flush()
+
+# ── 1b. Cultural preferences (drives the "Interests" analytics line) ──
+# Each tourist picks 1-3 categories; updated_at is spread over ~6 months so the
+# Interests time-series has points (includes Jul-Sep).
+ALL_CATEGORIES = [c.value for c in CulturalCategory]
+for t in tourist_objs:
+    cats = ", ".join(random.sample(ALL_CATEGORIES, random.randint(1, 3)))
+    updated = NOW - timedelta(days=random.randint(0, 180))
+    pref = db.query(UserPreference).filter(UserPreference.user_id == t.id).first()
+    if pref:
+        pref.categories = cats
+        pref.updated_at = updated
+    else:
+        db.add(UserPreference(user_id=t.id, categories=cats, updated_at=updated))
+db.commit()
 
 all_experiences = db.query(Experience).all()
 exp_ids = [e.id for e in all_experiences]
