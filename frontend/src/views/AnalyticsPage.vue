@@ -80,22 +80,42 @@
         </div>
       </div>
 
-      <!-- Customer demographics -->
-      <div class="card demographics-card" id="customer-demographics">
-        <div class="card-head">
-          <h2>Customer Demographics</h2>
-          <span class="card-sub">Tourist Origin</span>
-        </div>
-        <div v-if="touristOrigins.length">
-          <div class="demo-row" v-for="o in touristOrigins" :key="o.country">
-            <span class="demo-country" :title="o.country">{{ o.country }}</span>
-            <div class="demo-track">
-              <div class="demo-fill" :style="{ width: o.percentage + '%' }"></div>
-            </div>
-            <span class="demo-pct">{{ o.percentage }}%</span>
+      <!-- Customer demographics + Cultural interest breakdown -->
+      <div class="grid-wide">
+        <div class="card demographics-card" id="customer-demographics">
+          <div class="card-head">
+            <h2>Customer Demographics</h2>
+            <span class="card-sub">Tourist Origin</span>
           </div>
+          <div v-if="touristOrigins.length">
+            <div class="demo-row" v-for="o in touristOrigins" :key="o.country">
+              <span class="demo-country" :title="o.country">{{ o.country }}</span>
+              <div class="demo-track">
+                <div class="demo-fill" :style="{ width: o.percentage + '%' }"></div>
+              </div>
+              <span class="demo-pct">{{ o.percentage }}%</span>
+            </div>
+          </div>
+          <div v-else class="no-data">No origin data yet.</div>
         </div>
-        <div v-else class="no-data">No origin data yet.</div>
+
+        <div class="card cultural-card">
+          <div class="card-head">
+            <h2>Cultural interest breakdown</h2>
+          </div>
+          <div class="cultural-body" v-if="culturalBreakdown.length">
+            <div class="chart-wrap-md cultural-chart">
+              <canvas ref="culturalEl"></canvas>
+            </div>
+            <ul class="cultural-key">
+              <li v-for="(c, i) in culturalBreakdown" :key="c.category">
+                <span class="key-dot" :style="{ background: culturalColor(i) }"></span>
+                <span class="key-name">{{ c.category }}</span>
+              </li>
+            </ul>
+          </div>
+          <div v-else class="no-data">No category data yet.</div>
+        </div>
       </div>
 
       <!-- Performance table + Insights -->
@@ -406,6 +426,59 @@ const topBusiness = computed(() => {
 })
 
 const touristOrigins = computed(() => overview.value.tourist_origins || [])
+const culturalBreakdown = computed(() => overview.value.cultural_breakdown || [])
+
+const CULTURAL_COLORS = ['#E8A200', '#8B5A2B', '#C9A227', '#A67C52', '#5C3A21', '#D9B26A', '#7A5230', '#B08D57', '#E0C48A', '#6B4A28', '#FFD166', '#9C6B3F']
+
+function culturalColor(i) {
+  return CULTURAL_COLORS[i % CULTURAL_COLORS.length]
+}
+
+function hexToRgb(hex) {
+  let value = String(hex).replace('#', '')
+  if (value.length === 3) value = value.split('').map(c => c + c).join('')
+  return { r: parseInt(value.slice(0, 2), 16), g: parseInt(value.slice(2, 4), 16), b: parseInt(value.slice(4, 6), 16) }
+}
+
+function readableTextColor(bg) {
+  if (typeof bg !== 'string' || !bg.startsWith('#')) return '#FFFFFF'
+  const { r, g, b } = hexToRgb(bg)
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+  return luminance > 0.6 ? '#2C2416' : '#FFFFFF'
+}
+
+const piePercentageLabels = {
+  id: 'piePercentageLabels',
+  afterDatasetsDraw(chart) {
+    const values = chart.data?.datasets?.[0]?.data || []
+    const total = values.reduce((sum, v) => sum + (Number(v) || 0), 0)
+    if (!total) return
+    const backgrounds = chart.data?.datasets?.[0]?.backgroundColor
+    const meta = chart.getDatasetMeta(0)
+    const { ctx } = chart
+    ctx.save()
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.font = '700 11px Roboto, sans-serif'
+    meta.data.forEach((arc, i) => {
+      const value = Number(values[i]) || 0
+      if (value <= 0) return
+      const pct = Math.round((value / total) * 100)
+      if (pct <= 0) return
+      const props = arc.getProps(['x', 'y', 'startAngle', 'endAngle', 'innerRadius', 'outerRadius'], true)
+      const mid = (props.startAngle + props.endAngle) / 2
+      const radius = (props.outerRadius + props.innerRadius) / 2
+      const x = props.x + Math.cos(mid) * radius
+      const y = props.y + Math.sin(mid) * radius
+      const bg = Array.isArray(backgrounds) ? backgrounds[i] : backgrounds
+      ctx.fillStyle = readableTextColor(bg)
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.35)'
+      ctx.shadowBlur = 3
+      ctx.fillText(`${pct}%`, x, y)
+    })
+    ctx.restore()
+  },
+}
 
 function statusClass(status) {
   const map = {
@@ -612,6 +685,7 @@ const viewsEl = ref(null)
 const interestEl = ref(null)
 const starsEl = ref(null)
 const performanceEl = ref(null)
+const culturalEl = ref(null)
 let charts = []
 
 function destroyCharts() {
@@ -684,6 +758,30 @@ function renderCharts() {
         scales: {
           x: { grid: { display: false }, ticks: { color: textColor, font: { size: 10 } }, border: { color: axisColor } },
           y: { beginAtZero: true, grid: { color: gridColor }, ticks: { color: textColor, precision: 0, font: { size: 11 } }, border: { color: axisColor } },
+        },
+      },
+    }))
+  }
+
+  if (culturalEl.value && culturalBreakdown.value.length) {
+    charts.push(new Chart(culturalEl.value, {
+      type: 'pie',
+      data: {
+        labels: culturalBreakdown.value.map(c => c.category),
+        datasets: [{
+          data: culturalBreakdown.value.map(c => c.count),
+          backgroundColor: culturalBreakdown.value.map((_, i) => culturalColor(i)),
+          borderColor: '#ffffff',
+          borderWidth: 3,
+        }],
+      },
+      plugins: [piePercentageLabels],
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { backgroundColor: '#2C2416', titleColor: '#F5EFE3', bodyColor: '#F5EFE3' },
         },
       },
     }))
@@ -1168,8 +1266,6 @@ onUnmounted(() => {
 }
 
 /* Customer demographics */
-.demographics-card { margin-bottom: 20px; }
-
 .demo-row {
   display: flex;
   align-items: center;
@@ -1208,6 +1304,52 @@ onUnmounted(() => {
   font-size: 0.8rem;
   font-weight: 700;
   color: #16212f;
+}
+
+/* Cultural interest breakdown */
+.cultural-body {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.cultural-chart {
+  flex: 1;
+  min-width: 0;
+}
+
+.cultural-key {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 260px;
+  overflow-y: auto;
+  flex: 1;
+  min-width: 0;
+}
+
+.cultural-key li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.key-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.key-name {
+  font-size: 0.8rem;
+  color: #495057;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Table */

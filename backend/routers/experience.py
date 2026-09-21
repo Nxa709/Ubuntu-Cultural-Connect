@@ -1646,6 +1646,16 @@ def get_analytics_overview(
         for country, count in origin_counts.most_common()
     ]
 
+    # Cultural interest breakdown: my businesses grouped by cultural category
+    category_counts = defaultdict(int)
+    for e in exps:
+        cat = e.category.value if hasattr(e.category, "value") else e.category
+        category_counts[cat] += 1
+    cultural_breakdown = [
+        {"category": cat, "count": cnt}
+        for cat, cnt in sorted(category_counts.items(), key=lambda item: item[1], reverse=True)
+    ]
+
     return {
         "total_customers": total_customers,
         "total_reviews": total_reviews,
@@ -1672,6 +1682,7 @@ def get_analytics_overview(
         "profile_views_over_time": profile_views_over_time,
         "interests_over_time": interests_over_time,
         "tourist_origins": tourist_origins,
+        "cultural_breakdown": cultural_breakdown,
         "experience_performance": experience_performance,
         "recent_reviews": recent_reviews,
     }
