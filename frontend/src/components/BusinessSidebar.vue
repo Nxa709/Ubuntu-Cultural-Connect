@@ -10,7 +10,7 @@
       </div>
     </div>
 
-    <div class="account-selector">
+    <div class="account-selector" v-if="!auth.isBusinessOwner">
       <span class="account-avatar">{{ initials }}</span>
       <div class="account-meta">
         <span class="account-name">{{ auth.user?.full_name || 'My Business' }}</span>
