@@ -1669,7 +1669,6 @@ def get_analytics_overview(
             "percentage": round((cnt / visits_total) * 100) if visits_total else 0,
         }
         for cat, cnt in sorted(category_visits.items(), key=lambda item: item[1], reverse=True)
-        if cnt > 0
     ]
 
     return {

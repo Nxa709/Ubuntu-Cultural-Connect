@@ -57,22 +57,24 @@
           <div class="card-head">
             <h2>Top Performing Business</h2>
           </div>
-          <div class="top-performer" v-if="topBusiness">
-            <img class="top-performer-img" :src="topBusiness.image_url || fallbackImage" :alt="topBusiness.title" />
-            <div class="top-performer-details">
-              <h3 class="top-performer-name">{{ topBusiness.title }}</h3>
-              <span class="top-performer-category">{{ topBusiness.category }}</span>
-              <div class="top-performer-stat">
-                <i class="bi bi-eye"></i>
-                <span>{{ topBusiness.profile_views != null ? topBusiness.profile_views : topBusiness.views }} views</span>
-              </div>
-              <div class="top-performer-stat">
-                <i class="bi bi-map"></i>
-                <span>{{ topBusiness.itinerary_adds != null ? topBusiness.itinerary_adds : topBusiness.views }} itinerary</span>
-              </div>
-              <div class="top-performer-stat">
-                <i class="bi bi-star-fill"></i>
-                <span>{{ topBusiness.avg_rating != null ? topBusiness.avg_rating.toFixed(1) : '—' }}</span>
+          <div v-if="topBusinesses.length">
+            <div class="top-performer" v-for="b in topBusinesses" :key="b.id">
+              <img class="top-performer-img" :src="b.image_url || fallbackImage" :alt="b.title" />
+              <div class="top-performer-details">
+                <h3 class="top-performer-name">{{ b.title }}</h3>
+                <span class="top-performer-category">{{ b.category }}</span>
+                <div class="top-performer-stat">
+                  <i class="bi bi-eye"></i>
+                  <span>{{ b.profile_views != null ? b.profile_views : b.views }} views</span>
+                </div>
+                <div class="top-performer-stat">
+                  <i class="bi bi-map"></i>
+                  <span>{{ b.itinerary_adds != null ? b.itinerary_adds : b.views }} itinerary</span>
+                </div>
+                <div class="top-performer-stat">
+                  <i class="bi bi-star-fill"></i>
+                  <span>{{ b.avg_rating != null ? b.avg_rating.toFixed(1) : '—' }}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -150,45 +152,23 @@
         </div>
       </div>
 
-      <!-- Performance table -->
-      <div class="card table-card" id="experience-performance">
+      <!-- Recent reviews -->
+      <div class="card reviews-card recent-reviews-card">
         <div class="card-head">
-          <h2>Experience Performance</h2>
+          <h2>Recent Reviews</h2>
           <span class="card-sub">{{ rangeLabel }}</span>
         </div>
-        <div class="table-scroll" v-if="experiencePerformance.length">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Experience</th>
-                <th>Views</th>
-                <th>Avg Rating</th>
-                <th>Reviews</th>
-                <th>Status</th>
-                <th>Trend</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="row in experiencePerformance" :key="row.id">
-                <td>
-                  <div class="listing-cell">
-                    <span class="thumb" :style="{ backgroundImage: `url(${row.image_url || fallbackImage})` }"></span>
-                    <div class="listing-info">
-                      <span class="listing-name">{{ row.title }}</span>
-                      <span class="listing-cat">{{ row.category }}</span>
-                    </div>
-                  </div>
-                </td>
-                <td><strong>{{ row.views }}</strong></td>
-                <td>{{ row.avg_rating ? row.avg_rating.toFixed(1) : '—' }}</td>
-                <td>{{ row.reviews }}</td>
-                <td><span class="status-pill" :class="statusClass(row.status)">{{ row.status }}</span></td>
-                <td><span class="trend-badge" :class="trendClass(row.trend)">{{ trendText(row.trend) }}</span></td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="review-list" v-if="recentReviews.length">
+          <div class="review-item" v-for="r in recentReviews" :key="r.id">
+            <div class="review-top">
+              <span class="review-name">{{ r.user_name }}</span>
+              <span class="review-stars">{{ filledStars(r.score) }}</span>
+            </div>
+            <p class="review-text">{{ r.comment || 'No comment left.' }}</p>
+            <span class="review-meta">For <strong class="review-business">{{ r.experience_title }}</strong> · {{ formatDate(r.created_at) }}</span>
+          </div>
         </div>
-        <div v-else class="no-data">No experiences yet.</div>
+        <div v-else class="no-data">No reviews in this period.</div>
       </div>
 
       <p class="note-foot">
@@ -336,10 +316,10 @@ const performanceMonths = computed(() => {
   return PERFORMANCE_MONTHS.map(m => `${year}-${String(m).padStart(2, '0')}`)
 })
 
-const topBusiness = computed(() => {
+const topBusinesses = computed(() => {
   const list = (perfOverview.value && perfOverview.value.experience_performance) || experiencePerformance.value || []
-  if (!list.length) return null
-  return [...list].sort((a, b) => (b.views || 0) - (a.views || 0))[0]
+  if (!list.length) return []
+  return [...list].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 2)
 })
 
 const touristOrigins = computed(() => overview.value.tourist_origins || [])
@@ -1201,6 +1181,12 @@ onUnmounted(() => {
   font-size: 0.9rem;
   width: 18px;
   text-align: center;
+}
+
+.top-performer + .top-performer {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed #eef1f5;
 }
 
 /* Customer demographics */
