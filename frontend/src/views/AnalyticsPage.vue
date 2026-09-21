@@ -41,20 +41,48 @@
         </div>
       </nav>
 
-      <!-- Business performance overview -->
-      <div class="card performance-card" id="business-performance">
-        <div class="card-head">
-          <h2>Business performance overview</h2>
-          <span class="card-sub">July – September</span>
+      <!-- Business performance overview + Top performing business -->
+      <div class="grid-wide">
+        <div class="card performance-card" id="business-performance">
+          <div class="card-head">
+            <h2>Business performance overview</h2>
+            <span class="card-sub">July – September</span>
+          </div>
+          <div class="chart-wrap-lg">
+            <canvas ref="performanceEl"></canvas>
+          </div>
         </div>
-        <div class="chart-wrap-lg">
-          <canvas ref="performanceEl"></canvas>
+
+        <div class="card top-performer-card" id="top-performing">
+          <div class="card-head">
+            <h2>Top Performing Business</h2>
+          </div>
+          <div class="top-performer" v-if="topBusiness">
+            <img class="top-performer-img" :src="topBusiness.image_url || fallbackImage" :alt="topBusiness.title" />
+            <div class="top-performer-details">
+              <h3 class="top-performer-name">{{ topBusiness.title }}</h3>
+              <span class="top-performer-category">{{ topBusiness.category }}</span>
+              <div class="top-performer-stat">
+                <i class="bi bi-eye"></i>
+                <span>{{ topBusiness.profile_views != null ? topBusiness.profile_views : topBusiness.views }} views</span>
+              </div>
+              <div class="top-performer-stat">
+                <i class="bi bi-map"></i>
+                <span>{{ topBusiness.itinerary_adds != null ? topBusiness.itinerary_adds : topBusiness.views }} itinerary</span>
+              </div>
+              <div class="top-performer-stat">
+                <i class="bi bi-star-fill"></i>
+                <span>{{ topBusiness.avg_rating != null ? topBusiness.avg_rating.toFixed(1) : '—' }}</span>
+              </div>
+            </div>
+          </div>
+          <div v-else class="no-data">No data yet.</div>
         </div>
       </div>
 
       <!-- Performance table + Insights -->
       <div class="grid-wide">
-        <div class="card table-card span-2" id="top-performing">
+        <div class="card table-card span-2">
           <div class="card-head">
             <h2>Experience Performance</h2>
             <span class="card-sub">{{ rangeLabel }}</span>
@@ -351,6 +379,12 @@ const performanceMonths = computed(() => {
   }
   if (maxYear) year = maxYear
   return PERFORMANCE_MONTHS.map(m => `${year}-${String(m).padStart(2, '0')}`)
+})
+
+const topBusiness = computed(() => {
+  const list = (perfOverview.value && perfOverview.value.experience_performance) || experiencePerformance.value || []
+  if (!list.length) return null
+  return [...list].sort((a, b) => (b.views || 0) - (a.views || 0))[0]
 })
 
 function statusClass(status) {
@@ -1057,6 +1091,59 @@ onUnmounted(() => {
 .chart-wrap-lg { height: 320px; position: relative; }
 
 .performance-card { margin-bottom: 20px; }
+
+/* Top performing business */
+.top-performer {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.top-performer-img {
+  width: 96px;
+  height: 96px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: #f0e9dd;
+}
+
+.top-performer-details {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.top-performer-name {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #16212f;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.top-performer-category {
+  font-size: 0.78rem;
+  color: #6c757d;
+}
+
+.top-performer-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: #495057;
+}
+
+.top-performer-stat i {
+  color: var(--accent);
+  font-size: 0.9rem;
+  width: 18px;
+  text-align: center;
+}
 
 /* Table */
 .table-scroll { overflow-x: auto; }

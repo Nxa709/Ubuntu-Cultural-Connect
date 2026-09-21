@@ -1550,6 +1550,9 @@ def get_analytics_overview(
     contacts_by_exp = defaultdict(int)
     for ev in contact_events:
         contacts_by_exp[ev.experience_id] += 1
+    profile_views_by_exp = defaultdict(int)
+    for ev in prof_events:
+        profile_views_by_exp[ev.experience_id] += 1
 
     scores_by_exp = defaultdict(list)
     for r in ratings:
@@ -1576,6 +1579,8 @@ def get_analytics_overview(
             "image_url": e.image_url,
             "category": e.category.value if hasattr(e.category, "value") else e.category,
             "views": views_by_exp.get(e.id, 0),
+            "itinerary_adds": views_by_exp.get(e.id, 0),
+            "profile_views": profile_views_by_exp.get(e.id, 0),
             "searches": searches_by_exp.get(e.id, 0),
             "contacts": contacts_by_exp.get(e.id, 0),
             "reviews": len(scores),
@@ -1606,6 +1611,20 @@ def get_analytics_overview(
             "created_at": r.created_at.isoformat(),
         })
 
+    # Interests over time: users whose cultural preferences include my categories
+    my_categories = set()
+    for e in exps:
+        cat = e.category.value if hasattr(e.category, "value") else e.category
+        if cat:
+            my_categories.add(str(cat).strip())
+    daily_interests = defaultdict(int)
+    if my_categories:
+        for pref in db.query(UserPreference).all():
+            pref_cats = {c.strip() for c in (pref.categories or "").split(",") if c.strip()}
+            if my_categories & pref_cats and pref.updated_at:
+                daily_interests[pref.updated_at.strftime("%Y-%m-%d")] += 1
+    interests_over_time = [{"period": k, "count": c} for k, c in sorted(daily_interests.items())]
+
     return {
         "total_customers": total_customers,
         "total_reviews": total_reviews,
@@ -1630,6 +1649,7 @@ def get_analytics_overview(
         "interest_over_time": interest_over_time,
         "interest_granularity": interest_granularity,
         "profile_views_over_time": profile_views_over_time,
+        "interests_over_time": interests_over_time,
         "experience_performance": experience_performance,
         "recent_reviews": recent_reviews,
     }
