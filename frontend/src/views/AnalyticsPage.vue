@@ -24,8 +24,25 @@
         </div>
       </header>
 
+      <!-- Quick navigation -->
+      <nav class="ana-quicknav" aria-label="Analytics sections">
+        <div
+          v-for="s in SECTIONS"
+          :key="s.id"
+          class="quicknav-item"
+          role="link"
+          tabindex="0"
+          @click="scrollToSection(s.id)"
+          @keydown.enter.prevent="scrollToSection(s.id)"
+          @keydown.space.prevent="scrollToSection(s.id)"
+        >
+          <span class="kpi-icon" :class="'kpi-' + s.color"><i :class="['bi', s.icon]"></i></span>
+          <span class="quicknav-label">{{ s.label }}</span>
+        </div>
+      </nav>
+
       <!-- KPI row -->
-      <div class="kpi-grid" id="platform-growth">
+      <div class="kpi-grid" id="business-performance">
         <div class="kpi-card" v-for="k in kpis" :key="k.label">
           <div class="kpi-top">
             <span class="kpi-icon" :class="'kpi-' + k.color"><i :class="['bi', k.icon]"></i></span>
@@ -46,7 +63,7 @@
 
       <!-- Performance table + Insights -->
       <div class="grid-wide">
-        <div class="card table-card span-2" id="business-supply">
+        <div class="card table-card span-2" id="top-performing">
           <div class="card-head">
             <h2>Experience Performance</h2>
             <span class="card-sub">{{ rangeLabel }}</span>
@@ -100,7 +117,7 @@
       </div>
 
       <!-- Charts row -->
-      <div class="grid-2" id="cultural-demand">
+      <div class="grid-2" id="cultural-interest">
         <div class="card">
           <div class="card-head">
             <h2>Most Viewed Experiences</h2>
@@ -187,7 +204,7 @@
 
       <!-- Visitor profile -->
       <div class="grid-wide">
-        <div class="card span-2 visitor-card">
+        <div class="card span-2 visitor-card" id="customer-demographics">
           <div class="card-head">
             <h2>Visitor Profile</h2>
           </div>
@@ -246,6 +263,18 @@ const RANGE_OPTIONS = [
   { value: '365d', label: 'Last year' },
   { value: 'all', label: 'All time' },
 ]
+
+const SECTIONS = [
+  { id: 'business-performance', label: 'Business performance Overview', icon: 'bi-graph-up-arrow', color: 'brown' },
+  { id: 'top-performing', label: 'Top Performing Business', icon: 'bi-trophy', color: 'gold' },
+  { id: 'cultural-interest', label: 'Cultural interest', icon: 'bi-people', color: 'brownMid' },
+  { id: 'customer-demographics', label: 'Customer Demographics', icon: 'bi-person-badge', color: 'tan' },
+]
+
+function scrollToSection(id) {
+  const el = document.getElementById(id)
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
 
 const PALETTE = {
   gold: '#FFB612',
@@ -719,6 +748,56 @@ onUnmounted(() => {
   color: #1a1a1a;
 }
 
+/* Quick navigation */
+.ana-quicknav {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.quicknav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid #e5e9ef;
+  border-radius: 12px;
+  padding: 12px 14px;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 0;
+}
+
+.quicknav-item:hover {
+  border-color: var(--accent);
+  box-shadow: 0 4px 12px rgba(16, 24, 40, 0.08);
+  transform: translateY(-1px);
+}
+
+.quicknav-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.quicknav-label {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #16212f;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#business-performance,
+#top-performing,
+#cultural-interest,
+#customer-demographics {
+  scroll-margin-top: 90px;
+}
+
 /* KPI grid */
 .kpi-grid {
   display: grid;
@@ -1173,6 +1252,7 @@ onUnmounted(() => {
   .grid-wide { grid-template-columns: 1fr; }
   .grid-2 { grid-template-columns: 1fr; }
   .visitor-card { grid-column: span 1; }
+  .ana-quicknav { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 640px) {
@@ -1183,5 +1263,6 @@ onUnmounted(() => {
 
 @media (max-width: 420px) {
   .kpi-grid { grid-template-columns: 1fr; }
+  .ana-quicknav { grid-template-columns: 1fr; }
 }
 </style>

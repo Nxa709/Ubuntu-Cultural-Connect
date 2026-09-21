@@ -1,5 +1,5 @@
 <template>
-  <aside class="sidebar" :class="{ 'sidebar--admin': auth.isAdmin }" v-if="auth.isBusinessOwner || auth.isAdmin">
+  <aside class="sidebar" v-if="auth.isBusinessOwner || auth.isAdmin">
     <div class="sidebar-brand">
       <div class="brand-icon">
         <img src="/img/Ubuntu_logo/Ubuntu-logo.png" alt="Ubuntu Cultural Connect" />
@@ -111,40 +111,11 @@ function handleLogout() {
   left: 0;
   width: 232px;
   height: 100vh;
-  background: #16212f;
+  background: #5C3A21;
   display: flex;
   flex-direction: column;
   z-index: 998;
   padding: 20px 14px 16px;
-}
-
-.sidebar--admin {
-  background: #5C3A21;
-}
-
-.sidebar--admin .brand-sub,
-.sidebar--admin .account-role,
-.sidebar--admin .account-caret,
-.sidebar--admin .user-role,
-.sidebar--admin .logout-btn {
-  color: #E7CDB0;
-}
-
-.sidebar--admin .sidebar-link {
-  color: #F1E2D0;
-}
-
-.sidebar--admin .sidebar-link:hover {
-  background: rgba(255, 255, 255, 0.10);
-  color: #ffffff;
-}
-
-.sidebar--admin .user-avatar {
-  background: #7A5230;
-}
-
-.sidebar--admin .sidebar-bottom {
-  border-top-color: rgba(255, 255, 255, 0.18);
 }
 
 .sidebar-brand {
@@ -188,7 +159,7 @@ function handleLogout() {
 
 .brand-sub {
   font-size: 0.7rem;
-  color: #9fb0c3;
+  color: #E7CDB0;
   letter-spacing: 0.04em;
 }
 
@@ -235,11 +206,11 @@ function handleLogout() {
 
 .account-role {
   font-size: 0.7rem;
-  color: #9fb0c3;
+  color: #E7CDB0;
 }
 
 .account-caret {
-  color: #9fb0c3;
+  color: #E7CDB0;
   font-size: 0.8rem;
 }
 
@@ -257,7 +228,7 @@ function handleLogout() {
   gap: 12px;
   padding: 10px 12px;
   border-radius: 9px;
-  color: #c3cfdd;
+  color: #F1E2D0;
   text-decoration: none;
   font-size: 0.85rem;
   font-weight: 500;
@@ -277,7 +248,7 @@ function handleLogout() {
 }
 
 .sidebar-link:hover {
-  background: rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.10);
   color: #ffffff;
 }
 
@@ -298,7 +269,7 @@ function handleLogout() {
   gap: 12px;
   margin-top: 14px;
   padding-top: 14px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .user-card {
@@ -312,7 +283,7 @@ function handleLogout() {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: #2d465e;
+  background: #7A5230;
   color: #ffffff;
   font-family: 'Poppins', sans-serif;
   font-weight: 700;
@@ -341,13 +312,13 @@ function handleLogout() {
 
 .user-role {
   font-size: 0.7rem;
-  color: #9fb0c3;
+  color: #E7CDB0;
 }
 
 .logout-btn {
   background: none;
   border: none;
-  color: #9fb0c3;
+  color: #E7CDB0;
   font-size: 1.1rem;
   cursor: pointer;
   padding: 6px;
