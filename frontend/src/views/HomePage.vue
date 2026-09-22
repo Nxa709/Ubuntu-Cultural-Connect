@@ -318,7 +318,7 @@ function toggleWishlist(id) {
 
 /* Hero */
 .hero {
-  min-height: 55vh;
+  min-height: 360px;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -341,7 +341,7 @@ function toggleWishlist(id) {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 56px 20px;
+  padding: 36px 20px;
   position: relative;
   z-index: 1;
 }
@@ -354,16 +354,16 @@ function toggleWishlist(id) {
 .subtitle {
   letter-spacing: 4px;
   text-transform: uppercase;
-  font-size: 0.9rem;
-  margin-bottom: 18px;
+  font-size: 0.8rem;
+  margin-bottom: 12px;
   color: rgba(255, 255, 255, 0.98);
 }
 
 .hero h1 {
-  font-size: clamp(3rem, 7vw, 5.5rem);
-  line-height: 1.05;
+  font-size: clamp(2rem, 4.5vw, 3rem);
+  line-height: 1.1;
   font-weight: 700;
-  margin-bottom: 20px;
+  margin-bottom: 14px;
   color: #ffffff;
   font-family: 'Poppins', sans-serif;
 }
@@ -375,10 +375,10 @@ function toggleWishlist(id) {
 }
 
 .hero-text {
-  font-size: 1.1rem;
-  line-height: 1.8;
+  font-size: 1rem;
+  line-height: 1.6;
   max-width: 700px;
-  margin: 0 auto 30px;
+  margin: 0 auto 20px;
   color: rgba(255, 255, 255, 0.88);
 }
 
