@@ -24,36 +24,12 @@
           v-for="(item, idx) in currentKznItems"
           :key="idx"
           :to="'/kzn-directory/item/' + slugify(item.name)"
-          class="kzn-flip-card"
+          class="featured-card"
         >
-          <div class="kzn-flip-inner">
-            <div class="kzn-flip-front" :style="{ backgroundImage: `url(${item.image})` }">
-              <span class="exp-cat-badge">{{ item.category || selectedKznCategoryLabel }}</span>
-              <div class="front-name-bar">
-                <h3>{{ item.name }}</h3>
-              </div>
-            </div>
-            <div class="kzn-flip-back">
-              <div class="kzn-flip-back-body">
-                <div class="kzn-card-meta">
-                  <span class="kzn-location">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                    {{ item.location }}
-                  </span>
-                  <span class="kzn-rating" v-if="item.rating">&#9733; {{ item.rating }}</span>
-                </div>
-                <div class="kzn-detail-row" v-if="item.hours"><strong>Hours:</strong> {{ item.hours }}</div>
-                <div class="kzn-detail-row" v-if="item.contact"><strong>Contact:</strong> {{ item.contact }}</div>
-                <div class="kzn-detail-row" v-if="item.priceRange"><strong>Price:</strong> {{ item.priceRange }}</div>
-                <div class="kzn-detail-row" v-if="item.website"><strong>Web:</strong> <a :href="item.website" target="_blank" rel="noopener" class="kzn-link" @click.stop>{{ item.website }}</a></div>
-                <div class="kzn-services" v-if="item.services && item.services.length">
-                  <strong>Services:</strong>
-                  <ul>
-                    <li v-for="(s, si) in item.services.slice(0, 3)" :key="si">{{ s }}</li>
-                    <li v-if="item.services.length > 3">+{{ item.services.length - 3 }} more</li>
-                  </ul>
-                </div>
-              </div>
+          <div class="featured-img" :style="{ backgroundImage: `url(${item.image})` }">
+            <span class="featured-cat">{{ item.category || selectedKznCategoryLabel }}</span>
+            <div class="featured-overlay">
+              <h3>{{ item.name }}</h3>
             </div>
           </div>
         </router-link>
@@ -110,25 +86,11 @@ const selectedKznCategoryLabel = computed(() => {
 .kzn-tab:hover { background: var(--accent-light); color: var(--accent-text); border-color: var(--accent); }
 .kzn-tab.active { background: var(--accent-fill); color: #1a1a1a; border-color: var(--accent-fill); font-weight: 600; }
 .kzn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-.kzn-flip-card { display: block; text-decoration: none; color: inherit; perspective: 1000px; height: 280px; cursor: pointer; }
-.kzn-flip-inner { position: relative; width: 100%; height: 100%; transition: transform 0.5s; transform-style: preserve-3d; }
-.kzn-flip-card:hover .kzn-flip-inner { transform: rotateY(180deg); }
-.kzn-flip-front, .kzn-flip-back { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.45); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); }
-.kzn-flip-front { background-size: cover; background-position: center; display: flex; flex-direction: column; justify-content: flex-end; }
-.front-name-bar { background: linear-gradient(transparent, rgba(0,0,0,0.8)); padding: 30px 14px 14px; }
-.front-name-bar h3 { font-size: 1rem; font-weight: 600; color: #fff; margin: 0; text-shadow: 0 1px 4px rgba(0,0,0,0.5); }
-.kzn-flip-back { transform: rotateY(180deg); background: rgba(30, 30, 50, 0.96); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); color: #fff; }
-.kzn-flip-back-body { padding: 16px; height: 100%; overflow-y: auto; }
-.kzn-card-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-.kzn-location { display: flex; align-items: center; gap: 4px; font-size: 0.78rem; color: rgba(255, 255, 255, 0.88); }
-.kzn-rating { font-size: 0.78rem; color: var(--accent); }
-.kzn-detail-row { font-size: 0.78rem; color: rgba(255, 255, 255, 0.95); line-height: 1.5; margin-bottom: 4px; }
-.kzn-detail-row strong { color: rgba(255, 255, 255, 0.9); margin-right: 4px; }
-.kzn-link { color: var(--accent); text-decoration: none; word-break: break-all; font-size: 0.75rem; }
-.kzn-link:hover { text-decoration: underline; }
-.kzn-services { font-size: 0.78rem; margin-top: 4px; }
-.kzn-services strong { color: rgba(255, 255, 255, 0.9); }
-.kzn-services ul { margin: 2px 0 0; padding-left: 14px; }
-.kzn-services li { color: rgba(255, 255, 255, 0.94); line-height: 1.4; font-size: 0.75rem; }
+.featured-card { display: block; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08); transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; color: inherit; text-decoration: none; }
+.featured-card:hover { transform: translateY(-6px); box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12); }
+.featured-img { height: 200px; position: relative; background-size: cover; background-position: center; }
+.featured-cat { position: absolute; top: 12px; left: 12px; padding: 4px 12px; border-radius: 50px; font-size: 0.7rem; font-weight: 600; font-family: 'Poppins', sans-serif; color: #1a1a1a; background: var(--accent-fill); }
+.featured-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0, 0, 0, 0.75), transparent); display: flex; align-items: flex-end; padding: 16px; pointer-events: none; }
+.featured-overlay h3 { font-size: 1.15rem; font-weight: 600; color: #fff; margin: 0; font-family: 'Poppins', sans-serif; }
 @media (max-width: 768px) { .kzn-grid { grid-template-columns: 1fr; } .kzn-tabs { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 8px; justify-content: flex-start; } .kzn-tab { flex-shrink: 0; } }
 </style>
