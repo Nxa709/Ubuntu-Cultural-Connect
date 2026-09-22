@@ -318,7 +318,7 @@ function toggleWishlist(id) {
 
 /* Hero */
 .hero {
-  min-height: 100vh;
+  min-height: 55vh;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -341,7 +341,7 @@ function toggleWishlist(id) {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 80px 20px;
+  padding: 56px 20px;
   position: relative;
   z-index: 1;
 }
