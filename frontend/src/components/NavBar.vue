@@ -16,7 +16,7 @@
               <template v-if="auth.isTourist">
                 <li><router-link to="/experiences" @click="menuOpen = false">Experiences</router-link></li>
                 <li><router-link to="/preferences" @click="menuOpen = false">Set Preferences</router-link></li>
-                <li><router-link to="/plan-trip" class="plan-trip-link" @click="menuOpen = false">Plan Trip</router-link></li>
+                <li><router-link to="/plan-trip" @click="menuOpen = false">Plan Trip</router-link></li>
                 <li><router-link to="/journal" @click="menuOpen = false">Journal</router-link></li>
                 <li><router-link to="/reviews" @click="menuOpen = false">My Reviews</router-link></li>
               </template>
@@ -241,20 +241,6 @@ onUnmounted(() => {
 
 .register-link:hover {
   background-color: var(--accent-fill-hover) !important;
-  color: #1a1a1a !important;
-}
-
-.plan-trip-link {
-  background: var(--accent-light) !important;
-  color: var(--accent) !important;
-  font-weight: 600 !important;
-  border: 1px solid rgba(232, 162, 0, 0.4) !important;
-  border-radius: 8px !important;
-  padding: 8px 18px !important;
-}
-
-.plan-trip-link:hover {
-  background: var(--accent-fill) !important;
   color: #1a1a1a !important;
 }
 
