@@ -10,20 +10,32 @@
     <template v-else>
       <div class="stats-bar">
         <div class="stat">
-          <span class="stat-val">{{ totalReviews }}</span>
-          <span class="stat-lbl">Total Reviews</span>
+          <span class="stat-icon si-brown"><i class="bi bi-chat-square-text"></i></span>
+          <span class="stat-text">
+            <span class="stat-val">{{ totalReviews }}</span>
+            <span class="stat-lbl">Total Reviews</span>
+          </span>
         </div>
         <div class="stat">
-          <span class="stat-val">{{ averageRating }}</span>
-          <span class="stat-lbl">Average Rating</span>
+          <span class="stat-icon si-gold"><i class="bi bi-star-fill"></i></span>
+          <span class="stat-text">
+            <span class="stat-val">{{ averageRating }}</span>
+            <span class="stat-lbl">Average Rating</span>
+          </span>
         </div>
         <div class="stat">
-          <span class="stat-val">{{ hotspotCount }}</span>
-          <span class="stat-lbl">Hotspots</span>
+          <span class="stat-icon si-tan"><i class="bi bi-shop"></i></span>
+          <span class="stat-text">
+            <span class="stat-val">{{ hotspotCount }}</span>
+            <span class="stat-lbl">Hotspots</span>
+          </span>
         </div>
         <div class="stat">
-          <span class="stat-val">{{ uniqueGuests }}</span>
-          <span class="stat-lbl">Unique Guests</span>
+          <span class="stat-icon si-brownmid"><i class="bi bi-people"></i></span>
+          <span class="stat-text">
+            <span class="stat-val">{{ uniqueGuests }}</span>
+            <span class="stat-lbl">Unique Guests</span>
+          </span>
         </div>
       </div>
 
@@ -192,29 +204,61 @@ onMounted(async () => {
 }
 
 .stat {
-  background: rgba(255, 255, 255, 0.28);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.45);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #ffffff;
+  border: 1px solid #e5e9ef;
   border-radius: 12px;
-  padding: 1.25rem;
-  text-align: center;
+  padding: 12px 14px;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  transition: all 0.2s;
+  min-width: 0;
+}
+
+.stat:hover {
+  border-color: var(--accent);
+  box-shadow: 0 4px 12px rgba(16, 24, 40, 0.08);
+  transform: translateY(-1px);
+}
+
+.stat-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  flex-shrink: 0;
+}
+
+.si-brown { color: #8B5A2B; background: rgba(139, 90, 43, 0.13); }
+.si-gold { color: var(--accent-fill); background: var(--accent-light); }
+.si-tan { color: #C9A227; background: rgba(201, 162, 39, 0.14); }
+.si-brownmid { color: #A67C52; background: rgba(166, 124, 82, 0.14); }
+
+.stat-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .stat-val {
   display: block;
-  font-size: 1.8rem;
-  font-weight: 800;
+  font-size: 1.35rem;
+  font-weight: 700;
   font-family: 'Poppins', sans-serif;
-  color: var(--accent);
-  line-height: 1;
+  color: var(--heading-color);
+  line-height: 1.1;
 }
 
 .stat-lbl {
   display: block;
-  font-size: 0.8rem;
-  color: #4b5563;
-  margin-top: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  color: #16212f;
 }
 
 .hotspot-reviews {
