@@ -779,7 +779,7 @@ function renderAdminCharts() {
   if (adminSupplyEl.value && supply.length) {
     const supplyOptions = baseOptions('Province', 'Count')
     supplyOptions.scales.y.min = 0
-    supplyOptions.scales.y.max = 1000
+    supplyOptions.scales.y.max = 2500
     charts.push(new Chart(adminSupplyEl.value, {
       type: 'bar',
       data: {
