@@ -745,7 +745,13 @@ function renderAdminCharts() {
     }))
   }
 
-  const cats = data.category_demand || []
+  const allCats = data.category_demand || []
+  const TOP_CATEGORIES = 6
+  let cats = allCats.slice(0, TOP_CATEGORIES)
+  if (allCats.length > TOP_CATEGORIES) {
+    const rest = allCats.slice(TOP_CATEGORIES).reduce((sum, c) => sum + (Number(c.count) || 0), 0)
+    if (rest > 0) cats = [...cats, { category: 'Other', count: rest }]
+  }
   if (adminCategoryEl.value && cats.length) {
     const colors = [
       PALETTE.gold, PALETTE.brownMid, PALETTE.tan, PALETTE.brown,
