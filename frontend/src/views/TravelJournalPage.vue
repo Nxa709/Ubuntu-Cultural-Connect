@@ -49,7 +49,6 @@
                 @keydown.esc="closeDropdown"
                 placeholder="Search for an experience..."
               />
-              <span class="combobox-chevron">â–¾</span>
               <button v-if="form.experience_id" @click.stop="clearExperience" class="combobox-clear" aria-label="Clear">âœ•</button>
             </div>
 
