@@ -171,11 +171,6 @@
         </div>
         <div v-else class="no-data">No reviews in this period.</div>
       </div>
-
-      <p class="note-foot">
-        Views are measured as itinerary adds — how many times a traveller added an experience to their trip plan.
-        This is the closest interest signal our system tracks.
-      </p>
     </template>
   </div>
 </template>
