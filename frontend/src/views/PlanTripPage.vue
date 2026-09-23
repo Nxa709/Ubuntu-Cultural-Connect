@@ -50,7 +50,7 @@
           </div>
           <p v-else class="empty-trips">
             Set your interests on the <router-link to="/preferences" class="accent-link">Preferences page</router-link>
-            for a more personalized plan — you can still generate one now.
+            for a more personalized plan, you can still generate one now.
           </p>
 
           <form @submit.prevent="generate">
