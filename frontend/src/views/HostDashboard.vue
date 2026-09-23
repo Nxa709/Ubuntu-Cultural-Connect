@@ -403,24 +403,39 @@ onMounted(async () => {
 }
 
 .filter-btn {
-  padding: 0.45rem 1rem;
-  border: 1px solid var(--border-strong);
-  border-radius: 8px;
-  background: var(--surface);
-  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border: 1px solid #e5e9ef;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #16212f;
   cursor: pointer;
   font-size: 0.85rem;
-  font-family: inherit;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
   transition: all 0.2s;
 }
 
-.filter-btn:hover { border-color: var(--accent); color: var(--accent); }
-.filter-btn.active { background: var(--accent-fill); color: #1a1a1a; border-color: var(--accent-fill); font-weight: 600; }
+.filter-btn:hover {
+  border-color: var(--accent);
+  box-shadow: 0 4px 12px rgba(16, 24, 40, 0.08);
+  transform: translateY(-1px);
+}
+
+.filter-btn.active {
+  background: var(--accent-fill);
+  color: #1a1a1a;
+  border-color: var(--accent-fill);
+  font-weight: 600;
+}
 
 .count {
-  margin-left: 4px;
-  opacity: 0.7;
-  font-size: 0.8rem;
+  margin-left: 2px;
+  opacity: 0.8;
+  font-size: 0.78rem;
 }
 
 .search-bar {
