@@ -120,34 +120,33 @@
         </div>
       </div>
 
-      <!-- Top visited business categories + Business Insights -->
-      <div class="grid-wide">
-        <div class="card top-categories-card">
-          <div class="card-head">
-            <h2>Top visited Business categories</h2>
-          </div>
-          <div v-if="topCategories.length">
-            <div class="cat-row" v-for="c in topCategories" :key="c.category">
-              <i class="cat-icon" :class="['bi', categoryIcon(c.category)]"></i>
-              <span class="cat-name" :title="c.category">{{ c.category }}</span>
-              <div class="cat-track">
-                <div class="cat-fill" :style="{ width: c.percentage + '%' }"></div>
-              </div>
-              <span class="cat-pct">{{ c.percentage }}%</span>
-            </div>
-          </div>
-          <div v-else class="no-data">No category visits yet.</div>
+      <!-- Top visited business categories -->
+      <div class="card top-categories-card">
+        <div class="card-head">
+          <h2>Top visited Business categories</h2>
         </div>
-
-        <div class="card insights-card" id="attention-required">
-          <div class="card-head">
-            <h2>Business Insights</h2>
-          </div>
-          <div class="insight-list">
-            <div class="insight-item" v-for="(ins, i) in insights" :key="i">
-              <span class="insight-icon" :class="'kpi-' + ins.color"><i :class="['bi', ins.icon]"></i></span>
-              <p class="insight-text">{{ ins.pre }}<strong>{{ ins.strong }}</strong>{{ ins.post }}</p>
+        <div v-if="topCategories.length">
+          <div class="cat-row" v-for="c in topCategories" :key="c.category">
+            <i class="cat-icon" :class="['bi', categoryIcon(c.category)]"></i>
+            <span class="cat-name" :title="c.category">{{ c.category }}</span>
+            <div class="cat-track">
+              <div class="cat-fill" :style="{ width: c.percentage + '%' }"></div>
             </div>
+            <span class="cat-pct">{{ c.percentage }}%</span>
+          </div>
+        </div>
+        <div v-else class="no-data">No category visits yet.</div>
+      </div>
+
+      <!-- Business Insights -->
+      <div class="card insights-card" id="attention-required">
+        <div class="card-head">
+          <h2>Business Insights</h2>
+        </div>
+        <div class="insight-list">
+          <div class="insight-item" v-for="(ins, i) in insights" :key="i">
+            <span class="insight-icon" :class="'kpi-' + ins.color"><i :class="['bi', ins.icon]"></i></span>
+            <p class="insight-text">{{ ins.pre }}<strong>{{ ins.strong }}</strong>{{ ins.post }}</p>
           </div>
         </div>
       </div>
@@ -1277,6 +1276,10 @@ onUnmounted(() => {
 }
 
 /* Top visited business categories */
+.top-categories-card { margin-bottom: 20px; }
+
+.insights-card { margin-bottom: 20px; }
+
 .cat-row {
   display: flex;
   align-items: center;
