@@ -777,6 +777,10 @@ function renderAdminCharts() {
 
   const supply = data.province_supply || []
   if (adminSupplyEl.value && supply.length) {
+    const supplyOptions = baseOptions('Province', 'Count')
+    supplyOptions.scales.y.min = 0
+    supplyOptions.scales.y.max = 180
+    supplyOptions.scales.y.ticks = { ...supplyOptions.scales.y.ticks, stepSize: 10 }
     charts.push(new Chart(adminSupplyEl.value, {
       type: 'bar',
       data: {
@@ -798,7 +802,7 @@ function renderAdminCharts() {
           },
         ],
       },
-      options: baseOptions('Province', 'Count'),
+      options: supplyOptions,
     }))
   }
 }
