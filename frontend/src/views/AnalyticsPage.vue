@@ -101,41 +101,43 @@
           <div v-else class="no-data">No origin data yet.</div>
         </div>
 
-        <div class="card cultural-card" id="cultural-interest">
-          <div class="card-head">
-            <h2>Cultural interest breakdown</h2>
-          </div>
-          <div class="cultural-body" v-if="culturalBreakdown.length">
-            <div class="chart-wrap-md cultural-chart">
-              <canvas ref="culturalEl"></canvas>
+        <div class="stack-col">
+          <div class="card cultural-card" id="cultural-interest">
+            <div class="card-head">
+              <h2>Cultural interest breakdown</h2>
             </div>
-            <ul class="cultural-key">
-              <li v-for="(c, i) in culturalBreakdown" :key="c.category">
-                <span class="key-dot" :style="{ background: culturalColor(i) }"></span>
-                <span class="key-name">{{ c.category }}</span>
-              </li>
-            </ul>
+            <div class="cultural-body" v-if="culturalBreakdown.length">
+              <div class="chart-wrap-md cultural-chart">
+                <canvas ref="culturalEl"></canvas>
+              </div>
+              <ul class="cultural-key">
+                <li v-for="(c, i) in culturalBreakdown" :key="c.category">
+                  <span class="key-dot" :style="{ background: culturalColor(i) }"></span>
+                  <span class="key-name">{{ c.category }}</span>
+                </li>
+              </ul>
+            </div>
+            <div v-else class="no-data">No category data yet.</div>
           </div>
-          <div v-else class="no-data">No category data yet.</div>
-        </div>
-      </div>
 
-      <!-- Top visited business categories -->
-      <div class="card top-categories-card">
-        <div class="card-head">
-          <h2>Top visited Business categories</h2>
-        </div>
-        <div v-if="topCategories.length">
-          <div class="cat-row" v-for="c in topCategories" :key="c.category">
-            <i class="cat-icon" :class="['bi', categoryIcon(c.category)]"></i>
-            <span class="cat-name" :title="c.category">{{ c.category }}</span>
-            <div class="cat-track">
-              <div class="cat-fill" :style="{ width: c.percentage + '%' }"></div>
+          <!-- Top visited business categories -->
+          <div class="card top-categories-card">
+            <div class="card-head">
+              <h2>Top visited Business categories</h2>
             </div>
-            <span class="cat-pct">{{ c.percentage }}%</span>
+            <div v-if="topCategories.length">
+              <div class="cat-row" v-for="c in topCategories" :key="c.category">
+                <i class="cat-icon" :class="['bi', categoryIcon(c.category)]"></i>
+                <span class="cat-name" :title="c.category">{{ c.category }}</span>
+                <div class="cat-track">
+                  <div class="cat-fill" :style="{ width: c.percentage + '%' }"></div>
+                </div>
+                <span class="cat-pct">{{ c.percentage }}%</span>
+              </div>
+            </div>
+            <div v-else class="no-data">No category visits yet.</div>
           </div>
         </div>
-        <div v-else class="no-data">No category visits yet.</div>
       </div>
 
       <!-- Business Insights -->
@@ -1275,8 +1277,13 @@ onUnmounted(() => {
   text-overflow: ellipsis;
 }
 
-/* Top visited business categories */
-.top-categories-card { margin-bottom: 20px; }
+/* Stacked column (Cultural interest + Top visited categories) */
+.stack-col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
 
 .insights-card { margin-bottom: 20px; }
 
