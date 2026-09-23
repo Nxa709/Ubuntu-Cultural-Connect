@@ -13,12 +13,18 @@
 
     <div class="owner-overview" v-if="!loading">
       <div class="ov-card">
-        <span class="ov-value">{{ registeredCount }}</span>
-        <span class="ov-label">Registered Hotspots</span>
+        <span class="ov-icon ov-icon-brown"><i class="bi bi-shop"></i></span>
+        <span class="ov-text">
+          <span class="ov-value">{{ registeredCount }}</span>
+          <span class="ov-label">Registered Hotspots</span>
+        </span>
       </div>
       <div class="ov-card">
-        <span class="ov-value">{{ activeCount }}</span>
-        <span class="ov-label">Active Hotspots</span>
+        <span class="ov-icon ov-icon-gold"><i class="bi bi-check-circle"></i></span>
+        <span class="ov-text">
+          <span class="ov-value">{{ activeCount }}</span>
+          <span class="ov-label">Active Hotspots</span>
+        </span>
       </div>
     </div>
 
@@ -312,15 +318,12 @@ onMounted(async () => {
 
 .ov-card {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 4px;
-  text-align: center;
-  padding: 14px;
+  gap: 12px;
   background: #ffffff;
   border: 1px solid #e5e9ef;
   border-radius: 12px;
+  padding: 12px 14px;
   box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
   transition: all 0.2s;
   min-width: 0;
@@ -332,17 +335,37 @@ onMounted(async () => {
   transform: translateY(-1px);
 }
 
+.ov-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  flex-shrink: 0;
+}
+
+.ov-icon-brown { color: #8B5A2B; background: rgba(139, 90, 43, 0.13); }
+.ov-icon-gold { color: var(--accent-fill); background: var(--accent-light); }
+
+.ov-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
 .ov-value {
   font-family: 'Poppins', sans-serif;
-  font-size: 2rem;
-  font-weight: 800;
-  color: var(--accent-dark);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--heading-color);
   line-height: 1.1;
 }
 
 .ov-label {
   font-family: 'Poppins', sans-serif;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: #16212f;
 }
