@@ -317,12 +317,19 @@ onMounted(async () => {
   justify-content: center;
   gap: 4px;
   text-align: center;
-  padding: 22px 16px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  box-shadow: var(--shadow-sm);
+  padding: 14px;
+  background: #ffffff;
+  border: 1px solid #e5e9ef;
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  transition: all 0.2s;
   min-width: 0;
+}
+
+.ov-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 4px 12px rgba(16, 24, 40, 0.08);
+  transform: translateY(-1px);
 }
 
 .ov-value {
@@ -334,11 +341,10 @@ onMounted(async () => {
 }
 
 .ov-label {
-  font-size: 0.8rem;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.82rem;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-  color: var(--text-secondary);
+  color: #16212f;
 }
 
 @media (max-width: 420px) {
@@ -413,23 +419,18 @@ onMounted(async () => {
 .search-input {
   width: 100%;
   padding: 10px 14px 10px 42px;
-  border: 1px solid var(--border-strong);
+  border: none;
   border-radius: 10px;
   font-size: 0.88rem;
   font-family: inherit;
   background: var(--surface);
   color: var(--text-color);
   outline: none;
-  transition: border-color 0.2s;
   box-sizing: border-box;
 }
 
 .search-input::placeholder {
   color: var(--text-muted);
-}
-
-.search-input:focus {
-  border-color: var(--accent);
 }
 
 .loading-state, .empty-state {
