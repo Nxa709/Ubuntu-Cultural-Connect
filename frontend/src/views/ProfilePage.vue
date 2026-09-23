@@ -56,28 +56,46 @@
           <h2>Business Summary</h2>
           <div class="business-summary-grid">
             <div class="bs-item">
-              <span class="bs-value">{{ ownerStats.total_hotspots }}</span>
-              <span class="bs-label">Total Hotspots</span>
+              <span class="bs-icon bs-brown"><i class="bi bi-shop"></i></span>
+              <span class="bs-text">
+                <span class="bs-value">{{ ownerStats.total_hotspots }}</span>
+                <span class="bs-label">Total Hotspots</span>
+              </span>
             </div>
             <div class="bs-item">
-              <span class="bs-value active-v">{{ ownerStats.active_hotspots }}</span>
-              <span class="bs-label">Active</span>
+              <span class="bs-icon bs-green"><i class="bi bi-check-circle"></i></span>
+              <span class="bs-text">
+                <span class="bs-value active-v">{{ ownerStats.active_hotspots }}</span>
+                <span class="bs-label">Active</span>
+              </span>
             </div>
             <div class="bs-item">
-              <span class="bs-value pending-v">{{ ownerStats.pending_approval }}</span>
-              <span class="bs-label">Pending Approval</span>
+              <span class="bs-icon bs-warn"><i class="bi bi-hourglass-split"></i></span>
+              <span class="bs-text">
+                <span class="bs-value pending-v">{{ ownerStats.pending_approval }}</span>
+                <span class="bs-label">Pending Approval</span>
+              </span>
             </div>
             <div class="bs-item">
-              <span class="bs-value">{{ ownerStats.total_ratings }}</span>
-              <span class="bs-label">Total Reviews</span>
+              <span class="bs-icon bs-tan"><i class="bi bi-chat-square-text"></i></span>
+              <span class="bs-text">
+                <span class="bs-value">{{ ownerStats.total_ratings }}</span>
+                <span class="bs-label">Total Reviews</span>
+              </span>
             </div>
             <div class="bs-item">
-              <span class="bs-value">{{ ownerStats.avg_rating || '—' }}</span>
-              <span class="bs-label">Avg Rating</span>
+              <span class="bs-icon bs-gold"><i class="bi bi-star-fill"></i></span>
+              <span class="bs-text">
+                <span class="bs-value">{{ ownerStats.avg_rating || '—' }}</span>
+                <span class="bs-label">Avg Rating</span>
+              </span>
             </div>
             <div class="bs-item">
-              <span class="bs-value">{{ ownerStats.total_categories }}</span>
-              <span class="bs-label">Categories</span>
+              <span class="bs-icon bs-brownmid"><i class="bi bi-tags"></i></span>
+              <span class="bs-text">
+                <span class="bs-value">{{ ownerStats.total_categories }}</span>
+                <span class="bs-label">Categories</span>
+              </span>
             </div>
           </div>
         </div>
@@ -720,32 +738,66 @@ async function handleUpdate() {
 }
 
 .bs-item {
-  background: var(--surface-secondary);
-  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #ffffff;
+  border: 1px solid #e5e9ef;
+  border-radius: 12px;
+  padding: 12px 14px;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  transition: all 0.2s;
+  min-width: 0;
+}
+
+.bs-item:hover {
+  border-color: var(--accent);
+  box-shadow: 0 4px 12px rgba(16, 24, 40, 0.08);
+  transform: translateY(-1px);
+}
+
+.bs-icon {
+  width: 38px;
+  height: 38px;
   border-radius: 10px;
-  padding: 14px 10px;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  flex-shrink: 0;
+}
+
+.bs-brown { color: #8B5A2B; background: rgba(139, 90, 43, 0.13); }
+.bs-gold { color: var(--accent-fill); background: var(--accent-light); }
+.bs-tan { color: #C9A227; background: rgba(201, 162, 39, 0.14); }
+.bs-brownmid { color: #A67C52; background: rgba(166, 124, 82, 0.14); }
+.bs-green { color: #1f8a3c; background: rgba(81, 207, 102, 0.15); }
+.bs-warn { color: #8a6d1a; background: rgba(201, 162, 39, 0.18); }
+
+.bs-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .bs-value {
   display: block;
-  font-size: 1.8rem;
+  font-size: 1.35rem;
   font-weight: 700;
   color: var(--heading-color);
   font-family: 'Poppins', sans-serif;
-  line-height: 1;
+  line-height: 1.1;
 }
 
-.bs-value.active-v { color: var(--success); }
-.bs-value.pending-v { color: var(--warning); }
+.bs-value.active-v { color: #1f8a3c; }
+.bs-value.pending-v { color: #8a6d1a; }
 
 .bs-label {
   display: block;
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  margin-top: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  color: #16212f;
 }
 
 /* Travel History */
