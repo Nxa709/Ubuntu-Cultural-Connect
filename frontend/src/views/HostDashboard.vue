@@ -405,6 +405,9 @@ onMounted(async () => {
   margin-bottom: 1.5rem;
   max-width: 400px;
   padding: 0 16px;
+  /* Beat the global .search-bar border from App.vue */
+  border: none !important;
+  background: transparent !important;
 }
 
 .search-icon {
@@ -419,11 +422,11 @@ onMounted(async () => {
 .search-input {
   width: 100%;
   padding: 10px 14px 10px 42px;
-  border: none;
+  border: none !important;
   border-radius: 10px;
   font-size: 0.88rem;
   font-family: inherit;
-  background: var(--surface);
+  background: var(--surface) !important;
   color: var(--text-color);
   outline: none;
   box-sizing: border-box;
