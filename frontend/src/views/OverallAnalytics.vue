@@ -113,6 +113,23 @@
         </div>
       </section>
 
+      <!-- Admin insights -->
+      <section class="admin-insights" id="admin-insights" v-if="adminAnalytics && adminInsights.length">
+        <div class="card-head insights-head">
+          <h3><i class="bi bi-lightbulb"></i> Insights &amp; Recommendations</h3>
+          <span class="card-sub">What to improve next, based on your analytics</span>
+        </div>
+        <div class="insights-grid">
+          <div v-for="(ins, i) in adminInsights" :key="i" class="insight-card" :class="'insight-' + ins.type">
+            <div class="insight-icon"><i :class="['bi', ins.icon]"></i></div>
+            <div class="insight-content">
+              <h4>{{ ins.title }}</h4>
+              <p>{{ ins.message }}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- No hotspots -->
       <div class="empty-state" v-if="!hasData && !auth.isAdmin">
         <i class="bi bi-graph-up"></i>
@@ -348,6 +365,103 @@ const attentionGroups = computed(() => {
     { id: 'attention-low-rating', label: 'Businesses with Low Rating', icon: 'bi-star-half', ...(a?.low_rating || empty()) },
     { id: 'attention-inactive', label: 'Inactive Businesses', icon: 'bi-slash-circle', ...(a?.inactive || empty()) },
   ]
+})
+
+const adminInsights = computed(() => {
+  const a = adminAnalytics.value
+  if (!a) return []
+  const out = []
+  const att = a.attention_required || {}
+
+  const pending = att.pending_registrations?.count || 0
+  if (pending > 0) {
+    out.push({
+      type: 'warning', icon: 'bi-hourglass-split', title: 'Approve pending registrations',
+      message: `${pending} business registration${pending === 1 ? '' : 's'} awaiting approval. Approving them grows the supply tourists can book.`,
+    })
+  }
+
+  const low = att.low_rating?.count || 0
+  if (low > 0) {
+    out.push({
+      type: 'danger', icon: 'bi-star-half', title: 'Support low-rated businesses',
+      message: `${low} business${low === 1 ? '' : 'es'} sit below a 3.5★ rating. Reach out to help owners improve quality.`,
+    })
+  }
+
+  const inactive = att.inactive?.count || 0
+  if (inactive > 0) {
+    out.push({
+      type: 'warning', icon: 'bi-slash-circle', title: 'Re-engage inactive businesses',
+      message: `${inactive} business${inactive === 1 ? '' : 'es'} are inactive. Contact owners to reactivate or clean up listings.`,
+    })
+  }
+
+  const supply = a.province_supply || []
+  const underserved = supply
+    .filter(p => (p.interest || 0) > (p.businesses || 0) * 3 && (p.interest || 0) > 10)
+    .sort((x, y) => y.interest - x.interest)
+  if (underserved.length) {
+    const p = underserved[0]
+    out.push({
+      type: 'opportunity', icon: 'bi-geo-alt-fill', title: 'Supply gap detected',
+      message: `${p.province} shows strong interest (${p.interest}) but only ${p.businesses} business${p.businesses === 1 ? '' : 'es'}. Encourage new registrations there.`,
+    })
+  }
+  const oversupplied = supply.filter(p => (p.businesses || 0) > 0 && (p.interest || 0) === 0)
+    .sort((x, y) => y.businesses - x.businesses)
+  if (oversupplied.length) {
+    const p = oversupplied[0]
+    out.push({
+      type: 'info', icon: 'bi-megaphone', title: 'Promote quiet regions',
+      message: `${p.province} has ${p.businesses} businesses but no recorded interest — consider featuring it on the home page.`,
+    })
+  }
+
+  const cats = a.category_demand || []
+  if (cats.length) {
+    const top = cats[0]
+    const total = cats.reduce((s, c) => s + (c.count || 0), 0)
+    const pct = total ? Math.round((top.count / total) * 100) : 0
+    out.push({
+      type: 'info', icon: 'bi-graph-up-arrow', title: 'Focus on top demand',
+      message: `“${top.category}” drives ${pct}% of itinerary adds. Recruit more ${String(top.category).toLowerCase()} experiences to meet demand.`,
+    })
+  }
+
+  const months = a.tourists_per_month || []
+  if (months.length >= 2) {
+    const last = months[months.length - 1]
+    const prev = months[months.length - 2]
+    if (last.count < prev.count) {
+      out.push({
+        type: 'warning', icon: 'bi-arrow-down-right', title: 'Tourist sign-ups declined',
+        message: `New tourists dropped from ${prev.count} to ${last.count}. Consider a marketing push to reverse the trend.`,
+      })
+    } else if (last.count > prev.count) {
+      out.push({
+        type: 'success', icon: 'bi-arrow-up-right', title: 'Growing momentum',
+        message: `New tourists rose from ${prev.count} to ${last.count}. Keep promoting your top provinces.`,
+      })
+    }
+  }
+
+  const perf = a.experience_performance || []
+  const noViews = perf.filter(e => !e.views).length
+  if (noViews > 0) {
+    out.push({
+      type: 'warning', icon: 'bi-eye-slash', title: 'Unseen listings',
+      message: `${noViews} experience${noViews === 1 ? '' : 's'} received no views. Ask owners to improve images, titles and descriptions.`,
+    })
+  }
+
+  if (!out.length) {
+    out.push({
+      type: 'success', icon: 'bi-check-circle', title: 'All healthy',
+      message: 'No issues detected. Keep monitoring demand and supply balance across provinces.',
+    })
+  }
+  return out.slice(0, 8)
 })
 
 const SECTIONS = [
@@ -1302,6 +1416,19 @@ onUnmounted(() => {
 
 .attention-section .insights-head { margin-bottom: 16px; }
 
+.admin-insights {
+  margin-top: 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  scroll-margin-top: 90px;
+}
+
+.admin-insights .insights-head { margin-bottom: 16px; }
+.admin-insights .insight-card { background: var(--surface-secondary); }
+
 .attention-count {
   display: inline-flex;
   align-items: center;
@@ -1517,6 +1644,8 @@ onUnmounted(() => {
 .insight-success .insight-icon { color: #2e7d32; background: rgba(46, 125, 50, 0.12); }
 .insight-warning .insight-icon { color: #f57c00; background: rgba(245, 124, 0, 0.12); }
 .insight-info .insight-icon { color: #1976d2; background: rgba(25, 118, 210, 0.12); }
+.insight-danger .insight-icon { color: #d32f2f; background: rgba(211, 47, 47, 0.12); }
+.insight-opportunity .insight-icon { color: #7B1FA2; background: rgba(123, 31, 162, 0.12); }
 
 .insight-content h4 {
   font-family: 'Poppins', sans-serif;
