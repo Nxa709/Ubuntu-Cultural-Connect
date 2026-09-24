@@ -322,8 +322,11 @@ function toggleWishlist(id) {
   display: flex;
   flex-direction: column;
   position: relative;
-  background: url('/img/cultures/woman.jpeg') no-repeat center top;
-  background-size: cover;
+  background-color: #2A1C0D;
+  background-image: url('/img/cultures/woman.jpeg');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
 }
 
 .hero::before {

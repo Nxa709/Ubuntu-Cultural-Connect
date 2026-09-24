@@ -303,7 +303,8 @@ main.sidebar-shifted {
 
 /* Make the woman banner span the full screen width, even when it sits
    inside a padded or max-width container (and correctly offset the
-   fixed sidebar on business/admin pages). */
+   fixed sidebar on business/admin pages). The photo is fitted with
+   `contain` so the full image (the lady) stays visible and is never cut. */
 .hero-header,
 .about-hero,
 .welcome,
@@ -313,11 +314,19 @@ main.sidebar-shifted {
   margin-left: calc(50% - (100vw - var(--sidebar-w, 0px)) / 2) !important;
   margin-right: 0 !important;
   box-sizing: border-box !important;
+  background-color: #2A1C0D !important;
+  background-image: linear-gradient(rgba(15, 23, 42, 0.30), rgba(15, 23, 42, 0.55)), url('/img/cultures/woman.jpeg') !important;
+  background-repeat: no-repeat !important;
+  background-position: center center, center center !important;
+  background-size: cover, contain !important;
 }
 
 .ana-header {
-  background: linear-gradient(rgba(15, 23, 42, 0.25), rgba(15, 23, 42, 0.45)), url('/img/cultures/woman.jpeg') no-repeat center top / cover !important;
-  background-size: cover !important;
+  background-color: #2A1C0D !important;
+  background-image: linear-gradient(rgba(15, 23, 42, 0.30), rgba(15, 23, 42, 0.55)), url('/img/cultures/woman.jpeg') !important;
+  background-repeat: no-repeat !important;
+  background-position: center center, center center !important;
+  background-size: cover, contain !important;
   min-height: 340px !important;
   display: flex !important;
   align-items: center !important;
