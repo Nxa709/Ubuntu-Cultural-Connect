@@ -25,17 +25,30 @@
       <div v-if="showForm" class="journal-form glass-card">
         <h2>{{ editingId ? 'Edit Entry' : 'New Journal Entry' }}</h2>
         <div class="form-group">
+          <label>Select from your itineraries (optional)</label>
+          <select v-model="selectedTripId" @change="applyTrip">
+            <option value="">Choose a saved itinerary…</option>
+            <option v-for="t in trips" :key="t.id" :value="t.id">
+              {{ t.title || (t.destination + ' Vacation') }} · {{ t.destination }}
+            </option>
+          </select>
+        </div>
+        <div class="form-group">
           <label>Title</label>
           <input v-model="form.title" placeholder="Give your entry a title..." />
         </div>
+        <div class="form-group">
+          <label>Location</label>
+          <input v-model="form.location" placeholder="Where were you?" />
+        </div>
         <div class="form-row">
-          <div class="form-group">
-            <label>Location</label>
-            <input v-model="form.location" placeholder="Where were you?" />
-          </div>
           <div class="form-group">
             <label>Visit Date</label>
             <input v-model="form.visit_date" type="date" />
+          </div>
+          <div class="form-group">
+            <label>End Date</label>
+            <input v-model="form.end_date" type="date" :min="form.visit_date || ''" />
           </div>
         </div>
         <div class="form-group">
@@ -139,7 +152,7 @@
                   <line x1="16" y1="2" x2="16" y2="6"/>
                   <line x1="8" y1="2" x2="8" y2="6"/>
                 </svg>
-                {{ formatDate(entry.visit_date) }}
+                {{ formatDate(entry.visit_date) }}<template v-if="entry.end_date"> – {{ formatDate(entry.end_date) }}</template>
               </span>
               <span v-if="entry.experience_title" class="exp-link">
                 Linked: {{ entry.experience_title }}
@@ -173,6 +186,8 @@ const loading = ref(true)
 const showForm = ref(false)
 const editingId = ref(null)
 const experiences = ref([])
+const trips = ref([])
+const selectedTripId = ref('')
 const searchQuery = ref('')
 
 const comboboxRef = ref(null)
@@ -251,9 +266,19 @@ const form = ref({
   content: '',
   location: '',
   visit_date: null,
+  end_date: null,
   experience_id: null,
   mood: null,
 })
+
+function applyTrip() {
+  const trip = trips.value.find(t => t.id === selectedTripId.value)
+  if (!trip) return
+  form.value.title = trip.title || `${trip.destination} Vacation`
+  form.value.location = trip.destination || ''
+  form.value.visit_date = trip.start_date || null
+  form.value.end_date = trip.end_date || null
+}
 
 function getMoodIcon(mood) {
   return moods.find(m => m.value === mood)?.icon || ''
@@ -278,6 +303,7 @@ function startEdit(entry) {
     content: entry.content,
     location: entry.location || '',
     visit_date: entry.visit_date || null,
+    end_date: entry.end_date || null,
     experience_id: entry.experience_id || null,
     mood: entry.mood || null,
   }
@@ -297,7 +323,8 @@ async function handleSubmit() {
 
 function resetForm() {
   editingId.value = null
-  form.value = { title: '', content: '', location: '', visit_date: null, experience_id: null, mood: null }
+  form.value = { title: '', content: '', location: '', visit_date: null, end_date: null, experience_id: null, mood: null }
+  selectedTripId.value = ''
   expSearch.value = ''
   expDropdownOpen.value = false
   showForm.value = false
@@ -312,6 +339,7 @@ onMounted(async () => {
   await Promise.all([
     store.fetchMyJournals(),
     store.fetchExperiences().then(() => { experiences.value = store.experiences }),
+    store.fetchMyTrips().then(() => { trips.value = store.myTrips }),
   ])
   loading.value = false
 })

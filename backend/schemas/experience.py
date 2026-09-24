@@ -209,6 +209,7 @@ class JournalCreate(BaseModel):
     experience_id: Optional[int] = None
     location: Optional[str] = None
     visit_date: Optional[date] = None
+    end_date: Optional[date] = None
     mood: Optional[str] = None
 
 
@@ -218,6 +219,7 @@ class JournalUpdate(BaseModel):
     experience_id: Optional[int] = None
     location: Optional[str] = None
     visit_date: Optional[date] = None
+    end_date: Optional[date] = None
     mood: Optional[str] = None
 
 
@@ -230,6 +232,7 @@ class JournalResponse(BaseModel):
     content: str
     location: Optional[str] = None
     visit_date: Optional[date] = None
+    end_date: Optional[date] = None
     mood: Optional[str] = None
     created_at: datetime
     updated_at: Optional[datetime] = None

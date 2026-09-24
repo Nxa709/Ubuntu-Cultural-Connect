@@ -1725,6 +1725,7 @@ def list_my_journals(
             content=j.content,
             location=j.location,
             visit_date=j.visit_date,
+            end_date=j.end_date,
             mood=j.mood,
             created_at=j.created_at,
             updated_at=j.updated_at,
@@ -1751,6 +1752,7 @@ def create_journal(
         content=data.content,
         location=data.location,
         visit_date=data.visit_date,
+        end_date=data.end_date,
         mood=data.mood,
     )
     db.add(journal)
@@ -1766,6 +1768,7 @@ def create_journal(
         content=journal.content,
         location=journal.location,
         visit_date=journal.visit_date,
+        end_date=journal.end_date,
         mood=journal.mood,
         created_at=journal.created_at,
         updated_at=journal.updated_at,
@@ -1801,6 +1804,8 @@ def update_journal(
         journal.location = data.location
     if data.visit_date is not None:
         journal.visit_date = data.visit_date
+    if data.end_date is not None:
+        journal.end_date = data.end_date
     if data.mood is not None:
         journal.mood = data.mood
 
@@ -1816,6 +1821,7 @@ def update_journal(
         content=journal.content,
         location=journal.location,
         visit_date=journal.visit_date,
+        end_date=journal.end_date,
         mood=journal.mood,
         created_at=journal.created_at,
         updated_at=journal.updated_at,

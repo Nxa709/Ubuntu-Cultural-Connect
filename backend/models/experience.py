@@ -148,6 +148,7 @@ class TravelJournal(Base):
     content = Column(Text, nullable=False)
     location = Column(String, nullable=True)
     visit_date = Column(Date, nullable=True)
+    end_date = Column(Date, nullable=True)
     mood = Column(String, nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
