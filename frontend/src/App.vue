@@ -24,6 +24,10 @@ const showSidebar = computed(() => auth.isBusinessOwner || auth.isAdmin)
 @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap');
 
 :root {
+  /* Width of the fixed business/admin sidebar; 0 on tourist pages.
+     Used to make full-bleed page headers span the screen correctly. */
+  --sidebar-w: 0px;
+
   /* Surfaces — warm cream/off-white */
   --bg-color: #F6F0E3;
   --surface: #FFFDF7;
@@ -114,11 +118,13 @@ a:hover {
 
 #app.has-sidebar {
   flex-direction: row;
+  --sidebar-w: 232px;
 }
 
 main {
   flex: 1;
   min-width: 0;
+  overflow-x: clip;
 }
 
 main.sidebar-shifted {
@@ -295,6 +301,20 @@ main.sidebar-shifted {
   justify-content: center !important;
 }
 
+/* Make the woman banner span the full screen width, even when it sits
+   inside a padded or max-width container (and correctly offset the
+   fixed sidebar on business/admin pages). */
+.hero-header,
+.about-hero,
+.welcome,
+.dashboard-header {
+  width: calc(100vw - var(--sidebar-w, 0px)) !important;
+  max-width: none !important;
+  margin-left: calc(50% - (100vw - var(--sidebar-w, 0px)) / 2) !important;
+  margin-right: 0 !important;
+  box-sizing: border-box !important;
+}
+
 .ana-header {
   background: linear-gradient(rgba(15, 23, 42, 0.25), rgba(15, 23, 42, 0.45)), url('/img/cultures/woman.jpeg') no-repeat center top / cover !important;
   background-size: cover !important;
@@ -306,6 +326,11 @@ main.sidebar-shifted {
   flex-wrap: wrap !important;
   padding: 40px 28px 36px !important;
   position: relative !important;
+  width: calc(100vw - var(--sidebar-w, 0px)) !important;
+  max-width: none !important;
+  margin-left: calc(50% - (100vw - var(--sidebar-w, 0px)) / 2) !important;
+  margin-right: 0 !important;
+  box-sizing: border-box !important;
 }
 
 .hero-header h1,
