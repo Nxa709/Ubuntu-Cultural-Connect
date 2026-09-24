@@ -29,8 +29,6 @@ import ReviewHistoryPage from '../views/ReviewHistoryPage.vue'
 import ExperienceDetailPage from '../views/ExperienceDetailPage.vue'
 import ProvincePage from '../views/ProvincePage.vue'
 import DestinationDetail from '../views/DestinationDetail.vue'
-import KznDirectoryPage from '../views/KznDirectoryPage.vue'
-import KznItemDetail from '../views/KznItemDetail.vue'
 import HotspotAnalytics from '../views/HotspotAnalytics.vue'
 import OverallAnalytics from '../views/OverallAnalytics.vue'
 
@@ -47,8 +45,8 @@ const routes = [
   { path: '/rate/:id', name: 'RateExperience', component: RateExperiencePage, meta: { requiresAuth: true } },
   { path: '/analytics', name: 'Analytics', component: AnalyticsPage, meta: { requiresAuth: true } },
   { path: '/overall-analytics', name: 'OverallAnalytics', component: OverallAnalytics, meta: { requiresAuth: true } },
-  { path: '/kzn-directory', name: 'KznDirectory', component: KznDirectoryPage },
-  { path: '/kzn-directory/item/:slug', name: 'KznItemDetail', component: KznItemDetail },
+  { path: '/kzn-directory', name: 'KznDirectory', component: ProvincePage, props: { slug: 'kwaZulu-natal' } },
+  { path: '/kzn-directory/item/:slug', redirect: '/kzn-directory' },
   { path: '/province/:slug', name: 'Province', component: ProvincePage },
   { path: '/destination/:id', name: 'DestinationDetail', component: DestinationDetail },
   { path: '/admin/registered-hotspots', name: 'AdminRegisteredHotspots', component: AdminRegisteredHotspots, meta: { requiresAuth: true, requiresAdmin: true } },

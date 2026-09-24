@@ -58,6 +58,14 @@ const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
 
+/* Allows this component to be reused for a fixed province (e.g. the KZN
+   directory route passes slug="kwaZulu-natal"). Falls back to the route param. */
+const props = defineProps({
+  slug: { type: String, default: '' },
+})
+
+const provinceSlug = computed(() => props.slug || route.params.slug)
+
 function goBack() {
   if (window.history.length > 1) {
     router.back()
@@ -92,7 +100,7 @@ const showItineraryModal = ref(false)
 const selectedForItinerary = ref(null)
 
 const provinceMeta = ref(null)
-const staticProvince = computed(() => provinces.find(p => p.slug === route.params.slug) || {})
+const staticProvince = computed(() => provinces.find(p => p.slug === provinceSlug.value) || {})
 const province = computed(() => provinceMeta.value || staticProvince.value)
 
 const CATEGORY_SLUGS = [
@@ -150,8 +158,6 @@ function goToItem(item) {
     router.push(`/experience/${item.experience.id}`)
   } else if (item.id) {
     router.push(`/destination/${item.id}`)
-  } else if (item.name) {
-    router.push(`/kzn-directory/item/${slugify(item.name)}`)
   }
 }
 
@@ -205,7 +211,7 @@ function openItineraryFor(item) {
 onMounted(async () => {
   // Province metadata from the database (falls back to static config if unavailable).
   try {
-    const r = await api.get(`/provinces/${route.params.slug}`)
+    const r = await api.get(`/provinces/${provinceSlug.value}`)
     provinceMeta.value = r.data
   } catch (e) {
     provinceMeta.value = null
