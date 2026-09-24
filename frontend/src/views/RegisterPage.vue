@@ -21,7 +21,18 @@
         <input class="input-modern" v-model="form.full_name" type="text" placeholder="Full Name" required />
         <input class="input-modern" v-model="form.email" type="email" placeholder="Email Address" required />
         <input class="input-modern" v-model="form.phone_number" type="tel" placeholder="Phone Number (optional)" />
-        <input class="input-modern" v-model="form.password" type="password" placeholder="Password (min 6 characters)" required minlength="6" />
+        <div class="password-field">
+          <input class="input-modern" v-model="form.password" :type="showPassword ? 'text' : 'password'" placeholder="Password (min 6 characters)" required minlength="6" />
+          <button type="button" class="eye-toggle" @click="showPassword = !showPassword" :aria-label="showPassword ? 'Hide password' : 'Show password'">
+            <i :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+          </button>
+        </div>
+        <div class="password-field">
+          <input class="input-modern" v-model="form.confirmPassword" :type="showConfirmPassword ? 'text' : 'password'" placeholder="Confirm Password" required minlength="6" />
+          <button type="button" class="eye-toggle" @click="showConfirmPassword = !showConfirmPassword" :aria-label="showConfirmPassword ? 'Hide password' : 'Show password'">
+            <i :class="showConfirmPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+          </button>
+        </div>
 
         <select class="input-modern" v-model="form.role" @change="syncVisitorFields">
           <option value="tourist">I am a Tourist</option>
@@ -67,6 +78,7 @@ const form = reactive({
   email: '',
   phone_number: '',
   password: '',
+  confirmPassword: '',
   role: 'tourist',
   visitor_type: 'local',
   country: 'South Africa',
@@ -75,6 +87,8 @@ const form = reactive({
 const loading = ref(false)
 const error = ref('')
 const success = ref('')
+const showPassword = ref(false)
+const showConfirmPassword = ref(false)
 
 function syncVisitorFields() {
   if (form.role !== 'tourist') {
@@ -86,12 +100,19 @@ function syncVisitorFields() {
 }
 
 async function handleSubmit() {
-  loading.value = true
   error.value = ''
   success.value = ''
 
+  if (form.password !== form.confirmPassword) {
+    error.value = 'Passwords do not match.'
+    return
+  }
+
+  loading.value = true
+
   try {
-    await auth.register(form)
+    const { confirmPassword, ...payload } = form
+    await auth.register(payload)
     success.value = 'Account created! Redirecting to login...'
     setTimeout(() => router.push('/login'), 1500)
   } catch (e) {
@@ -191,6 +212,40 @@ async function handleSubmit() {
 
 .switch-text a:hover {
   text-decoration: underline;
+}
+
+/* Password + confirm password with show/hide eye */
+.password-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.password-field .input-modern {
+  width: 100%;
+  padding-right: 44px;
+}
+
+.eye-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+.eye-toggle:hover {
+  color: var(--accent);
 }
 
 @media (max-width: 600px) {

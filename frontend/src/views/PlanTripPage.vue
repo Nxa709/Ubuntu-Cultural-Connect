@@ -143,7 +143,6 @@
                       <span class="tl-meta" v-if="en.duration_hours">{{ en.duration_hours }}h</span>
                       <span class="tl-meta" v-if="en.cost">R{{ en.cost }}</span>
                     </div>
-                    <p class="tl-reason" v-if="en.reason">{{ en.reason }}</p>
                     <div class="tl-actions" v-if="en.type === 'experience' || en.type === 'meal'">
                       <button class="tl-btn" @click="moveEntry(day.day_number, idx, -1)" title="Move up">&uarr;</button>
                       <button class="tl-btn" @click="moveEntry(day.day_number, idx, 1)" title="Move down">&darr;</button>

@@ -25,7 +25,6 @@ import HostReviews from '../views/HostReviews.vue'
 import HostPerformance from '../views/HostPerformance.vue'
 import EditTripPage from '../views/EditTripPage.vue'
 import TravelJournalPage from '../views/TravelJournalPage.vue'
-import ReviewHistoryPage from '../views/ReviewHistoryPage.vue'
 import ExperienceDetailPage from '../views/ExperienceDetailPage.vue'
 import ProvincePage from '../views/ProvincePage.vue'
 import DestinationDetail from '../views/DestinationDetail.vue'
@@ -64,7 +63,7 @@ const routes = [
   { path: '/host/analytics/:id', name: 'HotspotAnalytics', component: HotspotAnalytics, meta: { requiresAuth: true, requiresHost: true } },
   { path: '/plan-trip/edit/:id', name: 'EditTrip', component: EditTripPage, meta: { requiresAuth: true } },
   { path: '/journal', name: 'TravelJournal', component: TravelJournalPage, meta: { requiresAuth: true } },
-  { path: '/reviews', name: 'ReviewHistory', component: ReviewHistoryPage, meta: { requiresAuth: true } },
+  { path: '/reviews', redirect: '/' },
 ]
 
 const router = createRouter({

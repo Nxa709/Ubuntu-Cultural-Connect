@@ -13,7 +13,6 @@
             <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
           <input v-model="search" type="text" placeholder="what are you looking for ?" class="search-input" @keyup.enter="performSearch" />
-          <button class="search-btn" @click="performSearch">Search</button>
         </div>
       </div>
     </div>
@@ -293,7 +292,7 @@ function getCategoryImage(cat) {
   justify-content: center;
   align-items: stretch;
   gap: 12px;
-  max-width: 700px;
+  max-width: 1000px;
   margin: 0 auto;
   flex-wrap: wrap;
 }
@@ -301,7 +300,7 @@ function getCategoryImage(cat) {
 .search-bar {
   flex: 1;
   min-width: 260px;
-  max-width: 600px;
+  max-width: 1000px;
   display: flex;
   align-items: center;
   background: rgba(255, 255, 255, 0.95);
@@ -337,26 +336,6 @@ function getCategoryImage(cat) {
 
 .search-input::placeholder {
   color: var(--text-muted);
-}
-
-.search-btn {
-  flex-shrink: 0;
-  border: none;
-  background: var(--accent-fill);
-  color: #1a1a1a;
-  font-family: 'Poppins', sans-serif;
-  font-weight: 600;
-  font-size: 0.95rem;
-  padding: 12px 28px;
-  border-radius: 50px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.2s;
-}
-
-.search-btn:hover {
-  background: var(--accent-fill-hover);
-  color: #1a1a1a;
 }
 
 /* Explore by province */
@@ -671,14 +650,8 @@ function getCategoryImage(cat) {
     flex-direction: column;
   }
   .search-bar {
-    flex-direction: column;
-    align-items: stretch;
-    border-radius: 20px;
-    padding: 12px;
-  }
-  .search-btn {
-    width: 100%;
-    justify-content: center;
+    border-radius: 50px;
+    padding: 4px 6px 4px 14px;
   }
   .featured-grid,
   .search-results-grid {

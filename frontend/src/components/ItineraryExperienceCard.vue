@@ -19,7 +19,6 @@
           <span v-if="item.duration_hours"><i class="bi bi-clock"></i> {{ item.duration_hours }}h</span>
           <span v-if="item.location"><i class="bi bi-geo-alt-fill"></i> {{ item.location }}</span>
         </div>
-        <p class="itin-reason" v-if="item.reason"><i class="bi bi-lightbulb"></i> {{ item.reason }}</p>
       </div>
       <div class="itin-actions">
         <button class="ibtn" title="Replace" @click="$emit('replace', item)"><i class="bi bi-arrow-repeat"></i></button>
@@ -31,7 +30,6 @@
       <div class="itin-break-icon"><i class="bi bi-cup-hot"></i></div>
       <div class="itin-body">
         <h3>{{ item.title || 'Break' }}</h3>
-        <p class="itin-reason" v-if="item.reason">{{ item.reason }}</p>
       </div>
     </template>
   </div>

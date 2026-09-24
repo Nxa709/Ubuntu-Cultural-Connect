@@ -32,7 +32,6 @@
               <template v-if="a.avg_rating"> · <i class="bi bi-star-fill"></i> {{ a.avg_rating.toFixed(1) }}</template>
               · R{{ Math.round(a.price || 0) }}
             </span>
-            <span class="alt-reason" v-if="a.reason">{{ a.reason }}</span>
           </span>
           <span class="alt-score">{{ Math.round(a.score) }}</span>
         </button>

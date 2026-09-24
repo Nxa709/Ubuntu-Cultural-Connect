@@ -18,7 +18,6 @@
                 <li><router-link to="/preferences" @click="menuOpen = false">Set Preferences</router-link></li>
                 <li><router-link to="/plan-trip" @click="menuOpen = false">Plan Trip</router-link></li>
                 <li><router-link to="/journal" @click="menuOpen = false">Journal</router-link></li>
-                <li><router-link to="/reviews" @click="menuOpen = false">My Reviews</router-link></li>
               </template>
 
               <li v-if="auth.isBusinessOwner || auth.isAdmin" class="notif-li">
