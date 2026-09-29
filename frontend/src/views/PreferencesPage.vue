@@ -12,7 +12,7 @@
     <div v-if="success" class="alert alert-success">{{ success }}</div>
     <div v-if="error" class="alert alert-error">{{ error }}</div>
 
-    <div class="card">
+    <div class="card prefs-card">
       <h2>What interests you?</h2>
       <p class="card-sub">Select one or more cultural categories</p>
 
@@ -186,21 +186,25 @@ function getIcon(cat) {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: var(--surface);
-  border: 1px solid var(--border-strong);
-  color: var(--text-color);
-  padding: 6px 14px;
-  border-radius: 8px;
+  background: var(--accent-fill);
+  border: 1px solid var(--accent-fill);
+  color: #1a1a1a;
+  padding: 7px 16px;
+  border-radius: 50px;
   font-size: 0.82rem;
+  font-weight: 600;
   font-family: inherit;
   cursor: pointer;
+  box-shadow: 0 4px 14px rgba(232, 162, 0, 0.35);
   transition: all 0.2s;
 }
 
 .back-btn:hover {
-  background: var(--accent-light);
-  border-color: var(--accent);
-  color: var(--accent-text);
+  background: var(--accent-fill-hover);
+  border-color: var(--accent-fill-hover);
+  color: #1a1a1a;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(232, 162, 0, 0.45);
 }
 
 .hero-header h1 {
@@ -249,6 +253,10 @@ function getIcon(cat) {
   right: 0;
   height: 4px;
   background: linear-gradient(90deg, var(--accent), #EC407A, #29B6F6);
+}
+
+.prefs-card {
+  margin-top: 36px;
 }
 
 .card h2 {
