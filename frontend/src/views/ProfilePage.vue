@@ -108,7 +108,7 @@
           </div>
           <p v-if="favorites.length === 0" class="empty-text">No favorites yet. Tap the heart on any hotspot to save it here.</p>
           <div v-else class="favorites-grid">
-            <router-link v-for="fav in favorites" :key="fav.id" :to="`/destination/${fav.id}`" class="favorite-card">
+            <router-link v-for="fav in favorites" :key="fav.id" :to="`/experience/${fav.id}`" class="favorite-card">
               <div class="favorite-img" :style="{ backgroundImage: `url(${fav.image})` }">
                 <span class="favorite-badge">{{ fav.category }}</span>
                 <button
@@ -245,7 +245,6 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useExperienceStore } from '../stores/experience'
-import { getAllDestinations } from '../data/provinces'
 
 const auth = useAuthStore()
 const expStore = useExperienceStore()
@@ -313,9 +312,16 @@ function loadFavorites() {
   try {
     ids = JSON.parse(localStorage.getItem('ucc_wishlist') || '[]')
   } catch (e) { /* ignore */ }
-  const all = getAllDestinations()
+  const all = (expStore.experiences || []).map(e => ({
+    id: e.id,
+    name: e.title,
+    category: e.category,
+    location: e.location,
+    rating: e.avg_rating,
+    image: e.image_url || getCategoryImage(e.category),
+  }))
   favorites.value = ids
-    .map(id => all.find(d => d.id === id))
+    .map(id => all.find(d => String(d.id) === String(id)))
     .filter(Boolean)
 }
 
@@ -407,6 +413,9 @@ onMounted(async () => {
   form.full_name = auth.user?.full_name || ''
   form.phone_number = auth.user?.phone_number || ''
 
+  try {
+    if (!expStore.experiences?.length) await expStore.fetchExperiences()
+  } catch (e) { /* silently fail */ }
   loadFavorites()
 
   try {
