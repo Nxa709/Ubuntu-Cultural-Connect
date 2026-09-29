@@ -280,10 +280,6 @@
           </div>
         </div>
       </template>
-
-      <p class="note-foot">
-        Profile views are measured as itinerary adds — how many times a traveller added your hotspots to their trip plan.
-      </p>
     </template>
   </div>
 </template>
