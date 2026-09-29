@@ -83,13 +83,13 @@
             </div>
           </div>
 
-          <div class="section" v-if="officialWebsite">
-            <h2>Official Website</h2>
-            <a class="website-link" :href="officialWebsite" target="_blank" rel="noopener noreferrer">
+          <div class="section" v-if="officialSite">
+            <h2>{{ officialSite.official ? 'Official Website' : 'Find Out More' }}</h2>
+            <a class="website-link" :href="officialSite.url" target="_blank" rel="noopener noreferrer">
               <span class="website-icon"><i class="bi bi-globe2"></i></span>
               <span class="website-text">
-                <span class="website-label">Visit the official site</span>
-                <span class="website-url">{{ officialWebsite }}</span>
+                <span class="website-label">{{ officialSite.official ? 'Visit the official site' : 'Search for this hotspot online' }}</span>
+                <span class="website-url">{{ officialSite.official ? officialSite.url : 'Opens a web search' }}</span>
               </span>
               <svg class="website-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
@@ -315,7 +315,7 @@ const mapQuery = computed(() => {
   return encodeURIComponent(parts.join(', '))
 })
 
-const officialWebsite = computed(() => (exp.value ? getHotspotWebsite(exp.value.title) : null))
+const officialSite = computed(() => (exp.value ? getHotspotWebsite(exp.value) : null))
 
 const categoryImages = {
   'Traditional Cooking': '/img/cultures/Rural.jpg',
