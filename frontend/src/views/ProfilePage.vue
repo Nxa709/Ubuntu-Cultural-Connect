@@ -177,7 +177,7 @@
                   <div v-if="submittingReview === item.experience_id" class="review-form">
                     <div class="star-rating">
                       <button v-for="n in 5" :key="n" type="button" class="star-btn" :class="{ filled: n <= (reviewForm.score) }" @click="reviewForm.score = n">
-                        <svg width="20" height="20" viewBox="0 0 24 24" :fill="n <= reviewForm.score ? 'var(--accent)' : 'none'" :stroke="n <= reviewForm.score ? 'var(--accent)' : '#E8E2DC'" stroke-width="2">
+                        <svg width="20" height="20" viewBox="0 0 24 24" :fill="n <= reviewForm.score ? 'var(--accent)' : 'none'" :stroke="n <= reviewForm.score ? 'var(--accent)' : 'var(--accent-fill)'" stroke-width="2">
                           <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
                         </svg>
                       </button>
@@ -976,12 +976,12 @@ async function handleUpdate() {
 }
 
 .star {
-  color: #d1d5db;
+  color: rgba(181, 121, 18, 0.4) !important;
   font-size: 0.95rem;
 }
 
 .star.filled {
-  color: var(--accent);
+  color: var(--accent) !important;
 }
 
 .existing-score {
