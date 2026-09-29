@@ -268,6 +268,8 @@ onMounted(async () => {
   width: 100%;
   max-width: none;
   margin: 0;
+  padding-top: 104px !important;
+  padding-bottom: 28px !important;
 }
 
 .owner-overview,
