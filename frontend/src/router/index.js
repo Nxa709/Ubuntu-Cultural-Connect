@@ -10,7 +10,7 @@ import ForgotPasswordPage from '../views/ForgotPasswordPage.vue'
 import ProfilePage from '../views/ProfilePage.vue'
 import PreferencesPage from '../views/PreferencesPage.vue'
 import ExperiencesPage from '../views/ExperiencesPage.vue'
-import PlanJourneyPage from '../views/PlanJourneyPage.vue'
+import PlanTripPage from '../views/PlanTripPage.vue'
 import RateExperiencePage from '../views/RateExperiencePage.vue'
 import AnalyticsPage from '../views/AnalyticsPage.vue'
 import AdminReviewComments from '../views/AdminReviewComments.vue'
@@ -42,7 +42,7 @@ const routes = [
   { path: '/preferences', name: 'Preferences', component: PreferencesPage, meta: { requiresAuth: true } },
   { path: '/experiences', name: 'Experiences', component: ExperiencesPage, meta: { requiresAuth: true } },
   { path: '/experience/:id', name: 'ExperienceDetail', component: ExperienceDetailPage, meta: { requiresAuth: true } },
-  { path: '/plan-trip', name: 'PlanTrip', component: PlanJourneyPage, meta: { requiresAuth: true } },
+  { path: '/plan-trip', name: 'PlanTrip', component: PlanTripPage, meta: { requiresAuth: true } },
   { path: '/rate/:id', name: 'RateExperience', component: RateExperiencePage, meta: { requiresAuth: true } },
   { path: '/analytics', name: 'Analytics', component: AnalyticsPage, meta: { requiresAuth: true } },
   { path: '/overall-analytics', name: 'OverallAnalytics', component: OverallAnalytics, meta: { requiresAuth: true } },

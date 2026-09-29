@@ -14,7 +14,6 @@ from routers.notification import router as notification_router
 from routers.upload import router as upload_router
 from routers.province import router as province_router
 from routers.images import router as images_router
-from routers.itinerary import router as itinerary_router
 
 # Create tables
 Base.metadata.create_all(bind=engine)
@@ -80,7 +79,6 @@ app.include_router(notification_router)
 app.include_router(upload_router)
 app.include_router(province_router)
 app.include_router(images_router)
-app.include_router(itinerary_router)
 
 
 @app.get("/api/health")
