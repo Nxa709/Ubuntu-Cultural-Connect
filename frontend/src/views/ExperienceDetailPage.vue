@@ -63,7 +63,7 @@
             </div>
             <div class="map-container" v-if="mapQuery">
               <iframe
-                :src="`https://www.google.com/maps?q=${mapQuery}&output=embed`"
+                :src="`https://www.google.com/maps?q=${mapQuery}&z=15&output=embed`"
                 title="Google Map"
                 loading="lazy"
                 allowfullscreen
@@ -254,7 +254,47 @@ const addingToTrip = ref(false)
 const currentTripInfo = ref(null)
 const showItineraryModal = ref(false)
 
+/* Precise coordinates for the map pin (resolved from the location text). */
+const coords = ref(null)
+
+function provinceCentroid() {
+  const target = (exp.value?.province || '').toLowerCase()
+  if (!target) return null
+  const p = (store.provinceDirectory || []).find(
+    (d) => d.name && d.name.toLowerCase() === target
+  )
+  if (p && p.latitude != null && p.longitude != null) {
+    return { lat: p.latitude, lng: p.longitude }
+  }
+  return null
+}
+
+async function resolveMapCoords() {
+  if (!exp.value?.location) return
+  const q = [exp.value.location, exp.value.province, 'South Africa'].filter(Boolean).join(', ')
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(q)}`,
+      { headers: { Accept: 'application/json' } }
+    )
+    if (res.ok) {
+      const data = await res.json()
+      if (data && data[0]) {
+        coords.value = { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) }
+        return
+      }
+    }
+  } catch (e) { /* fall through to province centroid */ }
+
+  if (!store.provinceDirectory?.length) {
+    try { await store.fetchProvinceDirectory() } catch (e) { /* ignore */ }
+  }
+  const centroid = provinceCentroid()
+  if (centroid) coords.value = centroid
+}
+
 const mapQuery = computed(() => {
+  if (coords.value) return `${coords.value.lat},${coords.value.lng}`
   if (!exp.value || !exp.value.location) return ''
   const parts = [exp.value.location, exp.value.province, 'South Africa'].filter(Boolean)
   return encodeURIComponent(parts.join(', '))
@@ -316,6 +356,7 @@ onMounted(async () => {
       store.getRatings(id),
     ])
     store.recordView(id)
+    resolveMapCoords()
   } catch (e) {
     exp.value = null
   }
