@@ -90,7 +90,7 @@ async function handleSubmit() {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: url('/img/cultures/woman.jpeg') no-repeat 20% 20%;
+  background: url('/img/cultures/woman.jpeg') no-repeat 20% 30%;
   background-size: cover;
   position: relative;
   padding: 80px 20px 40px;

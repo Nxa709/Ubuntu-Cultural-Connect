@@ -127,7 +127,7 @@ onMounted(async () => {
 
 <style scoped>
 .admin-page {
-  background: url('/img/cultures/woman.jpeg') no-repeat 20% 20%;
+  background: url('/img/cultures/woman.jpeg') no-repeat 20% 30%;
   background-size: cover;
   position: relative;
   min-height: 100vh;

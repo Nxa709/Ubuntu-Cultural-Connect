@@ -289,7 +289,7 @@ main.sidebar-shifted {
 .welcome,
 .dashboard-header,
 .exp-header {
-  background: linear-gradient(rgba(15, 23, 42, 0.25), rgba(15, 23, 42, 0.45)), url('/img/cultures/woman.jpeg') no-repeat 20% 20% / cover !important;
+  background: linear-gradient(rgba(15, 23, 42, 0.25), rgba(15, 23, 42, 0.45)), url('/img/cultures/woman.jpeg') no-repeat 20% 30% / cover !important;
   background-size: cover !important;
   text-align: center !important;
   padding: 40px 20px 36px !important;
@@ -316,7 +316,7 @@ main.sidebar-shifted {
 }
 
 .ana-header {
-  background: linear-gradient(rgba(15, 23, 42, 0.25), rgba(15, 23, 42, 0.45)), url('/img/cultures/woman.jpeg') no-repeat 20% 20% / cover !important;
+  background: linear-gradient(rgba(15, 23, 42, 0.25), rgba(15, 23, 42, 0.45)), url('/img/cultures/woman.jpeg') no-repeat 20% 30% / cover !important;
   background-size: cover !important;
   min-height: 340px !important;
   display: flex !important;

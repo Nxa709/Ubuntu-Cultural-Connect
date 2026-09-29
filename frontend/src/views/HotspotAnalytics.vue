@@ -387,7 +387,7 @@ onUnmounted(destroyCharts)
 .ana-header {
   text-align: center;
   padding: 60px 20px 40px;
-  background: linear-gradient(rgba(40, 32, 20, 0.6), rgba(40, 32, 20, 0.6)), url('/img/cultures/woman.jpeg') no-repeat 20% 20% / cover;
+  background: linear-gradient(rgba(40, 32, 20, 0.6), rgba(40, 32, 20, 0.6)), url('/img/cultures/woman.jpeg') no-repeat 20% 30% / cover;
   color: #fff;
   position: relative;
 }
