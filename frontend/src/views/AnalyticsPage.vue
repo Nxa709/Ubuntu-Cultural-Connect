@@ -145,10 +145,13 @@
         <div class="card-head">
           <h2>Business Insights</h2>
         </div>
-        <div class="insight-list">
-          <div class="insight-item" v-for="(ins, i) in insights" :key="i">
-            <span class="insight-icon" :class="'kpi-' + ins.color"><i :class="['bi', ins.icon]"></i></span>
-            <p class="insight-text">{{ ins.pre }}<strong>{{ ins.strong }}</strong>{{ ins.post }}</p>
+        <div class="insights-grid">
+          <div class="insight-card" :class="'insight-' + ins.type" v-for="(ins, i) in insights" :key="i">
+            <div class="insight-icon"><i :class="['bi', ins.icon]"></i></div>
+            <div class="insight-content">
+              <h4>{{ ins.title }}</h4>
+              <p>{{ ins.pre }}<strong>{{ ins.strong }}</strong>{{ ins.post }}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -463,7 +466,7 @@ const insights = computed(() => {
     const top = [...perf].sort((a, b) => b.views - a.views)[0]
     if (top && top.views > 0) {
       list.push({
-        icon: 'bi-eye', color: 'brown',
+        icon: 'bi-eye', type: 'info', title: 'Most Viewed Experience',
         pre: `"${top.title}" is your most viewed experience (${top.views} view${top.views === 1 ? '' : 's'} this period). `,
         strong: 'Promote it more prominently', post: ' to capitalise on existing interest.',
       })
@@ -474,7 +477,7 @@ const insights = computed(() => {
   if (lowInterest.length && perf.length > lowInterest.length) {
     const names = lowInterest.slice(0, 3).map(p => `"${p.title}"`).join(', ')
     list.push({
-      icon: 'bi-graph-down-arrow', color: 'tan',
+      icon: 'bi-graph-down-arrow', type: 'warning', title: 'Low-Interest Experiences',
       pre: `${lowInterest.length} experience(s) drew no interest this period (${names}). `,
       strong: 'Improve descriptions, images or positioning', post: ' to attract attention.',
     })
@@ -484,7 +487,7 @@ const insights = computed(() => {
   if (needsAttention.length) {
     const names = needsAttention.slice(0, 3).map(p => `"${p.title}"`).join(', ')
     list.push({
-      icon: 'bi-exclamation-triangle', color: 'brownDark',
+      icon: 'bi-exclamation-triangle', type: 'danger', title: 'Low Ratings to Review',
       pre: `${needsAttention.length} experience(s) have low ratings (${names}). `,
       strong: 'Review recent feedback', post: ' and address any recurring issues.',
     })
@@ -494,13 +497,13 @@ const insights = computed(() => {
     const diff = o.avg_rating - o.prev_avg_rating
     if (diff >= 0.2) {
       list.push({
-        icon: 'bi-star-fill', color: 'gold',
+        icon: 'bi-star-fill', type: 'success', title: 'Rating Improved',
         pre: `Average rating improved to ${o.avg_rating}★ from ${o.prev_avg_rating}★. `,
         strong: 'Keep doing what works', post: ' and repeat it across your experiences.',
       })
     } else if (diff <= -0.2) {
       list.push({
-        icon: 'bi-star-half', color: 'brownDark',
+        icon: 'bi-star-half', type: 'danger', title: 'Rating Dropped',
         pre: `Average rating dropped to ${o.avg_rating}★ from ${o.prev_avg_rating}★. `,
         strong: 'Check recent feedback', post: ' to identify what changed.',
       })
@@ -513,13 +516,13 @@ const insights = computed(() => {
     const last = it[it.length - 1].count
     if (last > first) {
       list.push({
-        icon: 'bi-graph-up-arrow', color: 'brown',
+        icon: 'bi-graph-up-arrow', type: 'success', title: 'Interest Rising',
         pre: `Interest is rising (${first} → ${last} per ${o.interest_granularity} over the period). `,
         strong: 'Scale up promotion', post: ' while momentum is high.',
       })
     } else if (last < first) {
       list.push({
-        icon: 'bi-graph-down-arrow', color: 'tan',
+        icon: 'bi-graph-down-arrow', type: 'warning', title: 'Interest Declining',
         pre: `Interest has declined (${first} → ${last}). `,
         strong: 'Refresh your listings', post: ' or try new marketing to reverse the trend.',
       })
@@ -530,7 +533,7 @@ const insights = computed(() => {
   const low = (sd[1] || 0) + (sd[2] || 0)
   if (low > 0 && o.total_reviews > 0) {
     list.push({
-      icon: 'bi-chat-square-text', color: 'brownDark',
+      icon: 'bi-chat-square-text', type: 'warning', title: 'Low Star Reviews',
       pre: `${low} of your ${o.total_reviews} review(s) were 1-2★. `,
       strong: 'Read the low ratings', post: ' and act on recurring concerns.',
     })
@@ -538,7 +541,7 @@ const insights = computed(() => {
 
   if (!list.length) {
     list.push({
-      icon: 'bi-lightbulb', color: 'gold',
+      icon: 'bi-lightbulb', type: 'opportunity', title: 'Build Your Insights',
       pre: 'Add experiences and collect reviews / itinerary adds to ',
       strong: 'unlock insights', post: ' about your business.',
     })
@@ -1427,38 +1430,61 @@ onUnmounted(() => {
 .trend-badge.t-none { background: rgba(108, 117, 125, 0.12); color: #6c757d; }
 
 /* Insights */
-.insight-list { display: flex; flex-direction: column; gap: 14px; }
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+}
 
-.insight-item {
+.insight-card {
   display: flex;
-  gap: 10px;
   align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid #eceff1;
+  background: #fff;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.insight-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
 }
 
 .insight-icon {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.95rem;
   flex-shrink: 0;
+  font-size: 1rem;
 }
 
-.insight-icon.kpi-gold { background: rgba(255, 182, 18, 0.14); }
-.insight-icon.kpi-brown { background: rgba(139, 90, 43, 0.13); }
-.insight-icon.kpi-brownDark { background: rgba(92, 58, 33, 0.13); }
-.insight-icon.kpi-tan { background: rgba(201, 162, 39, 0.14); }
+.insight-success .insight-icon { color: #2e7d32; background: rgba(46, 125, 50, 0.12); }
+.insight-warning .insight-icon { color: #f57c00; background: rgba(245, 124, 0, 0.12); }
+.insight-info .insight-icon { color: #1976d2; background: rgba(25, 118, 210, 0.12); }
+.insight-danger .insight-icon { color: #d32f2f; background: rgba(211, 47, 47, 0.12); }
+.insight-opportunity .insight-icon { color: #7B1FA2; background: rgba(123, 31, 162, 0.12); }
 
-.insight-text {
+.insight-content h4 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #16212f;
+  margin: 0 0 4px;
+}
+
+.insight-content p {
   font-size: 0.8rem;
   color: #6c757d;
-  line-height: 1.55;
   margin: 0;
+  line-height: 1.5;
 }
 
-.insight-text strong {
+.insight-content p strong {
   color: #16212f;
   font-weight: 700;
 }
