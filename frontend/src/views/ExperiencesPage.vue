@@ -292,7 +292,7 @@ function getCategoryImage(cat) {
   justify-content: center;
   align-items: stretch;
   gap: 12px;
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
   flex-wrap: wrap;
 }
@@ -300,7 +300,7 @@ function getCategoryImage(cat) {
 .search-bar {
   flex: 1;
   min-width: 260px;
-  max-width: 1000px;
+  max-width: 1200px;
   display: flex;
   align-items: center;
   background: rgba(255, 255, 255, 0.95);
@@ -325,13 +325,19 @@ function getCategoryImage(cat) {
 .search-input {
   flex: 1;
   min-width: 0;
-  border: none;
-  background: transparent;
+  border: none !important;
+  background: transparent !important;
   outline: none;
+  box-shadow: none !important;
   font-family: inherit;
   font-size: 0.95rem;
   color: #333;
   padding: 10px 0;
+}
+
+.search-input:focus {
+  border: none !important;
+  box-shadow: none !important;
 }
 
 .search-input::placeholder {
