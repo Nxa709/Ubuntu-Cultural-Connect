@@ -362,7 +362,7 @@ onMounted(async () => {
 }
 
 .form-page {
-  background: url('/img/cultures/woman.jpeg') no-repeat center top;
+  background: url('/img/cultures/woman.jpeg') no-repeat 20% 20%;
   background-size: cover;
   position: relative;
   min-height: 100vh;

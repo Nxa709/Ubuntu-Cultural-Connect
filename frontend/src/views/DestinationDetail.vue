@@ -307,7 +307,7 @@ function goBack() {
 </script>
 
 <style scoped>
-.detail-page { background: url('/img/cultures/woman.jpeg') no-repeat center top fixed; background-size: cover; position: relative; min-height: 100vh; }
+.detail-page { background: url('/img/cultures/woman.jpeg') no-repeat 20% 20% fixed; background-size: cover; position: relative; min-height: 100vh; }
 .detail-page::before { content: ""; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.15); z-index: 0; }
 .detail-page > * { position: relative; z-index: 1; }
 .loading-state { display: flex; justify-content: center; align-items: center; min-height: 60vh; color: rgba(255, 255, 255, 0.88); font-size: 1.1rem; }

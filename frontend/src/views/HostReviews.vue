@@ -138,7 +138,7 @@ onMounted(async () => {
 
 <style scoped>
 .host-page {
-  background: url('/img/cultures/woman.jpeg') no-repeat center top;
+  background: url('/img/cultures/woman.jpeg') no-repeat 20% 20%;
   background-size: cover;
   background-attachment: fixed;
   position: relative;

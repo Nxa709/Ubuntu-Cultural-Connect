@@ -77,7 +77,7 @@ onMounted(async () => {
 
 <style scoped>
 .owner-dash { background: #0a0c12; position: relative; min-height: 100vh; padding: 100px 20px 40px; }
-.owner-dash::before { content: ""; position: fixed; inset: -32px; z-index: 0; background: url('/img/cultures/woman.jpeg') no-repeat center top; background-size: cover; filter: blur(14px); transform: scale(1.08); }
+.owner-dash::before { content: ""; position: fixed; inset: -32px; z-index: 0; background: url('/img/cultures/woman.jpeg') no-repeat 20% 20%; background-size: cover; filter: blur(14px); transform: scale(1.08); }
 .owner-dash::after { content: ""; position: fixed; inset: 0; z-index: 0; background: rgba(0, 0, 0, 0.45); }
 .dash-content { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; }
 .welcome { text-align: center; padding: 40px 20px 48px; }

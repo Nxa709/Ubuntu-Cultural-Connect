@@ -353,7 +353,7 @@ onMounted(async () => {
 }
 
 .hero-header {
-  background: url('/img/cultures/woman.jpeg') no-repeat center top;
+  background: url('/img/cultures/woman.jpeg') no-repeat 20% 20%;
   background-size: cover;
   position: relative;
   text-align: center;
