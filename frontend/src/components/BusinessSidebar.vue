@@ -85,7 +85,15 @@ const navItems = computed(() => {
 })
 
 function isActive(path) {
-  return route.path === path || route.path.startsWith(path + '/')
+  if (!path) return false
+  const matches = (p) => route.path === p || route.path.startsWith(p + '/')
+  if (!matches(path)) return false
+  // Don't keep a parent item active when the current page matches a more
+  // specific nav item (e.g. /admin must not highlight on /admin/hotspots).
+  const moreSpecific = navItems.value.some(
+    (i) => i.path && i.path !== path && i.path.length > path.length && matches(i.path)
+  )
+  return !moreSpecific
 }
 
 function handleLogout() {

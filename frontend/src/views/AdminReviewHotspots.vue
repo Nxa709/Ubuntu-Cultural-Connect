@@ -333,27 +333,32 @@ onMounted(async () => {
 }
 
 .filter-btn {
-  padding: 0.5rem 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.28);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  color: #ccc;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.6rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 0.85rem;
+  font-family: inherit;
+  box-shadow: var(--shadow-sm);
   cursor: pointer;
-  font-size: 0.9rem;
   transition: all 0.2s;
 }
 
 .filter-btn:hover {
   border-color: var(--accent);
-  color: var(--accent);
+  color: var(--heading-color);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
 }
 
 .filter-btn.active {
-  background: var(--heading-color);
-  color: #f9f9f9;
-  border-color: rgba(255, 255, 255, 0.60);
+  background: var(--accent-fill);
+  border-color: var(--accent-fill);
+  color: #1a1a1a;
 }
 
 .badge {
@@ -364,10 +369,15 @@ onMounted(async () => {
   height: 20px;
   padding: 0 6px;
   border-radius: 10px;
-  background: var(--accent-fill);
-  color: #1a1a1a;
+  background: var(--accent-dark);
+  color: #fff;
   font-size: 0.75rem;
   margin-left: 6px;
+}
+
+.filter-btn.active .badge {
+  background: #1a1a1a;
+  color: var(--accent-fill);
 }
 
 .loading-state, .empty-state {

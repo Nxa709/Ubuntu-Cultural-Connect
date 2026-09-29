@@ -11,25 +11,25 @@
       <!-- Platform Growth Overview -->
       <div class="stats-grid">
         <div class="stat-card">
-          <div class="stat-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
-          <div class="stat-info">
-            <span class="stat-number">{{ admin.stats?.total_users || 0 }}</span>
+          <div class="stat-top">
+            <span class="stat-icon"><i class="bi bi-people"></i></span>
             <span class="stat-label">Total Users</span>
           </div>
+          <span class="stat-number">{{ admin.stats?.total_users || 0 }}</span>
         </div>
         <div class="stat-card">
-          <div class="stat-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
-          <div class="stat-info">
-            <span class="stat-number">{{ admin.stats?.total_experiences || 0 }}</span>
+          <div class="stat-top">
+            <span class="stat-icon"><i class="bi bi-geo-alt"></i></span>
             <span class="stat-label">Total Hotspots</span>
           </div>
+          <span class="stat-number">{{ admin.stats?.total_experiences || 0 }}</span>
         </div>
         <div class="stat-card">
-          <div class="stat-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
-          <div class="stat-info">
-            <span class="stat-number">{{ admin.stats?.total_ratings || 0 }}</span>
+          <div class="stat-top">
+            <span class="stat-icon"><i class="bi bi-star-fill"></i></span>
             <span class="stat-label">Total Reviews</span>
           </div>
+          <span class="stat-number">{{ admin.stats?.total_ratings || 0 }}</span>
         </div>
       </div>
 
@@ -224,49 +224,58 @@ onMounted(async () => {
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1rem;
+  margin-top: 2.5rem;
   margin-bottom: 2rem;
 }
 
 .stat-card {
-  background: rgba(255, 255, 255, 0.28);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 1.25rem;
+  padding: 18px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-top {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 8px;
+  margin-bottom: 10px;
 }
 
 .stat-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  background: rgba(232, 162, 0, 0.15);
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--accent-light);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--accent);
+  font-size: 0.95rem;
   flex-shrink: 0;
 }
 
 .stat-number {
   display: block;
-  font-size: 1.6rem;
-  font-weight: 800;
-  color: #fff;
-  line-height: 1;
   font-family: 'Poppins', sans-serif;
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: var(--heading-color);
+  line-height: 1.1;
 }
 
 .stat-label {
   display: block;
-  font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.88);
-  margin-top: 2px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
 }
 
 .charts-grid {
