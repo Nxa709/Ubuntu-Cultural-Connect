@@ -61,6 +61,8 @@ function handleClick(n) {
 
   if (n.type === 'hotspot_rejected' && n.experience_id) {
     router.push(`/host/edit/${n.experience_id}`)
+  } else if (n.type === 'hotspot_approved' && n.experience_id) {
+    router.push(`/experience/${n.experience_id}`)
   } else if (n.experience_id) {
     router.push(`/experience/${n.experience_id}`)
   }

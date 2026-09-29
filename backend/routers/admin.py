@@ -267,6 +267,16 @@ def approve_hotspot(
     exp.rejected_at = None
     db.commit()
 
+    if exp.owner_id:
+        notif = Notification(
+            user_id=exp.owner_id,
+            type="hotspot_approved",
+            message=f"Good news! Your business '{exp.title}' has been approved and is now live on Ubuntu Cultural Connect.\n\nClick to view your hotspot.",
+            experience_id=exp.id,
+        )
+        db.add(notif)
+        db.commit()
+
     return AdminActionResponse(
         message="Hotspot approved successfully",
         id=exp.id,
