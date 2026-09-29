@@ -83,6 +83,20 @@
             </div>
           </div>
 
+          <div class="section" v-if="officialWebsite">
+            <h2>Official Website</h2>
+            <a class="website-link" :href="officialWebsite" target="_blank" rel="noopener noreferrer">
+              <span class="website-icon"><i class="bi bi-globe2"></i></span>
+              <span class="website-text">
+                <span class="website-label">Visit the official site</span>
+                <span class="website-url">{{ officialWebsite }}</span>
+              </span>
+              <svg class="website-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+              </svg>
+            </a>
+          </div>
+
           <div class="section">
             <h2>Hosted By</h2>
             <div class="host-card">
@@ -234,6 +248,7 @@ import { useExperienceStore } from '../stores/experience'
 import { useAuthStore } from '../stores/auth'
 import AddToItineraryModal from '../components/AddToItineraryModal.vue'
 import { formatPrice } from '../utils/format'
+import { getHotspotWebsite } from '../data/hotspotWebsites'
 
 const route = useRoute()
 const router = useRouter()
@@ -299,6 +314,8 @@ const mapQuery = computed(() => {
   const parts = [exp.value.location, exp.value.province, 'South Africa'].filter(Boolean)
   return encodeURIComponent(parts.join(', '))
 })
+
+const officialWebsite = computed(() => (exp.value ? getHotspotWebsite(exp.value.title) : null))
 
 const categoryImages = {
   'Traditional Cooking': '/img/cultures/Rural.jpg',
@@ -559,6 +576,63 @@ onMounted(async () => {
   font-weight: 700;
   color: var(--heading-color);
   margin: 0 0 1rem;
+}
+
+.website-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 100%;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(181, 121, 18, 0.35);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.website-link:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.18);
+}
+
+.website-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: var(--accent-light);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+.website-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.website-label {
+  font-weight: 700;
+  color: var(--heading-color);
+  font-size: 0.95rem;
+}
+
+.website-url {
+  font-size: 0.82rem;
+  color: var(--accent);
+  word-break: break-all;
+}
+
+.website-arrow {
+  margin-left: auto;
+  color: var(--accent);
+  flex-shrink: 0;
 }
 
 .description-full p {
