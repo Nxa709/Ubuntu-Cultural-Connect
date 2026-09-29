@@ -40,6 +40,10 @@
           </button>
         </div>
 
+        <div class="forgot-row">
+          <router-link to="/forgot-password" class="forgot-link">Forgot password?</router-link>
+        </div>
+
         <button class="btn-gold" type="submit" :disabled="loading">
           {{ loading ? 'Logging in...' : 'Login' }}
         </button>
@@ -169,6 +173,24 @@ async function handleSubmit() {
 
 .pw-toggle:hover {
   color: #000;
+}
+
+.forgot-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -6px;
+}
+
+.forgot-link {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.forgot-link:hover {
+  color: var(--accent);
+  text-decoration: underline;
 }
 
 .btn-gold {

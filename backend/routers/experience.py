@@ -1395,7 +1395,6 @@ def _perf_status(avg):
         return "Needs attention"
     return "Critical"
 
-
 @router.get("/analytics/overview")
 def get_analytics_overview(
     range: str = "all",

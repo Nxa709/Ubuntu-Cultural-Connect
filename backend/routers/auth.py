@@ -1,11 +1,17 @@
+import secrets
+from datetime import datetime, timedelta, timezone
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
 from database import get_db
-from models.user import User, UserRole
-from schemas.user import UserRegister, UserLogin, UserResponse, Token
+from models.user import User, UserRole, PasswordResetToken
+from schemas.user import (
+    UserRegister, UserLogin, UserResponse, Token,
+    ForgotPasswordRequest, ResetPasswordRequest, ForgotPasswordResponse, MessageResponse,
+)
 from services.auth_service import (
     hash_password,
     verify_password,
@@ -155,3 +161,55 @@ def deregister(
     db.delete(current_user)
     db.commit()
     return {"message": "Account successfully deleted"}
+
+
+# ── Forgot / reset password ───────────────────────────────
+@router.post("/forgot-password", response_model=ForgotPasswordResponse)
+def forgot_password(payload: ForgotPasswordRequest, db: Session = Depends(get_db)):
+    email = payload.email.strip().lower()
+    user = db.query(User).filter(func.lower(User.email) == email).first()
+    generic = "If an account exists for that email, a reset token has been created."
+    if not user:
+        # Do not reveal whether the email is registered.
+        return ForgotPasswordResponse(message=generic)
+
+    # Invalidate any previous unused tokens for this user.
+    db.query(PasswordResetToken).filter(
+        PasswordResetToken.user_id == user.id, PasswordResetToken.used == False
+    ).update({"used": True})
+
+    token = secrets.token_urlsafe(24)
+    db.add(PasswordResetToken(
+        user_id=user.id,
+        token=token,
+        expires_at=datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(minutes=30),
+    ))
+    db.commit()
+    return ForgotPasswordResponse(
+        message="Reset token created. Use it within 30 minutes to choose a new password.",
+        # No email provider is configured, so the token is returned for the demo.
+        reset_token=token,
+    )
+
+
+@router.post("/reset-password", response_model=MessageResponse)
+def reset_password(payload: ResetPasswordRequest, db: Session = Depends(get_db)):
+    if not payload.new_password or len(payload.new_password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters.")
+
+    row = db.query(PasswordResetToken).filter(
+        PasswordResetToken.token == payload.token.strip()
+    ).first()
+    if not row or row.used:
+        raise HTTPException(status_code=400, detail="This reset token is invalid or has already been used.")
+    if row.expires_at and row.expires_at < datetime.now(timezone.utc).replace(tzinfo=None):
+        raise HTTPException(status_code=400, detail="This reset token has expired. Please request a new one.")
+
+    user = db.query(User).filter(User.id == row.user_id).first()
+    if not user:
+        raise HTTPException(status_code=400, detail="Account not found.")
+
+    user.hashed_password = hash_password(payload.new_password)
+    row.used = True
+    db.commit()
+    return MessageResponse(message="Your password has been reset. You can now log in.")

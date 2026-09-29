@@ -138,6 +138,53 @@ class ExperienceEvent(Base):
     user = relationship("User")
 
 
+class Itinerary(Base):
+    """A saved, editable smart cultural itinerary generated for a tourist."""
+
+    __tablename__ = "itineraries"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    title = Column(String, nullable=True)
+    province = Column(String, nullable=True)
+    num_days = Column(Integer, nullable=False, default=1)
+    budget = Column(Float, nullable=True)
+    estimated_cost = Column(Float, default=0)
+    pace = Column(String, default="balanced")
+    interests = Column(String, nullable=True)  # comma-separated interest keys
+    experience_type = Column(String, nullable=True)
+    min_rating = Column(Float, default=0)
+    budget_preference = Column(String, default="mid")
+    summary = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+
+    user = relationship("User", backref="itineraries")
+    items = relationship("ItineraryItem", back_populates="itinerary", cascade="all, delete-orphan")
+
+
+class ItineraryItem(Base):
+    """A single scheduled stop within a smart itinerary."""
+
+    __tablename__ = "itinerary_items"
+
+    id = Column(Integer, primary_key=True, index=True)
+    itinerary_id = Column(Integer, ForeignKey("itineraries.id"), nullable=False, index=True)
+    experience_id = Column(Integer, ForeignKey("experiences.id"), nullable=True)
+    item_type = Column(String, default="experience")  # experience | break
+    title = Column(String, nullable=True)             # used for break labels
+    day_number = Column(Integer, nullable=False)
+    start_time = Column(String, nullable=True)   # "HH:MM"
+    end_time = Column(String, nullable=True)      # "HH:MM"
+    sort_order = Column(Integer, default=0)
+    estimated_cost = Column(Float, default=0)
+    recommendation_score = Column(Float, default=0)
+    reason = Column(String, nullable=True)
+
+    itinerary = relationship("Itinerary", back_populates="items")
+    experience = relationship("Experience")
+
+
 class TravelJournal(Base):
     __tablename__ = "travel_journals"
 

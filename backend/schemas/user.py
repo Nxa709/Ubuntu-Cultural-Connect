@@ -37,3 +37,23 @@ class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
     user: UserResponse
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: str
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
+
+
+class ForgotPasswordResponse(BaseModel):
+    message: str
+    # Demo convenience: there is no email provider configured, so the reset
+    # token is returned directly when the account exists.
+    reset_token: Optional[str] = None
+
+
+class MessageResponse(BaseModel):
+    message: str

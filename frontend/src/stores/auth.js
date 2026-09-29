@@ -37,6 +37,16 @@ export const useAuthStore = defineStore('auth', () => {
     return response.data
   }
 
+  async function forgotPassword(email) {
+    const response = await api.post('/auth/forgot-password', { email })
+    return response.data
+  }
+
+  async function resetPassword(token, newPassword) {
+    const response = await api.post('/auth/reset-password', { token, new_password: newPassword })
+    return response.data
+  }
+
   async function fetchMe() {
     const response = await api.get('/auth/me')
     user.value = response.data
@@ -73,6 +83,8 @@ export const useAuthStore = defineStore('auth', () => {
     isBusinessOwner,
     register,
     login,
+    forgotPassword,
+    resetPassword,
     fetchMe,
     updateProfile,
     deregister,

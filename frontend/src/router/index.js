@@ -5,11 +5,12 @@ import HomePage from '../views/HomePage.vue'
 import AboutPage from '../views/AboutPage.vue'
 import LoginPage from '../views/LoginPage.vue'
 import RegisterPage from '../views/RegisterPage.vue'
+import ForgotPasswordPage from '../views/ForgotPasswordPage.vue'
 
 import ProfilePage from '../views/ProfilePage.vue'
 import PreferencesPage from '../views/PreferencesPage.vue'
 import ExperiencesPage from '../views/ExperiencesPage.vue'
-import PlanTripPage from '../views/PlanTripPage.vue'
+import PlanJourneyPage from '../views/PlanJourneyPage.vue'
 import RateExperiencePage from '../views/RateExperiencePage.vue'
 import AnalyticsPage from '../views/AnalyticsPage.vue'
 import AdminReviewComments from '../views/AdminReviewComments.vue'
@@ -36,11 +37,12 @@ const routes = [
   { path: '/about', name: 'About', component: AboutPage },
   { path: '/login', name: 'Login', component: LoginPage, meta: { guest: true } },
   { path: '/register', name: 'Register', component: RegisterPage, meta: { guest: true } },
+  { path: '/forgot-password', name: 'ForgotPassword', component: ForgotPasswordPage, meta: { guest: true } },
   { path: '/profile', name: 'Profile', component: ProfilePage, meta: { requiresAuth: true } },
   { path: '/preferences', name: 'Preferences', component: PreferencesPage, meta: { requiresAuth: true } },
   { path: '/experiences', name: 'Experiences', component: ExperiencesPage, meta: { requiresAuth: true } },
   { path: '/experience/:id', name: 'ExperienceDetail', component: ExperienceDetailPage, meta: { requiresAuth: true } },
-  { path: '/plan-trip', name: 'PlanTrip', component: PlanTripPage, meta: { requiresAuth: true } },
+  { path: '/plan-trip', name: 'PlanTrip', component: PlanJourneyPage, meta: { requiresAuth: true } },
   { path: '/rate/:id', name: 'RateExperience', component: RateExperiencePage, meta: { requiresAuth: true } },
   { path: '/analytics', name: 'Analytics', component: AnalyticsPage, meta: { requiresAuth: true } },
   { path: '/overall-analytics', name: 'OverallAnalytics', component: OverallAnalytics, meta: { requiresAuth: true } },

@@ -455,7 +455,7 @@ function themePct(t) {
   return Math.round((t.count / max) * 100)
 }
 
-/* ---------- Actionable insights (real data only) ---------- */
+/* ---------- Actionable insights usingreal data only ---------- */
 
 const insights = computed(() => {
   const list = []
@@ -482,7 +482,7 @@ const insights = computed(() => {
       strong: 'Improve descriptions, images or positioning', post: ' to attract attention.',
     })
   }
-
+/*identify hotspots with low ratings */
   const needsAttention = perf.filter(p => p.status === 'Needs attention' || p.status === 'Critical')
   if (needsAttention.length) {
     const names = needsAttention.slice(0, 3).map(p => `"${p.title}"`).join(', ')
@@ -605,11 +605,13 @@ const performanceEl = ref(null)
 const culturalEl = ref(null)
 let charts = []
 
+/*This function first destroys any existing charts to avoid duplication, */
 function destroyCharts() {
   charts.forEach(c => c.destroy())
   charts = []
 }
-
+/* Function declaration for creating charts based on the data 
+and rendering them in the respective canvas elements.  */
 function renderCharts() {
   destroyCharts()
 
@@ -617,6 +619,7 @@ function renderCharts() {
   const gridColor = 'rgba(0,0,0,0.06)'
   const axisColor = 'rgba(0,0,0,0.12)'
 
+/*Performance line chart rendering */
   if (performanceEl.value) {
     const o = perfOverview.value || {}
     const months = performanceMonths.value
@@ -680,6 +683,7 @@ function renderCharts() {
     }))
   }
 
+/*Cultural interest pie chart rendering */
   if (culturalEl.value && culturalBreakdown.value.length) {
     charts.push(new Chart(culturalEl.value, {
       type: 'pie',
@@ -704,6 +708,7 @@ function renderCharts() {
     }))
   }
 
+/*Most viewed experiences bar chart rendering */
   if (viewsEl.value && mostViewed.value.length) {
     charts.push(new Chart(viewsEl.value, {
       type: 'bar',
@@ -729,7 +734,7 @@ function renderCharts() {
       },
     }))
   }
-
+/*Interest over time line chart rendering */
   if (interestEl.value && interestOverTime.value.length) {
     charts.push(new Chart(interestEl.value, {
       type: 'line',
@@ -759,7 +764,7 @@ function renderCharts() {
       },
     }))
   }
-
+/*Star distribution doughnut chart rendering */
   if (starsEl.value && starCount.value > 0) {
     const sd = starDistribution.value
     const labels = []
@@ -1283,7 +1288,12 @@ onUnmounted(() => {
   min-width: 0;
 }
 
-.insights-card { margin-bottom: 20px; }
+.insights-card {
+  margin-bottom: 20px;
+  height: 320px;
+  display: flex;
+  flex-direction: column;
+}
 
 .cat-row {
   display: flex;
@@ -1434,6 +1444,8 @@ onUnmounted(() => {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 14px;
+  flex: 1;
+  overflow-y: auto;
 }
 
 .insight-card {
@@ -1555,7 +1567,8 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  max-height: 320px;
+  flex: 1;
+  max-height: none;
   overflow-y: auto;
 }
 
@@ -1601,7 +1614,12 @@ onUnmounted(() => {
   color: #98a2b3;
 }
 
-.recent-reviews-card { margin-bottom: 20px; }
+.recent-reviews-card {
+  margin-bottom: 20px;
+  height: 320px;
+  display: flex;
+  flex-direction: column;
+}
 
 .review-business {
   color: #16212f;
