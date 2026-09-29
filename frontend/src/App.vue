@@ -800,18 +800,45 @@ main.sidebar-shifted {
   background: var(--accent-light) !important;
 }
 
-/* Directories back buttons on light */
+/* Back buttons: consistent gold pill across every page */
+.back-btn,
+.back-link,
+.back-to-form,
 .kzn-page .back-btn,
 .province-page .back-btn {
-  background: var(--surface) !important;
-  border: 1px solid var(--border-strong) !important;
-  color: var(--text-color) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  background: var(--accent-fill) !important;
+  border: 1px solid var(--accent-fill) !important;
+  color: #1a1a1a !important;
+  padding: 7px 16px !important;
+  border-radius: 50px !important;
+  font-size: 0.82rem !important;
+  font-weight: 600 !important;
+  font-family: inherit !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  width: fit-content !important;
+  box-shadow: 0 4px 14px rgba(232, 162, 0, 0.35) !important;
+  transition: all 0.2s !important;
 }
 
+.back-btn:hover,
+.back-link:hover,
+.back-to-form:hover,
 .kzn-page .back-btn:hover,
 .province-page .back-btn:hover {
-  border-color: var(--accent) !important;
-  color: var(--accent) !important;
+  background: var(--accent-fill-hover) !important;
+  border-color: var(--accent-fill-hover) !important;
+  color: #1a1a1a !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 18px rgba(232, 162, 0, 0.45) !important;
+}
+
+/* Ensure the detail-hero back button keeps dark text on its gold fill */
+.detail-hero-content .back-link {
+  color: #1a1a1a !important;
 }
 
 /* Empty states */
@@ -922,7 +949,6 @@ main.sidebar-shifted {
 .detail-hero-content,
 .detail-hero-content h1,
 .detail-hero-content .meta-item,
-.detail-hero-content .back-link,
 .detail-hero-content .cat-badge,
 .hc-hero-content,
 .hc-hero-content h3,
